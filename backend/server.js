@@ -1,3 +1,4 @@
+const http = require("http");
 const express  = require("express");
 const cors     = require("cors");
 const dotenv   = require("dotenv");
@@ -7,7 +8,7 @@ const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 const hpp = require("hpp");
 const morgan = require("morgan");
-const { validateEnv } = require("./config/env");
+const { validateEnv, getClientOrigins } = require("./config/env");
 const { connectToDatabase } = require("./config/db");
 const { notFound, errorHandler } = require("./middleware/error");
 dotenv.config();
@@ -16,32 +17,25 @@ validateEnv();
 const app = express();
 app.set("trust proxy", 1);
 
-const allowedOrigins = [
-  ...(process.env.CLIENT_URLS || "").split(","),
-  process.env.CLIENT_URL,
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
-  "https://nouveauz.com",
-  "https://www.nouveauz.com",
-  "http://localhost:3000",
-  "http://localhost:3001",
-]
-  .map((origin) => String(origin || "").trim())
-  .filter(Boolean);
+const allowedOrigins = new Set(getClientOrigins());
 
 const isAllowedOrigin = (origin) => {
+  // Allow non-browser/server-to-server requests without Origin header
   if (!origin) return true;
-  if (allowedOrigins.includes(origin)) return true;
+
+  if (allowedOrigins.has(origin)) return true;
 
   try {
-    const parsed = new URL(origin);
-    if (parsed.protocol === "https:" && parsed.hostname.endsWith(".cloudfront.net")) return true;
-    if (parsed.protocol === "https:" && parsed.hostname.endsWith(".vercel.app")) return true;
-    if (parsed.protocol === "https:" && parsed.hostname.endsWith(".vercel.dev")) return true;
+    const { hostname } = new URL(origin);
+
+    if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1") {
+      return true;
+    }
+
+    return hostname.endsWith(".vercel.app") || hostname.endsWith(".vercel.dev");
   } catch {
     return false;
   }
-
-  return false;
 };
 
 const corsOptions = {
@@ -123,4 +117,30 @@ app.get("/", (req, res) => res.json({ message:"Nouveau™ API v2 running 🪷", 
 app.use(notFound);
 app.use(errorHandler);
 
+const startServer = async () => {
+  await connectToDatabase();
+
+  const port = process.env.PORT || 5000;
+  const host = process.env.HOST || "0.0.0.0";
+
+  return new Promise((resolve, reject) => {
+    const server = http.createServer(app);
+
+    server.once("error", reject);
+    server.listen(port, host, () => {
+      server.off("error", reject);
+      console.log(`API listening on http://${host}:${port}`);
+      resolve(server);
+    });
+  });
+};
+
+if (require.main === module) {
+  startServer().catch((err) => {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  });
+}
+
 module.exports = app;
+module.exports.startServer = startServer;
