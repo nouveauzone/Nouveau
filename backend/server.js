@@ -1,4 +1,3 @@
-const http = require("http");
 const express  = require("express");
 const cors     = require("cors");
 const dotenv   = require("dotenv");
@@ -117,30 +116,4 @@ app.get("/", (req, res) => res.json({ message:"Nouveau™ API v2 running 🪷", 
 app.use(notFound);
 app.use(errorHandler);
 
-const startServer = async () => {
-  await connectToDatabase();
-
-  const port = process.env.PORT || 5000;
-  const host = process.env.HOST || "0.0.0.0";
-
-  return new Promise((resolve, reject) => {
-    const server = http.createServer(app);
-
-    server.once("error", reject);
-    server.listen(port, host, () => {
-      server.off("error", reject);
-      console.log(`API listening on http://${host}:${port}`);
-      resolve(server);
-    });
-  });
-};
-
-if (require.main === module) {
-  startServer().catch((err) => {
-    console.error("Failed to start server:", err);
-    process.exit(1);
-  });
-}
-
 module.exports = app;
-module.exports.startServer = startServer;

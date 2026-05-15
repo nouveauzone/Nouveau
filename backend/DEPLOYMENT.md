@@ -7,7 +7,7 @@
 - **MongoDB Atlas** account (cloud database)
 - **Cloudinary** account (image hosting)
 - **Razorpay** account (payment gateway)
-- **Render** account (free hosting tier available)
+- **Vercel** account
 
 ---
 
@@ -309,22 +309,22 @@ const CLIENT_URLS = [
 
 ---
 
-## 🚀 Deploy to Render
+## 🚀 Deploy to Vercel
 
-### Step 1: Create Render Account
-1. Go to https://render.com
-2. Sign up with GitHub
-3. New → Web Service
+### Step 1: Create Vercel Project
+1. Go to https://vercel.com
+2. Import the GitHub repository
+3. Select the repo that contains `frontend`, `backend`, and `api`
 
-### Step 2: Connect Repository
-1. Select GitHub repository
-2. **Auto-deploy on push:** Enabled
-3. **Build command:** `npm install`
-4. **Start command:** `node server.js`
+### Step 2: Confirm Build Settings
+1. Use the repository root as the project root
+2. Let Vercel use the root `vercel.json`
+3. The backend function is served from `/api/index.js`
+4. The frontend SPA is served from the static build output
 
 ### Step 3: Environment Variables
-1. Go to **Environment** tab
-2. Add all variables from `.env`:
+1. Open **Project Settings** → **Environment Variables**
+2. Add the production values:
    ```
    NODE_ENV=production
   MONGODB_URI=your_production_mongodb_uri
@@ -334,14 +334,14 @@ const CLIENT_URLS = [
    ```
 
 ### Step 4: Deploy
-1. Click **Create Web Service**
-2. Render will build and deploy automatically
-3. Copy your Render URL: `https://your-app.onrender.com`
+1. Click **Deploy**
+2. Vercel will build the frontend and deploy the serverless backend together
+3. Your site should be available on the Vercel URL for the project
 
 ### Step 5: Update Frontend
 In frontend `.env` or config:
 ```
-REACT_APP_API_URL=https://your-app.onrender.com/api
+REACT_APP_API_URL=/api
 ```
 
 ---
@@ -355,7 +355,7 @@ GET /api/health
 
 ### Server Logs
 - **Local:** Check terminal output
-- **Render:** Dashboard → Logs tab
+- **Vercel:** Dashboard → Functions and Logs
 
 ### Error Tracking
 Enable error logs in production:
@@ -403,7 +403,7 @@ Header: Authorization: Bearer <expired_token>
 | Variable | Type | Example | Required |
 |----------|------|---------|----------|
 | `NODE_ENV` | string | development/production | Yes |
-| `PORT` | number | Render provides this at runtime | No |
+| `PORT` | number | Local dev only; Vercel sets it internally | No |
 | `MONGODB_URI` | string | mongodb+srv://... | Yes |
 | `MONGO_URI` | string | mongodb+srv://... | Supported alias |
 | `JWT_SECRET` | string | 32+ char random key | Yes |

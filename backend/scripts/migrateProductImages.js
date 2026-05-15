@@ -17,11 +17,12 @@ const isSameArray = (a, b) => {
 };
 
 const run = async () => {
-  if (!process.env.MONGO_URI) {
-    throw new Error("MONGO_URI is required in environment");
+  const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+  if (!mongoUri) {
+    throw new Error("MONGODB_URI (or MONGO_URI) is required in environment");
   }
 
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(mongoUri);
   console.log("[migrate] MongoDB connected");
 
   const cursor = Product.find({}, { _id: 1, images: 1 }).cursor();
