@@ -1,0 +1,215 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ec2
+  cancel-in-progress: true
+
+jobs:
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: 📦 Install dependencies
+        working-directory: ./frontend
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: 🎨 Build frontend
+        working-directory: ./frontend
+        run: |
+          export CI=false
+          npm run build
+          echo "${GITHUB_SHA}" > build/DEPLOY_COMMIT
+
+      - name: 📤 Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/build/
+          retention-days: 1
+
+  deploy:
+    name: Deploy to EC2
+    needs: build-frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 📥 Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/build
+
+      - name: 🔑 Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: 🚀 Transfer Build to EC2 (rsync)
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          rsync -avz --timeout=60 -e "ssh -o StrictHostKeyChecking=no" --delete frontend/build/ ubuntu@$HOST:/home/ubuntu/frontend-build/
+
+      - name: 🚀 Deploy Backend & Sync Nginx via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 10m
+
+          script: |
+            set -euo pipefail
+
+            echo "🚀 Starting Deployment..."
+
+            export HOME="/home/ubuntu"
+            export NVM_DIR="$HOME/.nvm"
+            if [ -s "$NVM_DIR/nvm.sh" ]; then
+              . "$NVM_DIR/nvm.sh"
+              nvm use --lts >/dev/null 2>&1 || true
+            fi
+
+            APP_DIR="/home/ubuntu/Nouveau-Web-site"
+
+            if [ ! -d "$APP_DIR/.git" ]; then
+              echo "📦 Project directory missing, cloning fresh copy..."
+              rm -rf "$APP_DIR"
+              git clone --depth 1 https://github.com/nouveauzone/Nouveau-Web-site.git "$APP_DIR"
+            fi
+
+            # 📁 Go to project folder
+            cd "$APP_DIR" || exit 1
+
+            # 🔧 Fix permissions
+            sudo chown -R ubuntu:ubuntu "$APP_DIR"
+
+            # 🔐 Fix git safe directory
+            git config --global --add safe.directory "$APP_DIR"
+
+            # 🔄 Pull latest code
+            git fetch origin
+            git reset --hard origin/main
+            git clean -fd -e backend/uploads/ -e uploads/
+
+            # =========================
+            # 📦 BACKEND SETUP
+            # =========================
+            cd backend
+            export NODE_ENV=production
+
+            if [ -f package-lock.json ]; then
+              npm ci --omit=dev --no-audit --no-fund || npm install --no-audit --no-fund
+            else
+              npm install --no-audit --no-fund
+            fi
+
+            pm2 describe backend > /dev/null \
+              && pm2 restart backend \
+              || pm2 start server.js --name backend
+
+            pm2 save
+
+            # =========================
+            # 🌐 DEPLOY TO NGINX
+            # =========================
+            if ! command -v rsync >/dev/null 2>&1; then
+              echo "📦 rsync missing, installing..."
+              sudo apt-get update -y
+              sudo apt-get install -y rsync
+            fi
+
+            # Detect nginx root for nouveauz.com. Fallback to /var/www/html if not found.
+            NGINX_ROOT=$(sudo nginx -T 2>/dev/null | awk '
+              /server_name[[:space:]]+.*nouveauz.com/ { in_server=1 }
+              in_server && /root[[:space:]]+/ {
+                gsub(";", "", $2)
+                print $2
+                exit
+              }
+            ')
+
+            if [ -z "${NGINX_ROOT:-}" ]; then
+              NGINX_ROOT="/var/www/html"
+              echo "⚠️ Could not detect nginx root for nouveauz.com. Falling back to ${NGINX_ROOT}."
+            fi
+
+            echo "📁 Deploying frontend build to: ${NGINX_ROOT}"
+            sudo mkdir -p "${NGINX_ROOT}"
+            sudo rsync -a --delete /home/ubuntu/frontend-build/ "${NGINX_ROOT}/"
+            sudo chown -R www-data:www-data "${NGINX_ROOT}" || true
+
+            # =========================
+            # 🔄 RELOAD NGINX
+            # =========================
+            if ! sudo nginx -t; then
+              echo "❌ Nginx config error"
+              sudo journalctl -u nginx -n 50 --no-pager
+              exit 1
+            fi
+
+            sudo systemctl reload nginx
+
+            if [ -f "${NGINX_ROOT}/DEPLOY_COMMIT" ]; then
+              echo "✅ Frontend commit on EC2: $(cat ${NGINX_ROOT}/DEPLOY_COMMIT)"
+            else
+              echo "⚠️ DEPLOY_COMMIT marker not found at ${NGINX_ROOT}"
+            fi
+
+            # =========================
+            # 🔍 BACKEND HEALTH & FINAL CHECK
+            # =========================
+            echo "🔍 Checking backend with retries..."
+            BACKEND_OK=0
+            for attempt in 1 2 3 4 5; do
+              if curl --max-time 10 -fsS http://127.0.0.1:5000/api/health > /dev/null; then
+                BACKEND_OK=1
+                echo "✅ Backend healthy"
+                break
+              fi
+              echo "⏳ Backend not ready (attempt ${attempt}/5), retrying..."
+              sleep 5
+            done
+
+            if [ "$BACKEND_OK" -ne 1 ]; then
+              echo "⚠️ Backend health check failed after retries."
+              pm2 logs backend --lines 50 --nostream || true
+            fi
+
+            echo "🌐 Checking live site..."
+            sleep 5
+
+            STATUS=$(curl -s -H "Cache-Control: no-cache" -o /dev/null -w "%{http_code}" https://nouveauz.com || echo "000")
+
+            if [[ ! "$STATUS" =~ ^(2|3) ]]; then
+              echo "❌ Site down (HTTP $STATUS)"
+              exit 1
+            fi
+
+            echo "✅ Deployment Successful!"
