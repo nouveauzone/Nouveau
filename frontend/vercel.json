@@ -1,5 +1,6 @@
 {
   "version": 2,
+
   "builds": [
     {
       "src": "api/index.js",
@@ -13,9 +14,14 @@
       }
     }
   ],
+
   "routes": [
     {
       "src": "/api/(.*)",
+      "dest": "api/index.js"
+    },
+    {
+      "src": "/api",
       "dest": "api/index.js"
     },
     {
@@ -23,7 +29,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/frontend/index.html"
+      "dest": "/frontend/build/index.html"
     }
   ]
 }
