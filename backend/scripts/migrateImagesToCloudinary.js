@@ -5,12 +5,34 @@ const http = require("http");
 const https = require("https");
 const crypto = require("crypto");
 const dotenv = require("dotenv");
+
+// Load environment variables BEFORE importing modules that depend on them
+dotenv.config();
+
+// Validate Cloudinary environment variables before importing the config
+const validateCloudinaryEnvVars = () => {
+  const required = ["CLOUDINARY_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"];
+  const missing = required.filter((varName) => !process.env[varName]);
+
+  if (missing.length > 0) {
+    console.error("❌ ERROR: Missing required Cloudinary environment variables:");
+    missing.forEach((varName) => {
+      console.error(`   - ${varName}`);
+    });
+    console.error("\nPlease ensure your .env file contains all required variables.");
+    process.exit(1);
+  }
+
+  console.log("✓ Cloudinary environment variables loaded successfully");
+};
+
+validateCloudinaryEnvVars();
+
+// Now safe to import modules that depend on environment variables
 const cloudinary = require("../config/cloudinary");
 const { connectToDatabase } = require("../config/db");
 const Product = require("../models/Product");
 const { normalizeImagePathForStorage } = require("../utils/imageUrl");
-
-dotenv.config();
 
 const HTTP_RE = /^https?:\/\//i;
 const CLOUDINARY_RE = /res\.cloudinary\.com/i;
@@ -20,11 +42,8 @@ const isCloudinaryUrl = (value) => CLOUDINARY_RE.test(String(value || "").trim()
 
 const uploadsRoot = path.resolve(__dirname, "..", "uploads");
 
-const hasCloudinary = Boolean(
-  process.env.CLOUDINARY_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET
-);
+// Cloudinary has already been validated at startup, so this is always true
+const hasCloudinary = true;
 
 const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
 const backupPath = path.resolve(__dirname, `migrateImagesToCloudinary.backup.${timestamp}.json`);
@@ -123,11 +142,10 @@ const uploadRemoteImage = async (url) => {
 };
 
 const migrateProductImages = async () => {
-  if (!hasCloudinary) {
-    throw new Error("Cloudinary credentials are missing in .env");
-  }
+  console.log("\n🚀 Starting image migration to Cloudinary...\n");
 
   await connectToDatabase();
+  console.log("✓ Connected to database\n");
 
   const products = await Product.find({}).lean(false);
   const total = products.length;
