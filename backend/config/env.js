@@ -18,6 +18,10 @@ const getPublicBaseUrl = () => {
   const raw = String(process.env.BASE_URL || "").trim();
   if (raw) return raw.replace(/\/+$/, "");
 
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
   if (process.env.NODE_ENV === "production") {
     return "https://nouveauz.com";
   }

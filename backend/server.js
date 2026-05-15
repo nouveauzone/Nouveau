@@ -1,10 +1,6 @@
 const express  = require("express");
-const http = require("http");
-const mongoose = require("mongoose");
 const cors     = require("cors");
 const dotenv   = require("dotenv");
-const path     = require("path");
-const { Server } = require("socket.io");
 const helmet   = require("helmet");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
@@ -12,8 +8,8 @@ const mongoSanitize = require("express-mongo-sanitize");
 const hpp = require("hpp");
 const morgan = require("morgan");
 const { validateEnv } = require("./config/env");
+const { connectToDatabase } = require("./config/db");
 const { notFound, errorHandler } = require("./middleware/error");
-const { bootstrapAdminUser } = require("./utils/bootstrap");
 dotenv.config();
 validateEnv();
 
@@ -23,6 +19,7 @@ app.set("trust proxy", 1);
 const allowedOrigins = [
   ...(process.env.CLIENT_URLS || "").split(","),
   process.env.CLIENT_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
   "https://nouveauz.com",
   "https://www.nouveauz.com",
   "http://localhost:3000",
@@ -38,6 +35,8 @@ const isAllowedOrigin = (origin) => {
   try {
     const parsed = new URL(origin);
     if (parsed.protocol === "https:" && parsed.hostname.endsWith(".cloudfront.net")) return true;
+    if (parsed.protocol === "https:" && parsed.hostname.endsWith(".vercel.app")) return true;
+    if (parsed.protocol === "https:" && parsed.hostname.endsWith(".vercel.dev")) return true;
   } catch {
     return false;
   }
@@ -56,21 +55,8 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-const httpServer = http.createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin: corsOptions.origin,
-    credentials: true,
-    methods: corsOptions.methods,
-    allowedHeaders: corsOptions.allowedHeaders,
-  },
-});
-
-app.set("io", io);
-
-io.on("connection", (socket) => {
-  socket.on("disconnect", () => {});
-});
+// Socket.IO is not supported on Vercel serverless; keep a no-op placeholder.
+app.set("io", null);
 
 // ── Middleware ──────────────────────────────────────────────────────────────
 app.use(cors(corsOptions));
@@ -94,6 +80,16 @@ app.use(rateLimit({
   message: { message: "Too many requests, please try again after 15 minutes." },
 }));
 
+// Ensure DB connection (cached across warm invocations).
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+});
+
 // Stricter limit only for auth routes — prevent brute force
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -106,22 +102,6 @@ app.use(express.json({ limit:"10mb" }));
 // Twilio webhook needs urlencoded body
 app.use("/api/whatsapp/webhook", express.urlencoded({ extended: false }));
 app.use(express.urlencoded({ extended:true, limit:"10mb" }));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
-
-// Debugging: Catch 404 errors for missing static files
-app.use(["/uploads", "/api/uploads"], (req, res) => {
-  console.error(`[Static 404] Missing image requested: ${req.originalUrl}`);
-  res.status(404).send("Image not found");
-});
-
-// ── DB ──────────────────────────────────────────────────────────────────────
-mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/nouveau")
-  .then(async () => {
-    console.log("✅ MongoDB connected");
-    await bootstrapAdminUser();
-  })
-  .catch(err => console.error("❌ MongoDB error:", err.message));
 
 // ── Routes ──────────────────────────────────────────────────────────────────
 app.use("/api/auth",     authLimiter, require("./routes/auth"));
@@ -143,5 +123,4 @@ app.get("/", (req, res) => res.json({ message:"Nouveau™ API v2 running 🪷", 
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, "0.0.0.0", () => console.log(`🚀 Nouveau™ Server → http://0.0.0.0:${PORT}`));
+module.exports = app;

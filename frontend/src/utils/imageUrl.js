@@ -1,5 +1,3 @@
-import API from '../config/api';
-
 const FALLBACK = '/product1.jpeg';
 
 // Images that don't exist on server - use fallback
@@ -27,28 +25,31 @@ export const fixImageUrl = (url) => {
     return FALLBACK;
   }
 
+  if (targetUrl.startsWith('data:') || targetUrl.startsWith('blob:')) {
+    return targetUrl;
+  }
+
   // If it's a full URL to the production server, return as-is (the backend serves /uploads directly)
   if (targetUrl.startsWith('http') && !targetUrl.includes('localhost')) {
     return targetUrl;
   }
 
-  // Directly point to the uploads directory (served by backend at /uploads/)
-  if (targetUrl.includes('/uploads/')) {
-    const cleanPath = targetUrl.split('/uploads/')[1];
-    if (cleanPath) {
-      return `/uploads/${cleanPath}`;
+  const uploadsBase = String(process.env.REACT_APP_UPLOADS_BASE_URL || '').trim().replace(/\/+$/, '');
+
+  if (uploadsBase) {
+    if (targetUrl.includes('/uploads/')) {
+      const cleanPath = targetUrl.split('/uploads/')[1];
+      if (cleanPath) return `${uploadsBase}/uploads/${cleanPath}`;
     }
-  }
 
-  // Catch relative edge cases like "uploads/..."
-  if (targetUrl.startsWith('uploads/')) {
-    const cleanPath = targetUrl.replace(/^uploads\//, '');
-    return `/uploads/${cleanPath}`;
-  }
+    if (targetUrl.startsWith('uploads/')) {
+      const cleanPath = targetUrl.replace(/^uploads\//, '');
+      return `${uploadsBase}/uploads/${cleanPath}`;
+    }
 
-  // If it's a plain filename without directory (bare filename)
-  if (!targetUrl.startsWith('/') && !targetUrl.startsWith('http')) {
-    return `/uploads/${targetUrl}`;
+    if (!targetUrl.startsWith('/') && !targetUrl.startsWith('http')) {
+      return `${uploadsBase}/uploads/${targetUrl}`;
+    }
   }
 
   return targetUrl;

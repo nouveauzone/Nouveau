@@ -47,6 +47,11 @@ const toPublicImageUrl = (src) => {
   const stored = normalizeImagePathForStorage(raw);
   if (!stored) return "";
 
+  const uploadsDisabled = process.env.UPLOADS_DISABLED === "true" || Boolean(process.env.VERCEL);
+  if (uploadsDisabled && (stored.startsWith("uploads/") || stored.startsWith("/uploads/"))) {
+    return "/product1.jpeg";
+  }
+
   if (HTTP_RE.test(stored)) return forceHttps(stored);
   if (stored.startsWith("uploads/")) return `${baseUrl}/${stored}`;
   if (stored.startsWith("/uploads/")) return `${baseUrl}${stored}`;
