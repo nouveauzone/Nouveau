@@ -118,6 +118,7 @@ app.use("/api/metrics",  require("./routes/metrics"));
 
 // ── Health check ────────────────────────────────────────────────────────────
 app.get("/", (req, res) => res.json({ message:"Nouveau™ API v2 running 🪷", status:"ok" }));
+app.get("/api", (req, res) => res.json({ message: "API Working" }));
 
 // ── Error handler ───────────────────────────────────────────────────────────
 app.use(notFound);
