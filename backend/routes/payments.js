@@ -15,37 +15,37 @@ const payRouter = express.Router();
 const cleanEnvValue = (value) => String(value || "").trim().replace(/^['"]|['"]$/g, "");
 
 const getRazorpayConfig = () => {
-  const keyId = cleanEnvValue(process.env.RAZORPAY_KEY_ID);
-  const keySecret = cleanEnvValue(process.env.RAZORPAY_KEY_SECRET);
+  const key_id = cleanEnvValue(process.env.RAZORPAY_KEY_ID);
+  const key_secret = cleanEnvValue(process.env.RAZORPAY_KEY_SECRET);
 
   console.log("[razorpay] env status", {
-    keyLoaded: Boolean(keyId),
-    secretLoaded: Boolean(keySecret),
-    keyPrefix: keyId ? keyId.slice(0, 8) : "",
-    mode: keyId.startsWith("rzp_test_") ? "test" : keyId.startsWith("rzp_live_") ? "live" : "unknown",
-    secretLength: keySecret.length,
+    keyLoaded: Boolean(key_id),
+    secretLoaded: Boolean(key_secret),
+    keyPrefix: key_id ? key_id.slice(0, 8) : "",
+    mode: key_id.startsWith("rzp_test_") ? "test" : key_id.startsWith("rzp_live_") ? "live" : "unknown",
+    secretLength: key_secret.length,
   });
 
-  return { keyId, keySecret };
+  return { key_id, key_secret };
 };
 
-let razorpayClient = null;
+let razorpay = null;
 
 const getRazorpayClient = () => {
-  if (razorpayClient) return razorpayClient;
+  if (razorpay) return razorpay;
 
-  const { keyId, keySecret } = getRazorpayConfig();
-  if (!keyId || !keySecret) {
+  const { key_id, key_secret } = getRazorpayConfig();
+  if (!key_id || !key_secret) {
     throw new Error("Razorpay credentials are missing");
   }
 
   console.log("[razorpay] initializing SDK instance");
-  razorpayClient = new Razorpay({
-    key_id: keyId,
-    key_secret: keySecret,
+  razorpay = new Razorpay({
+    key_id: key_id,
+    key_secret: key_secret,
   });
 
-  return razorpayClient;
+  return razorpay;
 };
 
 const sendPaymentConfirmationEmail = async (order, fallbackName = "Customer") => {
@@ -62,10 +62,10 @@ const sendPaymentConfirmationEmail = async (order, fallbackName = "Customer") =>
 payRouter.get(
   "/razorpay/test",
   (req, res) => {
-    const { keyId, keySecret } = getRazorpayConfig();
+    const { key_id, key_secret } = getRazorpayConfig();
     res.json({
-      keyLoaded: Boolean(keyId),
-      secretLoaded: Boolean(keySecret),
+      keyLoaded: Boolean(key_id),
+      secretLoaded: Boolean(key_secret),
     });
   }
 );
@@ -90,8 +90,8 @@ payRouter.post(
         authUserId: req.user?._id?.toString(),
       });
 
-      const { keyId } = getRazorpayConfig();
-      const amount = Math.round(Number(req.body.amount) * 100);
+      const { key_id } = getRazorpayConfig();
+      const amount = Number(req.body.amount) * 100;
 
       if (!Number.isFinite(amount) || amount <= 0) {
         return res.status(400).json({ message: "Invalid amount" });
@@ -101,7 +101,7 @@ payRouter.post(
       console.log("[razorpay] creating order", { amount, currency: "INR" });
 
       const order = await client.orders.create({
-        amount,
+        amount: amount,
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         notes: {
@@ -114,14 +114,10 @@ payRouter.post(
         orderId: order?.id,
         amount: order?.amount,
         currency: order?.currency,
-        keyPrefix: keyId.slice(0, 8),
+        keyPrefix: key_id.slice(0, 8),
       });
 
-      return res.json({
-        orderId: order.id,
-        currency: order.currency,
-        amount: order.amount,
-      });
+      return res.json(order);
     } catch (error) {
       console.error("[razorpay] create-order failed", {
         message: error?.message,

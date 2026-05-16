@@ -73,12 +73,13 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
         items: cartItems.length,
       });
       const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) }, token);
+      const orderId = gatewayOrder?.id || gatewayOrder?.orderId;
 
       const options = {
         key: keyId,
         amount: gatewayOrder.amount,
         currency: gatewayOrder.currency || "INR",
-        order_id: gatewayOrder.orderId,
+        order_id: orderId,
         name: "Nouveau™",
         description: cartItems.length > 0
           ? `${cartItems.length} item(s) — ${cartItems.map(getItemLabel).join(", ")}`

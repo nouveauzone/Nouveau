@@ -183,13 +183,14 @@ const CardPayment = ({
         orderId,
       });
       const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) }, authToken);
+      const razorpayOrderId = gatewayOrder?.id || gatewayOrder?.orderId;
       const verificationOrderId = getOrderIdForVerification(orderId);
 
       const options = {
         key: keyId,
         amount: gatewayOrder.amount,
         currency: gatewayOrder.currency || "INR",
-        order_id: gatewayOrder.orderId,
+        order_id: razorpayOrderId,
         name: merchantName || DEFAULT_MERCHANT,
         description: `Card payment for ${orderId || "order"}`,
         prefill: {

@@ -101,13 +101,14 @@ const PaymentPage = ({
         hasToken: Boolean(authToken),
       });
       const gatewayOrder = await apiService.createRazorpayOrder({ amount: amountNumber }, authToken);
+      const razorpayOrderId = gatewayOrder?.id || gatewayOrder?.orderId;
       const verificationOrderId = isMongoId(orderId) ? orderId : undefined;
 
       const options = {
         key: keyId,
         amount: gatewayOrder.amount,
         currency: gatewayOrder.currency || "INR",
-        order_id: gatewayOrder.orderId,
+        order_id: razorpayOrderId,
         name: merchantName || "Nouveauz",
         description: `Net banking payment for ${orderId || "order"}`,
         prefill: {
