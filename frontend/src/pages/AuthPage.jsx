@@ -65,6 +65,9 @@ export default function AuthPage({ setPage }) {
       try {
         localStorage.setItem("nouveau_auth", JSON.stringify(authPayload));
         localStorage.setItem("token", authPayload.token || "");
+        if (String(authPayload.user?.role || "").toLowerCase() === "admin") {
+          localStorage.setItem("admin", JSON.stringify(authPayload));
+        }
       } catch {}
 
       dispatch({ type:"LOGIN", payload:authPayload.user, token:authPayload.token });

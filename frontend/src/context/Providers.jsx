@@ -46,6 +46,18 @@ const hydrateAuthState = () => {
   const hasUser = Boolean(raw?.user?._id);
   const hasToken = typeof raw?.token === "string" && raw.token.trim().length > 0;
   if (raw?.isAuthenticated && hasUser && hasToken) return raw;
+
+  try {
+    const legacyAdmin = JSON.parse(localStorage.getItem("admin") || "null");
+    const adminUser = legacyAdmin?.user || legacyAdmin;
+    const adminToken = String(legacyAdmin?.token || "").trim();
+    const adminRole = String(adminUser?.role || legacyAdmin?.role || "").toLowerCase();
+    if (adminUser && adminToken && adminRole === "admin") {
+      return { user: adminUser, token: adminToken, isAuthenticated: true };
+    }
+  } catch {
+  }
+
   return { user:null, token:null, isAuthenticated:false };
 };
 

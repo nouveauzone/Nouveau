@@ -470,6 +470,7 @@ export default function AdminPage({ setPage }) {
       try {
         localStorage.setItem("nouveau_auth", JSON.stringify(authPayload));
         localStorage.setItem("token", authPayload.token || "");
+        localStorage.setItem("admin", JSON.stringify(authPayload));
       } catch { }
 
       authDispatch({

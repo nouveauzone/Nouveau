@@ -27,6 +27,15 @@ export default function CheckoutPage({ setPage }) {
   const { placeOrder } = useContext(AppDataContext);
   const { isAuthenticated, token } = useContext(AuthContext);
   const { formatPrice } = useContext(CurrencyContext);
+  const isAdminSession = (() => {
+    try {
+      const adminSession = JSON.parse(localStorage.getItem("admin") || "null");
+      const role = String(adminSession?.user?.role || adminSession?.role || "").toLowerCase();
+      return role === "admin" && Boolean(String(adminSession?.token || "").trim());
+    } catch {
+      return false;
+    }
+  })();
   const [isMobile, setIsMobile] = useState(() => (typeof window !== "undefined" ? window.innerWidth < 768 : false));
   const [step, setStep] = useState(1);
   const [address, setAddress] = useState({ name: "", phone: "", email: "", street: "", city: "", state: "", pincode: "" });
@@ -77,7 +86,7 @@ export default function CheckoutPage({ setPage }) {
   };
 
   const hasAuthToken = Boolean(String(token || "").trim());
-  const canCheckout = isAuthenticated && hasAuthToken;
+  const canCheckout = (isAuthenticated && hasAuthToken) || isAdminSession;
 
   if (!canCheckout) {
     return (
