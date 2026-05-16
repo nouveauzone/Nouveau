@@ -114,8 +114,6 @@ router.get(
   [
     query("minPrice").optional().isFloat({ min: 0 }),
     query("maxPrice").optional().isFloat({ min: 0 }),
-    query("page").optional().isInt({ min: 1 }),
-    query("limit").optional().isInt({ min: 1, max: 200 }),
     validate,
   ],
   async (req, res) => {
