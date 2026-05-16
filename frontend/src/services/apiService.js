@@ -268,8 +268,6 @@ const apiService = {
   addAddress: (data) => request({ url: "/auth/addresses", method: "POST", data }),
   deleteAddress: (addressId) => request({ url: `/auth/addresses/${addressId}`, method: "DELETE" }),
 
-  getMonthlyViews: (month) => request({ url: "/metrics/views", method: "GET", params: month ? { month } : {} }),
-  incrementMonthlyViews: (month) => request({ url: "/metrics/views", method: "POST", data: month ? { month } : {} }),
   getTraffic: () => request({ url: "/auth/traffic", method: "GET" }),
 };
 
