@@ -46,7 +46,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
   };
 
   const openRazorpay = async () => {
-    const keyId = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_live_ShIb6CLyEFQUrG";
+    const keyId = String(process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
 
     if (!keyId) {
       const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
@@ -67,6 +67,11 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
     try {
       await loadRazorpayScript();
       const token = getAuthToken();
+      console.log("[razorpay] frontend create-order request", {
+        amount: Number(amount),
+        hasToken: Boolean(token),
+        items: cartItems.length,
+      });
       const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) }, token);
 
       const options = {
@@ -103,6 +108,11 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
         },
         handler: async (response) => {
           try {
+            console.log("[razorpay] frontend verify request", {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              hasToken: Boolean(token),
+            });
             await apiService.verifyRazorpayPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,

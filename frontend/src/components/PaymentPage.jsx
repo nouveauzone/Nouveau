@@ -33,6 +33,17 @@ const Spinner = () => (
 
 const isMongoId = (value) => typeof value === "string" && /^[a-f\d]{24}$/i.test(value);
 
+const getStoredAuthToken = () => {
+  try {
+    const direct = String(localStorage.getItem("token") || "").trim();
+    if (direct) return direct;
+    const nested = JSON.parse(localStorage.getItem("nouveau_auth") || "{}");
+    return String(nested?.token || "").trim();
+  } catch {
+    return "";
+  }
+};
+
 const PaymentPage = ({
   amount = 1426,
   orderId,
@@ -83,7 +94,13 @@ const PaymentPage = ({
 
     try {
       await loadRazorpayScript();
-      const gatewayOrder = await apiService.createRazorpayOrder({ amount: amountNumber });
+      const authToken = getStoredAuthToken();
+      console.log("[razorpay] payment page create-order request", {
+        amount: amountNumber,
+        bank: selectedBank,
+        hasToken: Boolean(authToken),
+      });
+      const gatewayOrder = await apiService.createRazorpayOrder({ amount: amountNumber }, authToken);
       const verificationOrderId = isMongoId(orderId) ? orderId : undefined;
 
       const options = {
@@ -112,6 +129,12 @@ const PaymentPage = ({
         },
         handler: async (response) => {
           try {
+            console.log("[razorpay] payment page verify request", {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              bank: selectedBank,
+              hasToken: Boolean(authToken),
+            });
             const payload = {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -122,7 +145,7 @@ const PaymentPage = ({
               payload.orderId = verificationOrderId;
             }
 
-            await apiService.verifyRazorpayPayment(payload);
+            await apiService.verifyRazorpayPayment(payload, authToken);
 
             handleSuccess({
               paymentId: response.razorpay_payment_id,

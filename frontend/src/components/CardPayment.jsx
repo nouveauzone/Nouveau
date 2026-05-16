@@ -79,6 +79,17 @@ const getOrderIdForVerification = (orderId) => {
   return undefined;
 };
 
+const getStoredAuthToken = () => {
+  try {
+    const direct = String(localStorage.getItem("token") || "").trim();
+    if (direct) return direct;
+    const nested = JSON.parse(localStorage.getItem("nouveau_auth") || "{}");
+    return String(nested?.token || "").trim();
+  } catch {
+    return "";
+  }
+};
+
 const Spinner = () => (
   <span style={{
     display: "inline-block",
@@ -165,7 +176,13 @@ const CardPayment = ({
 
     try {
       await loadRazorpayScript();
-      const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) });
+      const authToken = getStoredAuthToken();
+      console.log("[razorpay] card create-order request", {
+        amount: Number(amount),
+        hasToken: Boolean(authToken),
+        orderId,
+      });
+      const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) }, authToken);
       const verificationOrderId = getOrderIdForVerification(orderId);
 
       const options = {
@@ -193,6 +210,11 @@ const CardPayment = ({
         },
         handler: async (response) => {
           try {
+            console.log("[razorpay] card verify request", {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              hasToken: Boolean(authToken),
+            });
             const payload = {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -203,7 +225,7 @@ const CardPayment = ({
               payload.orderId = verificationOrderId;
             }
 
-            await apiService.verifyRazorpayPayment(payload);
+            await apiService.verifyRazorpayPayment(payload, authToken);
 
             onSuccess?.({
               paymentId: response.razorpay_payment_id,
