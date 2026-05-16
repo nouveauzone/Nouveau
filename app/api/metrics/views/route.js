@@ -1,5 +1,6 @@
 const viewCounts = globalThis.__nouveauMonthlyViewCounts || new Map();
 globalThis.__nouveauMonthlyViewCounts = viewCounts;
+export const dynamic = "force-dynamic";
 
 const getMonthKey = (value) => {
   const raw = String(value || "").trim();

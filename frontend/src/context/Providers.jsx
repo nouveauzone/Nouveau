@@ -343,7 +343,7 @@ export default function Providers({ children }) {
 
       // NEW: Refresh product list after order to update stock in localStorage and UI
       try {
-        const products = await API.getProducts({ limit: 200 });
+        const products = await API.getProducts();
         if (products && products.length > 0) {
           localStorage.setItem("nouveau_local_products", JSON.stringify(products));
           // Optionally, dispatch a custom event to notify listeners

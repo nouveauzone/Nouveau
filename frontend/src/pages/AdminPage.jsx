@@ -365,7 +365,7 @@ export default function AdminPage({ setPage }) {
       const [backendOrders, backendUsers, prodRes] = await Promise.allSettled([
         fetchAllPages(API.getAllOrders, "orders"),
         fetchAllPages(API.getAllUsers, "users"),
-        API.getProducts({ limit: 100 }),
+        API.getProducts(),
       ]);
 
       const backendOrderList = backendOrders.status === "fulfilled" ? backendOrders.value : [];

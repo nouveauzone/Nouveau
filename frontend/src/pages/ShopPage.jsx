@@ -81,7 +81,7 @@ const mergeById = (primary = [], secondary = []) => {
   useEffect(() => {
     let alive = true;
 
-    API.getProducts({ limit: 200 })
+    API.getProducts()
       .then((data) => {
         if (!alive) return;
         const list = data?.products?.length ? data.products
