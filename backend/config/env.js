@@ -37,6 +37,7 @@ const getClientOrigins = () => {
     process.env.CLIENT_URL,
     process.env.PRODUCTION_URL,
     process.env.FRONTEND_URL,
+    process.env.NEXTAUTH_URL,
   ].forEach((value) => {
     parseCsv(value).forEach((origin) => origins.add(origin));
   });

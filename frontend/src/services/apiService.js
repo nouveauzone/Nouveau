@@ -37,6 +37,22 @@ const normalizeProduct = (product) => ({
   sizes: normalizeSizes(product),
 });
 
+const mergeProductsById = (primary = [], secondary = []) => {
+  const seen = new Set();
+  const merged = [];
+
+  [...primary, ...secondary].forEach((item) => {
+    const normalized = normalizeProduct(item);
+    const id = String(normalized?._id || normalized?.id || "");
+    const fingerprint = id || `${normalized?.title || ""}-${normalized?.price || 0}`;
+    if (!fingerprint || seen.has(fingerprint)) return;
+    seen.add(fingerprint);
+    merged.push(normalized);
+  });
+
+  return merged;
+};
+
 const prepareProductWritePayload = (data = {}) => {
   const normalized = normalizeProduct(data);
   const { _id, id, rating, reviews, avgRating, numReviews, stock, createdAt, updatedAt, __v, ...rest } = normalized;
@@ -203,8 +219,19 @@ const apiService = {
   login: (data) => request({ url: "/auth/login", method: "POST", data }),
   getMe: () => request({ url: "/auth/me", method: "GET" }),
 
-  getProducts: (params = {}) => {
-    return request({ url: "/products", method: "GET", params }).catch(() => INITIAL_PRODUCTS.map(normalizeProduct));
+  getProducts: async (params = {}) => {
+    try {
+      const data = await request({ url: "/products", method: "GET", params });
+      const backendProducts = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.products)
+          ? data.products
+          : [];
+
+      return mergeProductsById(backendProducts, INITIAL_PRODUCTS);
+    } catch {
+      return INITIAL_PRODUCTS.map(normalizeProduct);
+    }
   },
   getProduct: (id) => request({ url: `/products/${id}`, method: "GET" }),
   createProduct: (data) => request({ url: "/products", method: "POST", data: prepareProductWritePayload(data) }),

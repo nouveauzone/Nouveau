@@ -27,12 +27,10 @@ function VisitorCount() {
           if (!incrementRes.ok) {
             throw new Error("Failed to increment monthly views");
           }
-
-          response = await incrementRes.json();
           sessionStorage.setItem(sessionKey, "true");
-        } else {
-          response = await API.getMonthlyViews(monthKey);
         }
+
+        response = await API.getMonthlyViews(monthKey);
 
         setCount(Number(response?.views || 0));
       } catch {

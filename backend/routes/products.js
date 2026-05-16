@@ -121,10 +121,7 @@ router.get(
   async (req, res) => {
     try {
       res.set("Cache-Control", "no-store");
-      const parsedLimit = Number.parseInt(req.query.limit, 10);
-      const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : 0;
-
-      const products = await Product.find({}).limit(limit);
+      const products = await Product.find({}).sort({ createdAt: -1 }).lean();
       res.json(products.map(toSafeProduct));
     } catch (error) {
       console.error("PRODUCT ERROR:", error);

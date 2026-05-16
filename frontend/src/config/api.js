@@ -31,6 +31,11 @@ const normalizeApiBase = (value) => {
 	return normalized.replace(/\/api$/i, "");
 };
 
-const API = normalizeApiBase(process.env.REACT_APP_API_URL || process.env.VITE_API_URL || "/api");
+const API = normalizeApiBase(
+	process.env.REACT_APP_API_URL ||
+	process.env.NEXT_PUBLIC_API_URL ||
+	process.env.VITE_API_URL ||
+	"/api"
+);
 
 export default API;
