@@ -16,7 +16,19 @@ function VisitorCount() {
 
         let response;
         if (!sessionStorage.getItem(sessionKey)) {
-          response = await API.incrementMonthlyViews(monthKey);
+          const incrementRes = await fetch("/api/metrics/views", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ month: monthKey }),
+          });
+
+          if (!incrementRes.ok) {
+            throw new Error("Failed to increment monthly views");
+          }
+
+          response = await incrementRes.json();
           sessionStorage.setItem(sessionKey, "true");
         } else {
           response = await API.getMonthlyViews(monthKey);
