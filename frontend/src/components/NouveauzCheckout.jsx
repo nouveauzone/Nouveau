@@ -73,7 +73,11 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
         items: cartItems.length,
       });
       const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) }, token);
-      const orderId = gatewayOrder?.id || gatewayOrder?.orderId;
+      const orderId = gatewayOrder?.id || gatewayOrder?.orderId || gatewayOrder?.order?.id || gatewayOrder?.order?.orderId;
+
+      if (!orderId) {
+        throw new Error("Razorpay order creation failed. Missing order id.");
+      }
 
       const options = {
         key: keyId,

@@ -158,8 +158,9 @@ const createClient = (baseURL) => {
   });
 
   client.interceptors.request.use((config) => {
+    const explicitAuth = String(config.headers?.Authorization || config.headers?.authorization || "").trim();
     const token = getStoredToken();
-    if (token) {
+    if (!explicitAuth && token) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
     }

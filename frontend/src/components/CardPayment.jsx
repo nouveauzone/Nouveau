@@ -183,7 +183,11 @@ const CardPayment = ({
         orderId,
       });
       const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) }, authToken);
-      const razorpayOrderId = gatewayOrder?.id || gatewayOrder?.orderId;
+      const razorpayOrderId = gatewayOrder?.id || gatewayOrder?.orderId || gatewayOrder?.order?.id || gatewayOrder?.order?.orderId;
+
+      if (!razorpayOrderId) {
+        throw new Error("Razorpay order creation failed. Missing order id.");
+      }
       const verificationOrderId = getOrderIdForVerification(orderId);
 
       const options = {

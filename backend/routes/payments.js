@@ -12,6 +12,42 @@ const validate = require("../middleware/validate");
 
 const payRouter = express.Router();
 const shouldBypassPaymentAuth = String(process.env.PAYMENTS_BYPASS_AUTH || "").toLowerCase() === "true";
+const hasBearerToken = (req) => {
+  const candidates = [
+    req.headers.authorization,
+    req.headers.Authorization,
+    req.headers["x-access-token"],
+    req.headers["x-auth-token"],
+    req.headers.token,
+  ];
+
+  return candidates.some((candidate) => Boolean(String(candidate || "").trim()));
+};
+
+const optionalPaymentAuth = shouldBypassPaymentAuth
+  ? (req, res, next) => {
+      console.warn(`[payments] AUTH BYPASS ENABLED for ${req.method} ${req.originalUrl}`);
+      req.user = req.user || {
+        _id: "000000000000000000000000",
+        email: "bypass@local",
+        name: "Auth Bypass",
+        role: "admin",
+      };
+      next();
+    }
+  : (req, res, next) => {
+      if (!hasBearerToken(req)) {
+        req.user = req.user || {
+          _id: "000000000000000000000000",
+          email: "guest@nouveau.local",
+          name: "Guest",
+          role: "guest",
+        };
+        return next();
+      }
+
+      return protect(req, res, next);
+    };
 const paymentAuth = shouldBypassPaymentAuth
   ? (req, res, next) => {
       console.warn(`[payments] AUTH BYPASS ENABLED for ${req.method} ${req.originalUrl}`);
@@ -86,7 +122,7 @@ payRouter.get(
 // POST /api/payments/razorpay/create-order
 payRouter.post(
   "/razorpay/create-order",
-  paymentAuth,
+  optionalPaymentAuth,
   [body("amount").isFloat({ gt: 0 }).withMessage("amount must be greater than 0"), validate],
   asyncHandler(async (req, res) => {
     try {
@@ -118,7 +154,7 @@ payRouter.post(
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         notes: {
-          userId: req.user._id.toString(),
+          userId: req.user?._id?.toString?.() || String(req.user?._id || ""),
           userEmail: req.user?.email || "",
         },
       });
@@ -130,7 +166,11 @@ payRouter.post(
         keyPrefix: key_id.slice(0, 8),
       });
 
-      return res.json(order);
+      return res.json({
+        success: true,
+        order,
+        ...order,
+      });
     } catch (error) {
       console.error("[razorpay] create-order failed", {
         message: error?.message,
@@ -151,7 +191,7 @@ payRouter.post(
 // POST /api/payments/razorpay/verify
 payRouter.post(
   "/razorpay/verify",
-  paymentAuth,
+  optionalPaymentAuth,
   [
     body("razorpay_order_id").notEmpty(),
     body("razorpay_payment_id").notEmpty(),
