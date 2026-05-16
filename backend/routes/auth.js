@@ -92,7 +92,9 @@ router.post(
         `
       });
     } catch (e) { console.log("Welcome email error:", e.message); }
-    res.status(201).json({ _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, token: genToken(user._id) });
+    const token = genToken(user._id);
+    const userPayload = { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, addresses: user.addresses };
+    res.status(201).json({ success: true, token, user: userPayload, ...userPayload });
   })
 );
 
@@ -111,7 +113,10 @@ router.post(
     const user = await User.findOne({ email }).select("+password");
     let needsUserSave = false;
 
-    if (!user) return res.status(401).json({ message: "Invalid email or password" });
+    if (!user) {
+      console.warn("[auth] login failed: user not found", { email });
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
 
     const storedPassword = String(user.password || "");
     let passwordMatches = false;
@@ -141,7 +146,10 @@ router.post(
       }
     }
 
-    if (!passwordMatches) return res.status(401).json({ message: "Invalid email or password" });
+    if (!passwordMatches) {
+      console.warn("[auth] login failed: password mismatch", { email, userId: user._id?.toString(), role: user.role });
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
 
     user.lastLogin = new Date();
     user.loginCount = Number(user.loginCount || 0) + 1;
@@ -156,7 +164,9 @@ router.post(
       await user.save();
     }
 
-    res.json({ _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, addresses: user.addresses, token: genToken(user._id) });
+    const token = genToken(user._id);
+    const userPayload = { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, addresses: user.addresses };
+    res.json({ success: true, token, user: userPayload, ...userPayload });
   })
 );
 

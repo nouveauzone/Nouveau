@@ -126,6 +126,14 @@ const getStoredToken = () => {
   } catch { }
 
   const nestedToken = String(getStoredAuth()?.token || "").trim();
+  if (nestedToken) return nestedToken;
+
+  try {
+    const adminSession = JSON.parse(localStorage.getItem("admin") || "null");
+    const adminToken = String(adminSession?.token || adminSession?.user?.token || "").trim();
+    if (adminToken) return adminToken;
+  } catch { }
+
   return nestedToken;
 };
 
@@ -133,6 +141,7 @@ const clearStoredAuth = () => {
   try {
     localStorage.removeItem("nouveau_auth");
     localStorage.removeItem("token");
+    localStorage.removeItem("admin");
   } catch { }
 };
 
