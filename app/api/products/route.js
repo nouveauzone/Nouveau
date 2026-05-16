@@ -7,8 +7,19 @@ const Product = require("../../../backend/models/Product");
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  await connectToDatabase();
-  const products = await Product.find({}).sort({ createdAt: -1 }).lean();
+  try {
+    await connectToDatabase();
 
-  return Response.json(products);
+    const products = await Product.find({}).sort({ createdAt: -1 });
+
+    return Response.json(products);
+  } catch (error) {
+    return Response.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
+  }
 }
