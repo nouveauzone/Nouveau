@@ -1,5 +1,5 @@
 import axios from "axios";
-import API from "../config/api";
+import API_URL from "../config/api";
 import { PRODUCTS as INITIAL_PRODUCTS } from "../data/products";
 
 const normalizeSizeLabel = (value) => {
@@ -92,7 +92,8 @@ const AUTH_EXPIRED_EVENT = "nouveau:auth-expired";
 
 const buildApiBase = (base) => {
   const normalized = String(base || "").replace(/\/+$/, "");
-  return normalized ? `${normalized}/api` : "/api";
+  if (!normalized) return "/api";
+  return /\/api$/i.test(normalized) ? normalized : `${normalized}/api`;
 };
 
 const isLikelyServerFailure = (status) => status === 404 || status === 500 || status === 502 || status === 503 || status === 504 || status >= 520;
@@ -159,7 +160,7 @@ const createClient = (baseURL) => {
   return client;
 };
 
-const primaryClient = createClient(buildApiBase(API));
+const primaryClient = createClient(buildApiBase(API_URL));
 const fallbackClient = API_FALLBACK ? createClient(buildApiBase(API_FALLBACK)) : null;
 
 const requestWithClient = async (client, config) => {
