@@ -24,17 +24,12 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
   const [loading, setLoading] = useState(false);
   const totalPrice = Number(amount) || 0;
   const apiBaseUrl = String(
-    (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_URL) ||
-    (typeof process !== "undefined" && process.env && process.env.REACT_APP_API_URL) ||
+    import.meta.env.VITE_API_URL ||
     ""
   ).trim().replace(/\/+$/, "");
 
   const handlePayment = async () => {
-    const keyId = String(
-      (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_RAZORPAY_KEY_ID) ||
-      (typeof process !== "undefined" && process.env && process.env.REACT_APP_RAZORPAY_KEY_ID) ||
-      ""
-    ).trim();
+    const keyId = String(import.meta.env.VITE_RAZORPAY_KEY_ID || "").trim();
 
     if (!keyId) {
       const message = "Razorpay key missing. Add VITE_RAZORPAY_KEY_ID in frontend environment.";
