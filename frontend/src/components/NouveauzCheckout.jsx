@@ -23,6 +23,11 @@ const Spinner = () => (
 
 export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure }) {
   const [loading, setLoading] = useState(false);
+  const apiBaseUrl = String(
+    process.env.REACT_APP_API_URL ||
+    (typeof import.meta !== "undefined" ? import.meta.env?.VITE_API_URL : "") ||
+    ""
+  ).trim().replace(/\/+$/, "");
 
   const handlePayment = async () => {
     const keyId = String(
@@ -51,7 +56,9 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
     try {
       await loadRazorpayScript();
       console.log("TOKEN:", token);
-      const response = await fetch("/api/razorpay/create-order", {
+      const response = await fetch(
+        apiBaseUrl ? `${apiBaseUrl}/api/razorpay/create-order` : "/api/razorpay/create-order",
+        {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +67,8 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
         body: JSON.stringify({
           amount: Number(amount),
         }),
-      });
+        }
+      );
 
       console.log("STATUS:", response.status);
 
