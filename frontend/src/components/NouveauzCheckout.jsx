@@ -23,17 +23,21 @@ const Spinner = () => (
 export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure }) {
   const [loading, setLoading] = useState(false);
   const totalPrice = Number(amount) || 0;
+  const apiBaseUrl = String(
+    (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_URL) ||
+    (typeof process !== "undefined" && process.env && process.env.REACT_APP_API_URL) ||
+    ""
+  ).trim().replace(/\/+$/, "");
 
   const handlePayment = async () => {
     const keyId = String(
-      process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-      (typeof import.meta !== "undefined" ? import.meta.env?.VITE_RAZORPAY_KEY_ID : "") ||
-      process.env.REACT_APP_RAZORPAY_KEY_ID ||
+      (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_RAZORPAY_KEY_ID) ||
+      (typeof process !== "undefined" && process.env && process.env.REACT_APP_RAZORPAY_KEY_ID) ||
       ""
     ).trim();
 
     if (!keyId) {
-      const message = "Razorpay key missing. Add NEXT_PUBLIC_RAZORPAY_KEY_ID in frontend environment.";
+      const message = "Razorpay key missing. Add VITE_RAZORPAY_KEY_ID in frontend environment.";
       onFailure?.({ reason: "missing-key", description: message });
       return;
     }
@@ -51,8 +55,13 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
     try {
       await loadRazorpayScript();
       console.log("TOKEN:", token);
-      console.log("API URL:", "/api/razorpay/create-order");
-      const response = await fetch("/api/razorpay/create-order", {
+      if (!apiBaseUrl) {
+        throw new Error("Backend API URL is missing. Set VITE_API_URL to your Express backend domain.");
+      }
+
+      const requestUrl = `${apiBaseUrl}/api/razorpay/create-order`;
+      console.log("API URL:", requestUrl);
+      const response = await fetch(requestUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
