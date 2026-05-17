@@ -24,10 +24,16 @@ export async function POST(request) {
   try {
     await connectToDatabase();
 
+    const authHeader = String(request.headers.get("authorization") || "").trim();
+    console.log("AUTH HEADER:", authHeader || "<empty>");
+
     const decoded = verifyToken(request);
     if (!decoded) {
       return NextResponse.json({ message: "Not authorized: missing bearer token" }, { status: 401 });
     }
+
+    const token = authHeader.toLowerCase().startsWith("bearer ") ? authHeader.slice(7).trim() : "";
+    console.log("TOKEN:", token || "<empty>");
 
     const userId = decoded?.id || decoded?.userId || decoded?._id;
     const user = await User.findById(userId).select("-password");
@@ -55,12 +61,14 @@ export async function POST(request) {
       },
     });
 
-    return NextResponse.json({ success: true, order, orderId: order.id });
+    console.log("ORDER CREATED:", order);
+
+    return NextResponse.json({ success: true, order });
   } catch (error) {
-    const status = String(error?.message || "").includes("missing") ? 500 : 500;
+    console.error("RAZORPAY ERROR:", error);
     return NextResponse.json(
       { success: false, message: error?.message || "Failed to create Razorpay order" },
-      { status }
+      { status: 500 }
     );
   }
 }

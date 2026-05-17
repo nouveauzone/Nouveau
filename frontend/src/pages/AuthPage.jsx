@@ -104,6 +104,11 @@ export default function AuthPage({ setPage }) {
         token: res.token,
         isAuthenticated: true,
       };
+      try {
+        localStorage.setItem("token", res.token);
+        document.cookie = `token=${res.token}; path=/; ${process.env.NODE_ENV === "production" ? "secure; samesite=none" : "samesite=lax"}`;
+      } catch {
+      }
       persistAuthSession(authPayload);
 
       dispatch({ type:"LOGIN", payload:authPayload.user, token:authPayload.token });

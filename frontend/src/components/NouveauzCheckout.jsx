@@ -24,24 +24,18 @@ const Spinner = () => (
 export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure }) {
   const [loading, setLoading] = useState(false);
 
-  const hasAuthToken = () => {
-    return Boolean(getStoredToken());
-  };
-
-  const getAuthToken = () => {
-    return getStoredToken();
-  };
-
   const openRazorpay = async () => {
-    const keyId = String(process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
+    const keyId = String(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
 
     if (!keyId) {
-      const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
+      const message = "Razorpay key missing. Add NEXT_PUBLIC_RAZORPAY_KEY_ID in frontend environment.";
       onFailure?.({ reason: "missing-key", description: message });
       return;
     }
 
-    if (!hasAuthToken()) {
+    const token = String(localStorage.getItem("token") || getStoredToken() || "").trim();
+
+    if (!token) {
       const message = "Please login again to continue checkout.";
       onFailure?.({ reason: "auth", description: message });
       return;
@@ -51,23 +45,39 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
 
     try {
       await loadRazorpayScript();
-      const token = getAuthToken();
       console.log("[razorpay] frontend create-order request", {
         amount: Number(amount),
         hasToken: Boolean(token),
         items: cartItems.length,
       });
-      const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) }, token);
-      const orderId = gatewayOrder?.id || gatewayOrder?.orderId || gatewayOrder?.order?.id || gatewayOrder?.order?.orderId;
+      const response = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ amount: Number(amount) }),
+      });
+
+      const gatewayOrder = await response.json();
+      console.log("ORDER RESPONSE:", gatewayOrder);
+
+      if (!gatewayOrder?.success) {
+        throw new Error(gatewayOrder?.message || "Failed to create Razorpay order");
+      }
+
+      const orderId = gatewayOrder?.order?.id || gatewayOrder?.orderId;
 
       if (!orderId) {
         throw new Error("Razorpay order creation failed. Missing order id.");
       }
 
+      const orderData = gatewayOrder.order || {};
+
       const options = {
         key: keyId,
-        amount: gatewayOrder.amount,
-        currency: gatewayOrder.currency || "INR",
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
         order_id: orderId,
         name: "Nouveau™",
         description: cartItems.length > 0
