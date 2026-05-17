@@ -51,14 +51,18 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
       return;
     }
 
+    if (!apiBaseUrl) {
+      const message = "Backend API URL is missing. Set REACT_APP_API_URL or VITE_API_URL to the full backend domain.";
+      onFailure?.({ reason: "config", description: message });
+      return;
+    }
+
     setLoading(true);
 
     try {
       await loadRazorpayScript();
       console.log("TOKEN:", token);
-      const response = await fetch(
-        apiBaseUrl ? `${apiBaseUrl}/api/razorpay/create-order` : "/api/razorpay/create-order",
-        {
+      const response = await fetch(`${apiBaseUrl}/api/razorpay/create-order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,8 +71,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
         body: JSON.stringify({
           amount: Number(amount),
         }),
-        }
-      );
+      });
 
       console.log("STATUS:", response.status);
 
