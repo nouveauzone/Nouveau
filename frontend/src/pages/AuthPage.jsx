@@ -42,7 +42,7 @@ const mapRedirectTarget = (value) => {
 
 export default function AuthPage({ setPage }) {
   const { dispatch } = useContext(AuthContext);
-  const enableLocalAuthFallback = import.meta.env.DEV && import.meta.env.VITE_ENABLE_LOCAL_AUTH_FALLBACK === "true";
+  const enableLocalAuthFallback = process.env.NODE_ENV !== "production" && process.env.REACT_APP_ENABLE_LOCAL_AUTH_FALLBACK === "true";
   const [isLogin, setIsLogin] = useState(true);
   const [form,    setForm]    = useState({ name:"", email:"", password:"", confirm:"", phone:"", city:"", state:"" });
   const [errors,  setErrors]  = useState({});
@@ -106,7 +106,7 @@ export default function AuthPage({ setPage }) {
       };
       try {
         localStorage.setItem("token", res.token);
-        document.cookie = `token=${res.token}; path=/; ${import.meta.env.PROD ? "secure; samesite=none" : "samesite=lax"}`;
+        document.cookie = `token=${res.token}; path=/; ${process.env.NODE_ENV === "production" ? "secure; samesite=none" : "samesite=lax"}`;
       } catch {
       }
       persistAuthSession(authPayload);

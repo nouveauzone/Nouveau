@@ -1,3 +1,4 @@
+const http = require("http");
 const express  = require("express");
 const cors     = require("cors");
 const dotenv   = require("dotenv");
@@ -117,5 +118,19 @@ app.get("/", (req, res) => res.json({ message:"Nouveau™ API v2 running 🪷", 
 // ── Error handler ───────────────────────────────────────────────────────────
 app.use(notFound);
 app.use(errorHandler);
+
+if (require.main === module) {
+  const port = process.env.PORT || 5000;
+  connectToDatabase()
+    .then(() => {
+      http.createServer(app).listen(port, "0.0.0.0", () => {
+        console.log(`API listening on http://0.0.0.0:${port}`);
+      });
+    })
+    .catch((err) => {
+      console.error("Failed to start server:", err);
+      process.exit(1);
+    });
+}
 
 module.exports = app;

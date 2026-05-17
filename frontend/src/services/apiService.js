@@ -88,7 +88,7 @@ const normalizeFallback = (value) => {
   return normalized.replace(/\/api$/i, "");
 };
 
-const API_FALLBACK = normalizeFallback(import.meta.env.VITE_API_FALLBACK_URL || "");
+const API_FALLBACK = normalizeFallback(process.env.REACT_APP_API_FALLBACK_URL || "");
 const AUTH_EXPIRED_EVENT = "nouveau:auth-expired";
 
 const buildApiBase = (base) => {

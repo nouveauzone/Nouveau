@@ -23,13 +23,12 @@ const Spinner = () => (
 export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure }) {
   const [loading, setLoading] = useState(false);
   const totalPrice = Number(amount) || 0;
-  const apiBaseUrl = String(import.meta.env.VITE_API_URL || "/api").trim().replace(/\/+$/, "");
 
   const handlePayment = async () => {
-    const keyId = String(import.meta.env.VITE_RAZORPAY_KEY_ID || "").trim();
+    const keyId = String(process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
 
     if (!keyId) {
-      const message = "Razorpay key missing. Add VITE_RAZORPAY_KEY_ID in frontend environment.";
+      const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
       onFailure?.({ reason: "missing-key", description: message });
       return;
     }
@@ -46,56 +45,14 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
 
     try {
       await loadRazorpayScript();
-      console.log("TOKEN:", token);
-      const requestUrl = `${apiBaseUrl}/api/razorpay/create-order`;
-      console.log("API URL:", requestUrl);
-      const response = await fetch(requestUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          amount: totalPrice,
-        }),
-      });
-
-      console.log("STATUS:", response.status);
-
-      const text = await response.text();
-
-      console.log("RAW RESPONSE:", text);
-
-      if (!text) {
-        throw new Error("Empty API response");
-      }
-
-      let gatewayOrder;
-
-      try {
-        gatewayOrder = JSON.parse(text);
-      } catch (error) {
-        console.error("JSON PARSE ERROR:", error);
-        throw new Error("Invalid JSON response from server");
-      }
-
-      console.log("PARSED DATA:", gatewayOrder);
-
-      if (!response.ok) {
-        throw new Error(gatewayOrder?.message || "Failed to create Razorpay order");
-      }
-
-      if (!gatewayOrder?.success) {
-        throw new Error(gatewayOrder?.message || "Failed to create Razorpay order");
-      }
-
-      const orderId = gatewayOrder?.order?.id || gatewayOrder?.orderId;
+      const gatewayOrder = await apiService.createRazorpayOrder({ amount: totalPrice }, token);
+      const orderId = gatewayOrder?.order?.id || gatewayOrder?.orderId || gatewayOrder?.id || gatewayOrder?.order?.orderId;
 
       if (!orderId) {
         throw new Error("Razorpay order creation failed. Missing order id.");
       }
 
-      const orderData = gatewayOrder.order || {};
+      const orderData = gatewayOrder.order || gatewayOrder || {};
 
       const options = {
         key: keyId,

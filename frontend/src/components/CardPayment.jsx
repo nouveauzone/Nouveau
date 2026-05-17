@@ -158,9 +158,9 @@ const CardPayment = ({
       return;
     }
 
-    const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID;
+    const keyId = process.env.REACT_APP_RAZORPAY_KEY_ID;
     if (!keyId) {
-      const message = "Razorpay key missing. Add VITE_RAZORPAY_KEY_ID in frontend environment.";
+      const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
       toast(message, "error");
       onFailure?.({ reason: "missing-key", description: message });
       return;

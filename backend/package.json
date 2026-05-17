@@ -7,9 +7,9 @@
     "node": ">=18.18.0"
   },
   "scripts": {
-    "start": "node server.local.js",
-    "dev": "nodemon server.local.js",
-    "server": "node server.local.js",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "server": "node server.js",
     "seed": "node seed/seedData.js",
     "migrate:images": "node scripts/migrateProductImages.js",
     "migrate-images": "node scripts/migrateImagesToCloudinary.js"
