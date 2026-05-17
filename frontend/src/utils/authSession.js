@@ -7,10 +7,10 @@ const isBrowser = () => typeof window !== "undefined" && typeof document !== "un
 
 const isSecureContext = () => {
   if (typeof window === "undefined") {
-    return process.env.NODE_ENV === "production";
+    return Boolean(import.meta.env.PROD);
   }
 
-  return window.location.protocol === "https:" || process.env.NODE_ENV === "production";
+  return window.location.protocol === "https:" || Boolean(import.meta.env.PROD);
 };
 
 const readCookie = (name) => {
@@ -33,7 +33,7 @@ const writeCookie = (name, value, maxAgeSeconds = 60 * 60 * 24 * 30) => {
     `${encodeURIComponent(name)}=${encodeURIComponent(value)}`,
     "path=/",
     `max-age=${maxAgeSeconds}`,
-    `samesite=${process.env.NODE_ENV === "production" ? "none" : "lax"}`,
+    `samesite=${import.meta.env.PROD ? "none" : "lax"}`,
   ];
 
   if (isSecureContext()) {
@@ -50,7 +50,7 @@ const deleteCookie = (name) => {
     `${encodeURIComponent(name)}=`,
     "path=/",
     "max-age=0",
-    `samesite=${process.env.NODE_ENV === "production" ? "none" : "lax"}`,
+    `samesite=${import.meta.env.PROD ? "none" : "lax"}`,
   ];
 
   if (isSecureContext()) {
