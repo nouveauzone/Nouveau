@@ -99,11 +99,24 @@ const getRazorpayKeyId = async () => {
 
   if (cachedRazorpayKeyId) return cachedRazorpayKeyId;
 
-  const data = await request({ url: "/razorpay/config", method: "GET" });
+  const configPaths = ["/razorpay/config", "/config"];
+  let data;
+  let lastError;
+
+  for (const url of configPaths) {
+    try {
+      data = await request({ url, method: "GET" });
+      break;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
   const keyId = String(data?.keyId || data?.key_id || data?.razorpayKeyId || data?.razorpay_key_id || "").trim();
 
   if (!keyId) {
-    throw new Error("Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID or enable /razorpay/config on the API server.");
+    const message = lastError?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID or enable /razorpay/config on the API server.";
+    throw new Error(message);
   }
 
   cachedRazorpayKeyId = keyId;
@@ -116,7 +129,8 @@ const AUTH_EXPIRED_EVENT = "nouveau:auth-expired";
 const buildApiBase = (base) => {
   const normalized = String(base || "").replace(/\/+$/, "");
   if (!normalized) return "/api";
-  return /\/api$/i.test(normalized) ? normalized : `${normalized}/api`;
+  if (/\/(api|payment|payments|razorpay)$/i.test(normalized)) return normalized;
+  return `${normalized}/api`;
 };
 
 const isLikelyServerFailure = (status) => status === 404 || status === 500 || status === 502 || status === 503 || status === 504 || status >= 520;
