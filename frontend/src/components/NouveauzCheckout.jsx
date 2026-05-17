@@ -23,10 +23,7 @@ const Spinner = () => (
 export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure }) {
   const [loading, setLoading] = useState(false);
   const totalPrice = Number(amount) || 0;
-  const apiBaseUrl = String(
-    import.meta.env.VITE_API_URL ||
-    ""
-  ).trim().replace(/\/+$/, "");
+  const apiBaseUrl = String(import.meta.env.VITE_API_URL || "/api").trim().replace(/\/+$/, "");
 
   const handlePayment = async () => {
     const keyId = String(import.meta.env.VITE_RAZORPAY_KEY_ID || "").trim();
@@ -50,10 +47,6 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
     try {
       await loadRazorpayScript();
       console.log("TOKEN:", token);
-      if (!apiBaseUrl) {
-        throw new Error("Backend API URL is missing. Set VITE_API_URL to your Express backend domain.");
-      }
-
       const requestUrl = `${apiBaseUrl}/api/razorpay/create-order`;
       console.log("API URL:", requestUrl);
       const response = await fetch(requestUrl, {

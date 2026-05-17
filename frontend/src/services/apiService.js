@@ -93,9 +93,7 @@ const AUTH_EXPIRED_EVENT = "nouveau:auth-expired";
 
 const buildApiBase = (base) => {
   const normalized = String(base || "").replace(/\/+$/, "");
-  if (!normalized) {
-    throw new Error("VITE_API_URL is missing. Set it to your Express backend URL in the frontend environment.");
-  }
+  if (!normalized) return "/api";
   return /\/api$/i.test(normalized) ? normalized : `${normalized}/api`;
 };
 
