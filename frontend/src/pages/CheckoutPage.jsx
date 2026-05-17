@@ -29,6 +29,7 @@ export default function CheckoutPage({ setPage }) {
   const toast = useContext(ToastContext);
   const { isAuthenticated, token } = useContext(AuthContext);
   const { formatPrice } = useContext(CurrencyContext);
+  const [storedAuthToken, setStoredAuthToken] = useState("");
   const isAdminSession = (() => {
     try {
       const adminSession = JSON.parse(localStorage.getItem("admin") || "null");
@@ -49,6 +50,13 @@ export default function CheckoutPage({ setPage }) {
     updateViewport();
     window.addEventListener("resize", updateViewport);
     return () => window.removeEventListener("resize", updateViewport);
+  }, []);
+
+  useEffect(() => {
+    const savedToken = String(localStorage.getItem("token") || "").trim();
+    if (savedToken) {
+      setStoredAuthToken(savedToken);
+    }
   }, []);
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -96,7 +104,7 @@ export default function CheckoutPage({ setPage }) {
     }
   };
 
-  const hasAuthToken = Boolean(String(token || "").trim());
+  const hasAuthToken = Boolean(String(token || storedAuthToken || "").trim());
   const canCheckout = (isAuthenticated && hasAuthToken) || isAdminSession;
 
   if (!canCheckout) {

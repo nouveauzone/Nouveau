@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createRequire } from "module";
 import crypto from "crypto";
-import { getTokenFromRequest, verifyJwt } from "../../_lib/session";
+import { verifyToken } from "../../_lib/session";
 
 const require = createRequire(import.meta.url);
 const { connectToDatabase } = require("../../../../backend/config/db");
@@ -18,12 +18,11 @@ export async function POST(request) {
   try {
     await connectToDatabase();
 
-    const token = getTokenFromRequest(request);
-    if (!token) {
+    const decoded = verifyToken(request);
+    if (!decoded) {
       return NextResponse.json({ message: "Not authorized: missing bearer token" }, { status: 401 });
     }
 
-    const decoded = verifyJwt(token);
     const userId = decoded?.id || decoded?.userId || decoded?._id;
     const user = await User.findById(userId).select("-password");
 

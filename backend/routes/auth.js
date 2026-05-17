@@ -13,7 +13,7 @@ const genToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "
 const authCookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   path: "/",
   maxAge: 30 * 24 * 60 * 60 * 1000,
 };

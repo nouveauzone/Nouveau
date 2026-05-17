@@ -219,8 +219,13 @@ const request = async (config) => {
     const message = error?.response?.data?.message || error?.message || "Request failed";
 
     if (status === 401) {
-      await clearStoredAuth();
-      emitAuthExpired(message || "Token invalid or expired");
+      const url = String(config?.url || "");
+      const skipAuthReset = Boolean(config?.skipAuthResetOn401) || /\/razorpay\//i.test(url);
+
+      if (!skipAuthReset) {
+        await clearStoredAuth();
+        emitAuthExpired(message || "Token invalid or expired");
+      }
     }
 
     throw new Error(message);
@@ -257,12 +262,14 @@ const apiService = {
     url: "/razorpay/create-order",
     method: "POST",
     data,
+    skipAuthResetOn401: true,
     headers: tokenOverride ? { Authorization: `Bearer ${tokenOverride}` } : undefined,
   }),
   verifyRazorpayPayment: (data, tokenOverride) => request({
     url: "/razorpay/verify",
     method: "POST",
     data,
+    skipAuthResetOn401: true,
     headers: tokenOverride ? { Authorization: `Bearer ${tokenOverride}` } : undefined,
   }),
 

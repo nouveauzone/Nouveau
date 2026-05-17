@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const cookieOptions = {
   httpOnly: true,
-  sameSite: "lax",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   secure: process.env.NODE_ENV === "production",
   path: "/",
   maxAge: 30 * 24 * 60 * 60,
@@ -28,12 +28,27 @@ const parseCookies = (cookieHeader = "") => {
 
 const getTokenFromRequest = (request) => {
   const header = String(request.headers.get("authorization") || request.headers.get("Authorization") || "").trim();
+  console.log("AUTH HEADER:", header ? `${header.slice(0, 20)}...` : "<empty>");
   if (header.toLowerCase().startsWith("bearer ")) {
     return header.slice(7).trim();
   }
 
   const cookies = parseCookies(request.headers.get("cookie") || "");
   return String(cookies.nouveau_auth_token || cookies.token || cookies.jwt || "").trim();
+};
+
+const verifyToken = (request) => {
+  const token = getTokenFromRequest(request);
+  if (!token) return null;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("USER VERIFIED");
+    return decoded;
+  } catch (error) {
+    console.log("TOKEN VERIFY FAILED:", error?.message || error);
+    return null;
+  }
 };
 
 const setAuthCookies = (response, token) => {
@@ -59,4 +74,4 @@ const verifyJwt = (token) => {
   return jwt.verify(token, process.env.JWT_SECRET);
 };
 
-export { clearAuthCookies, cookieOptions, getTokenFromRequest, setAuthCookies, verifyJwt };
+export { clearAuthCookies, cookieOptions, getTokenFromRequest, setAuthCookies, verifyJwt, verifyToken };

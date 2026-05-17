@@ -33,7 +33,7 @@ const writeCookie = (name, value, maxAgeSeconds = 60 * 60 * 24 * 30) => {
     `${encodeURIComponent(name)}=${encodeURIComponent(value)}`,
     "path=/",
     `max-age=${maxAgeSeconds}`,
-    "samesite=lax",
+    `samesite=${process.env.NODE_ENV === "production" ? "none" : "lax"}`,
   ];
 
   if (isSecureContext()) {
@@ -50,7 +50,7 @@ const deleteCookie = (name) => {
     `${encodeURIComponent(name)}=`,
     "path=/",
     "max-age=0",
-    "samesite=lax",
+    `samesite=${process.env.NODE_ENV === "production" ? "none" : "lax"}`,
   ];
 
   if (isSecureContext()) {

@@ -14,7 +14,7 @@ const getAuthToken = (request: NextRequest) => {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/api")) {
+  if (pathname.startsWith("/api") && !pathname.startsWith("/api/razorpay")) {
     return NextResponse.next();
   }
 
@@ -39,5 +39,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/checkout/:path*", "/account/:path*", "/admin/:path*", "/auth"],
+  matcher: ["/checkout/:path*", "/api/razorpay/:path*"],
 };
