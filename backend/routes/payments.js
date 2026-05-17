@@ -222,7 +222,7 @@ payRouter.get(
   }
 );
 
-payRouter.get("/razorpay/config", (req, res) => {
+const sendRazorpayConfig = (req, res) => {
   const { key_id } = getRazorpayConfig();
 
   if (!key_id) {
@@ -230,7 +230,10 @@ payRouter.get("/razorpay/config", (req, res) => {
   }
 
   return res.json({ success: true, keyId: key_id });
-});
+};
+
+payRouter.get("/razorpay/config", sendRazorpayConfig);
+payRouter.get("/config", sendRazorpayConfig);
 
 // POST /api/payments/razorpay/create-order
 payRouter.post("/create-order", paymentAuth, [body("amount").optional().isFloat({ gt: 0 }).withMessage("amount must be greater than 0"), body("total").optional().isFloat({ gt: 0 }).withMessage("total must be greater than 0"), validate], createRazorpayOrder);
