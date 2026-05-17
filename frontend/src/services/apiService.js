@@ -45,7 +45,7 @@ const mergeProductsById = (primary = [], secondary = []) => {
   [...primary, ...secondary].forEach((item) => {
     const normalized = normalizeProduct(item);
     const id = String(normalized?._id || normalized?.id || "");
-    const fingerprint = id || `${normalized?.title || ""}-${normalized?.price || 0}`;
+    const fingerprint = id || `${normalized?.title || ""}-${normalized?.price || 0}-${normalized?.category || ""}-${normalized?.subcategory || ""}-${String(normalized?.images?.[0] || "")}`;
     if (!fingerprint || seen.has(fingerprint)) return;
     seen.add(fingerprint);
     merged.push(normalized);
@@ -86,6 +86,28 @@ const normalizeFallback = (value) => {
   }
 
   return normalized.replace(/\/api$/i, "");
+};
+
+let cachedRazorpayKeyId = null;
+
+const getRazorpayKeyId = async () => {
+  const envKey = String(process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
+  if (envKey) {
+    cachedRazorpayKeyId = envKey;
+    return envKey;
+  }
+
+  if (cachedRazorpayKeyId) return cachedRazorpayKeyId;
+
+  const data = await request({ url: "/razorpay/config", method: "GET" });
+  const keyId = String(data?.keyId || data?.key_id || data?.razorpayKeyId || data?.razorpay_key_id || "").trim();
+
+  if (!keyId) {
+    throw new Error("Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID or enable /razorpay/config on the API server.");
+  }
+
+  cachedRazorpayKeyId = keyId;
+  return keyId;
 };
 
 const API_FALLBACK = normalizeFallback(process.env.REACT_APP_API_FALLBACK_URL || "");
@@ -259,6 +281,7 @@ const apiService = {
     }
   },
   getProduct: (id) => request({ url: `/products/${id}`, method: "GET" }),
+  getRazorpayKeyId: () => getRazorpayKeyId(),
   createProduct: (data) => request({ url: "/products", method: "POST", data: prepareProductWritePayload(data) }),
   updateProduct: (id, data) => request({ url: `/products/${id}`, method: "PUT", data: prepareProductWritePayload(data) }),
   deleteProduct: (id) => request({ url: `/products/${id}`, method: "DELETE" }),

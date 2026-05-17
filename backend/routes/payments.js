@@ -222,6 +222,16 @@ payRouter.get(
   }
 );
 
+payRouter.get("/razorpay/config", (req, res) => {
+  const { key_id } = getRazorpayConfig();
+
+  if (!key_id) {
+    return res.status(500).json({ success: false, message: "Razorpay public key is not configured on the server." });
+  }
+
+  return res.json({ success: true, keyId: key_id });
+});
+
 // POST /api/payments/razorpay/create-order
 payRouter.post("/create-order", paymentAuth, [body("amount").optional().isFloat({ gt: 0 }).withMessage("amount must be greater than 0"), body("total").optional().isFloat({ gt: 0 }).withMessage("total must be greater than 0"), validate], createRazorpayOrder);
 payRouter.post("/razorpay/create-order", paymentAuth, [body("amount").optional().isFloat({ gt: 0 }).withMessage("amount must be greater than 0"), body("total").optional().isFloat({ gt: 0 }).withMessage("total must be greater than 0"), validate], createRazorpayOrder);

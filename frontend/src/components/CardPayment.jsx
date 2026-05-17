@@ -158,7 +158,16 @@ const CardPayment = ({
       return;
     }
 
-    const keyId = process.env.REACT_APP_RAZORPAY_KEY_ID;
+    let keyId;
+    try {
+      keyId = await apiService.getRazorpayKeyId();
+    } catch (error) {
+      const message = error?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID in the frontend build env or enable the backend /razorpay/config route.";
+      toast(message, "error");
+      onFailure?.({ reason: "missing-key", description: message });
+      return;
+    }
+
     if (!keyId) {
       const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
       toast(message, "error");

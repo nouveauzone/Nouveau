@@ -25,7 +25,14 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
   const totalPrice = Number(amount) || 0;
 
   const handlePayment = async () => {
-    const keyId = String(process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
+    let keyId;
+    try {
+      keyId = await apiService.getRazorpayKeyId();
+    } catch (error) {
+      const message = error?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID in the frontend build env or enable the backend /razorpay/config route.";
+      onFailure?.({ reason: "missing-key", description: message });
+      return;
+    }
 
     if (!keyId) {
       const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
