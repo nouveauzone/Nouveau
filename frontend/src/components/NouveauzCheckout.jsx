@@ -1,7 +1,6 @@
 import { useState } from "react";
 import apiService from "../services/apiService";
 import { loadRazorpayScript } from "../utils/loadRazorpay";
-import { getStoredToken } from "../utils/authSession";
 
 const METHOD_BADGES = ["UPI", "PhonePe", "GPay", "Cards", "NetBanking", "Wallets"];
 
@@ -23,6 +22,7 @@ const Spinner = () => (
 
 export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure }) {
   const [loading, setLoading] = useState(false);
+  const totalPrice = Number(amount) || 0;
 
   const handlePayment = async () => {
     const keyId = String(
@@ -38,7 +38,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
       return;
     }
 
-    const token = String(localStorage.getItem("token") || getStoredToken() || "").trim();
+    const token = localStorage.getItem("token");
 
     if (!token) {
       const message = "Please login again to continue checkout.";
@@ -59,7 +59,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          amount: Number(amount),
+          amount: totalPrice,
         }),
       });
 
