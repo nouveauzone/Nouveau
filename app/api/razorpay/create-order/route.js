@@ -43,6 +43,7 @@ export async function POST(request) {
     }
 
     const body = await request.json();
+    console.log("BODY:", body);
     const baseAmount = Number(body?.total ?? body?.amount);
     const amount = Math.round(baseAmount * 100);
 
@@ -61,7 +62,7 @@ export async function POST(request) {
       },
     });
 
-    console.log("ORDER CREATED:", order);
+    console.log("ORDER:", order);
 
     return NextResponse.json({ success: true, order });
   } catch (error) {

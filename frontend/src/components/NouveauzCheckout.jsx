@@ -24,8 +24,13 @@ const Spinner = () => (
 export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure }) {
   const [loading, setLoading] = useState(false);
 
-  const openRazorpay = async () => {
-    const keyId = String(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
+  const handlePayment = async () => {
+    const keyId = String(
+      process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+      (typeof import.meta !== "undefined" ? import.meta.env?.VITE_RAZORPAY_KEY_ID : "") ||
+      process.env.REACT_APP_RAZORPAY_KEY_ID ||
+      ""
+    ).trim();
 
     if (!keyId) {
       const message = "Razorpay key missing. Add NEXT_PUBLIC_RAZORPAY_KEY_ID in frontend environment.";
@@ -45,22 +50,42 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
 
     try {
       await loadRazorpayScript();
-      console.log("[razorpay] frontend create-order request", {
-        amount: Number(amount),
-        hasToken: Boolean(token),
-        items: cartItems.length,
-      });
+      console.log("TOKEN:", token);
       const response = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ amount: Number(amount) }),
+        body: JSON.stringify({
+          amount: Number(amount),
+        }),
       });
 
-      const gatewayOrder = await response.json();
-      console.log("ORDER RESPONSE:", gatewayOrder);
+      console.log("STATUS:", response.status);
+
+      const text = await response.text();
+
+      console.log("RAW RESPONSE:", text);
+
+      if (!text) {
+        throw new Error("Empty API response");
+      }
+
+      let gatewayOrder;
+
+      try {
+        gatewayOrder = JSON.parse(text);
+      } catch (error) {
+        console.error("JSON PARSE ERROR:", error);
+        throw new Error("Invalid JSON response from server");
+      }
+
+      console.log("PARSED DATA:", gatewayOrder);
+
+      if (!response.ok) {
+        throw new Error(gatewayOrder?.message || "Failed to create Razorpay order");
+      }
 
       if (!gatewayOrder?.success) {
         throw new Error(gatewayOrder?.message || "Failed to create Razorpay order");
@@ -162,6 +187,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
     } catch (error) {
       setLoading(false);
       const message = error?.message || "Unable to start payment";
+      console.error("PAYMENT ERROR:", error);
       onFailure?.({ reason: "start_failed", description: message });
     }
   };
@@ -169,7 +195,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
   return (
     <div>
       <button
-        onClick={openRazorpay}
+        onClick={handlePayment}
         disabled={loading || !amount}
         style={{
           width: "100%",
