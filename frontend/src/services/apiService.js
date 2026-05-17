@@ -93,7 +93,9 @@ const AUTH_EXPIRED_EVENT = "nouveau:auth-expired";
 
 const buildApiBase = (base) => {
   const normalized = String(base || "").replace(/\/+$/, "");
-  if (!normalized) return "/api";
+  if (!normalized) {
+    throw new Error("VITE_API_URL is missing. Set it to your Express backend URL in the frontend environment.");
+  }
   return /\/api$/i.test(normalized) ? normalized : `${normalized}/api`;
 };
 
@@ -233,8 +235,14 @@ const request = async (config) => {
 };
 
 const apiService = {
-  register: (data) => request({ url: "/auth/register", method: "POST", data }),
-  login: (data) => request({ url: "/auth/login", method: "POST", data }),
+  register: (data) => {
+    console.log("[auth] register request", { email: data?.email });
+    return request({ url: "/auth/register", method: "POST", data });
+  },
+  login: (data) => {
+    console.log("[auth] login request", { email: data?.email });
+    return request({ url: "/auth/login", method: "POST", data });
+  },
   logout: () => request({ url: "/auth/logout", method: "POST" }),
   getMe: () => request({ url: "/auth/me", method: "GET" }),
 
