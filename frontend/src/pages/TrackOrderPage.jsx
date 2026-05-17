@@ -8,6 +8,12 @@ import { fixImageUrl } from "../utils/imageUrl";
 // Use same API base as rest of app - no axios needed
 const API_BASE = API;
 
+const buildApiUrl = (path = "") => {
+  const base = String(API_BASE || "").trim().replace(/\/+$/g, "");
+  const suffix = String(path || "").trim().replace(/^\/+/, "");
+  return base ? `${base}/${suffix}` : `/${suffix}`;
+};
+
 const getAuthHeader = () => {
   try {
     const auth = JSON.parse(localStorage.getItem("nouveau_auth") || "{}");
@@ -260,11 +266,16 @@ export default function TrackOrderPage({ setPage }) {
     if (!headers.Authorization) return;
 
     try {
-      const res  = await fetch(`${API_BASE}/api/orders/my`, { headers });
-      if (!res.ok) return;
+      const res  = await fetch(buildApiUrl("api/orders/my"), { headers });
       const data = await res.json();
-      if (Array.isArray(data)) { setMyOrders(data); if (data.length>0) setActiveTab("myorders"); }
-    } catch (e) { console.log("my orders error:", e.message); }
+      if (!res.ok) {
+        console.error("Failed to fetch my orders", { status: res.status, body: data });
+        return;
+      }
+      if (Array.isArray(data)) { setMyOrders(data); if (data.length > 0) setActiveTab("myorders"); }
+    } catch (e) {
+      console.error("my orders error:", e);
+    }
   };
 
   const handleTrack = async (id) => {
@@ -273,9 +284,12 @@ export default function TrackOrderPage({ setPage }) {
     setLoading(true); setError(""); setOrder(null);
     try {
       // Public endpoint — no auth header needed
-      const res  = await fetch(`${API_BASE}/api/orders/track/${encodeURIComponent(tid)}`);
+      const res  = await fetch(buildApiUrl(`api/orders/track/${encodeURIComponent(tid)}`));
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Order not found");
+      if (!res.ok) {
+        console.error("Track order failed", { status: res.status, body: data });
+        throw new Error(data.message || "Order not found");
+      }
       setOrder(data);
       localStorage.setItem("lastTrackingId", tid);
       setActiveTab("track");

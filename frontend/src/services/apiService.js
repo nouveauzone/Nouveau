@@ -210,6 +210,13 @@ const requestWithClient = async (client, config) => {
     }
   }
 
+  console.debug("[api] request", {
+    url: safeConfig.url,
+    method: safeConfig.method,
+    baseURL: client.defaults.baseURL,
+    params: safeConfig.params,
+  });
+
   const response = await client.request(safeConfig);
   return response.data;
 };
@@ -239,6 +246,16 @@ const request = async (config) => {
 
     const status = Number(error?.response?.status || 0);
     const message = error?.response?.data?.message || error?.message || "Request failed";
+
+    const requestUrl = `${client?.defaults?.baseURL || ""}${String(config?.url || "")}`;
+    console.error("[api] request failed", {
+      requestUrl,
+      status,
+      message,
+      url: config?.url,
+      data: config?.data,
+      response: error?.response?.data,
+    });
 
     if (status === 401) {
       const url = String(config?.url || "");
