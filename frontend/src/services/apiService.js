@@ -102,7 +102,14 @@ const getRazorpayKeyId = async () => {
 
   if (cachedRazorpayKeyId) return cachedRazorpayKeyId;
 
-  const configPaths = ["/razorpay/config", "/config"];
+  const configPaths = [
+    "/razorpay/config",
+    "/config",
+    "/payments/razorpay/config",
+    "/payment/razorpay/config",
+    "/payments/config",
+    "/payment/config",
+  ];
   let data;
   let lastError;
 
