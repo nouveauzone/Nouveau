@@ -97,10 +97,14 @@ const getRazorpayKeyId = async () => {
 
   if (envKey) {
     cachedRazorpayKeyId = envKey;
+    console.log("[razorpay] using env key");
     return envKey;
   }
 
-  if (cachedRazorpayKeyId) return cachedRazorpayKeyId;
+  if (cachedRazorpayKeyId) {
+    console.log("[razorpay] using cached key");
+    return cachedRazorpayKeyId;
+  }
 
   const configPaths = [
     "/razorpay/config",
@@ -110,27 +114,39 @@ const getRazorpayKeyId = async () => {
     "/payments/config",
     "/payment/config",
   ];
+  
   let data;
   let lastError;
 
   for (const url of configPaths) {
     try {
-      data = await request({ url, method: "GET" });
+      data = await request({ url, method: "GET" });\n      console.log("[razorpay] fetched from", url, data);
       break;
     } catch (error) {
+      console.log("[razorpay] fetch failed for", url, error.message);
       lastError = error;
+    }\n  }
+
+  if (data) {\n    const keyId = String(data?.keyId || data?.key_id || data?.razorpayKeyId || data?.razorpay_key_id || "").trim();\n    if (keyId) {\n      cachedRazorpayKeyId = keyId;\n      return keyId;\n    }\n  }
+
+  try {
+    console.log("[razorpay] trying direct fetch from root /razorpay/config");
+    const res = await fetch("/razorpay/config");
+    if (res.ok) {
+      const json = await res.json();
+      const keyId = String(json?.keyId || json?.key_id || json?.razorpayKeyId || json?.razorpay_key_id || "").trim();
+      if (keyId) {
+        cachedRazorpayKeyId = keyId;
+        console.log("[razorpay] got key from direct fetch");
+        return keyId;
+      }
     }
+  } catch (err) {
+    console.log("[razorpay] direct fetch also failed:", err.message);
   }
 
-  const keyId = String(data?.keyId || data?.key_id || data?.razorpayKeyId || data?.razorpay_key_id || "").trim();
-
-  if (!keyId) {
-    const message = lastError?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID or enable /razorpay/config on the API server.";
-    throw new Error(message);
-  }
-
-  cachedRazorpayKeyId = keyId;
-  return keyId;
+  const message = lastError?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID or enable /razorpay/config on the API server.";
+  throw new Error(message);
 };
 
 const API_FALLBACK = normalizeFallback(process.env.REACT_APP_API_FALLBACK_URL || "");
