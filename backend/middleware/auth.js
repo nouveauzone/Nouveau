@@ -1,6 +1,21 @@
 const jwt  = require("jsonwebtoken");
 const User = require("../models/User");
 
+const parseCookies = (cookieHeader = "") => {
+  return String(cookieHeader || "")
+    .split(";")
+    .map((pair) => pair.trim())
+    .filter(Boolean)
+    .reduce((cookies, pair) => {
+      const index = pair.indexOf("=");
+      if (index === -1) return cookies;
+      const key = decodeURIComponent(pair.slice(0, index).trim());
+      const value = decodeURIComponent(pair.slice(index + 1).trim());
+      if (key) cookies[key] = value;
+      return cookies;
+    }, {});
+};
+
 const previewToken = (token) => {
   const value = String(token || "").trim();
   if (!value) return "";
@@ -27,6 +42,12 @@ const extractBearerToken = (req) => {
     if (/^eyJ/.test(value) || value.split(".").length === 3) {
       return { token: value, source: "raw" };
     }
+  }
+
+  const cookies = parseCookies(req.headers.cookie || "");
+  const cookieToken = String(cookies.token || cookies.jwt || cookies.authToken || "").trim();
+  if (cookieToken) {
+    return { token: cookieToken, source: "cookie" };
   }
 
   return { token: "", source: "missing" };

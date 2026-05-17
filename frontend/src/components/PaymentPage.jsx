@@ -5,6 +5,8 @@ import DirectUPIPayment from "./DirectUPIPayment";
 import { AuthContext } from "../context/AuthContext";
 import { BUSINESS_UPI_ID } from "../config/payment";
 import { loadRazorpayScript } from "../utils/loadRazorpay";
+import { ToastContext } from "../context/Providers";
+import { getStoredToken } from "../utils/authSession";
 
 const BANKS = [
   { id: "sbi", name: "State Bank of India", short: "SBI" },
@@ -33,16 +35,7 @@ const Spinner = () => (
 
 const isMongoId = (value) => typeof value === "string" && /^[a-f\d]{24}$/i.test(value);
 
-const getStoredAuthToken = () => {
-  try {
-    const direct = String(localStorage.getItem("token") || "").trim();
-    if (direct) return direct;
-    const nested = JSON.parse(localStorage.getItem("nouveau_auth") || "{}");
-    return String(nested?.token || "").trim();
-  } catch {
-    return "";
-  }
-};
+const getStoredAuthToken = () => getStoredToken();
 
 const PaymentPage = ({
   amount = 1426,
@@ -55,6 +48,7 @@ const PaymentPage = ({
   onFailure,
 }) => {
   const { isAuthenticated } = useContext(AuthContext);
+  const toast = useContext(ToastContext);
   const [activeTab, setActiveTab] = useState("upi");
   const [paid, setPaid] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
@@ -77,7 +71,7 @@ const PaymentPage = ({
   const startNetBanking = async () => {
     if (!selectedBank) {
       const message = "Please select a bank.";
-      alert(message);
+      toast(message, "error");
       handleFailure({ reason: "validation_failed", description: message });
       return;
     }
@@ -85,7 +79,7 @@ const PaymentPage = ({
     const keyId = process.env.REACT_APP_RAZORPAY_KEY_ID;
     if (!keyId) {
       const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
-      alert(message);
+      toast(message, "error");
       handleFailure({ reason: "missing-key", description: message });
       return;
     }
@@ -162,7 +156,7 @@ const PaymentPage = ({
           } catch (error) {
             const message = error?.message || "Payment verification failed";
             handleFailure({ reason: "verification_failed", description: message });
-            alert(message);
+            toast(message, "error");
           } finally {
             setBankLoading(false);
           }
@@ -182,7 +176,7 @@ const PaymentPage = ({
     } catch (error) {
       setBankLoading(false);
       const message = error?.message || "Unable to start payment";
-      alert(message);
+      toast(message, "error");
       handleFailure({ reason: "start_failed", description: message });
     }
   };

@@ -10,6 +10,23 @@ const validate = require("../middleware/validate");
 const router = express.Router();
 
 const genToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+const authCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  path: "/",
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+};
+
+const setAuthCookie = (res, token) => {
+  res.cookie("token", token, authCookieOptions);
+  res.cookie("jwt", token, authCookieOptions);
+};
+
+const clearAuthCookie = (res) => {
+  res.clearCookie("token", { ...authCookieOptions, maxAge: undefined });
+  res.clearCookie("jwt", { ...authCookieOptions, maxAge: undefined });
+};
 
 const getClientIP = (req) => {
   const forwarded = req.headers["x-forwarded-for"];
@@ -94,6 +111,7 @@ router.post(
     } catch (e) { console.log("Welcome email error:", e.message); }
     const token = genToken(user._id);
     const userPayload = { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, addresses: user.addresses };
+    setAuthCookie(res, token);
     res.status(201).json({ success: true, token, user: userPayload, ...userPayload });
   })
 );
@@ -166,9 +184,16 @@ router.post(
 
     const token = genToken(user._id);
     const userPayload = { _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, addresses: user.addresses };
+    setAuthCookie(res, token);
     res.json({ success: true, token, user: userPayload, ...userPayload });
   })
 );
+
+// POST /api/auth/logout
+router.post("/logout", asyncHandler(async (req, res) => {
+  clearAuthCookie(res);
+  res.json({ success: true, message: "Logged out" });
+}));
 
 // GET /api/auth/me
 router.get("/me", protect, asyncHandler(async (req, res) => {

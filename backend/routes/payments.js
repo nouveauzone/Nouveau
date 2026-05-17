@@ -12,42 +12,6 @@ const validate = require("../middleware/validate");
 
 const payRouter = express.Router();
 const shouldBypassPaymentAuth = String(process.env.PAYMENTS_BYPASS_AUTH || "").toLowerCase() === "true";
-const hasBearerToken = (req) => {
-  const candidates = [
-    req.headers.authorization,
-    req.headers.Authorization,
-    req.headers["x-access-token"],
-    req.headers["x-auth-token"],
-    req.headers.token,
-  ];
-
-  return candidates.some((candidate) => Boolean(String(candidate || "").trim()));
-};
-
-const optionalPaymentAuth = shouldBypassPaymentAuth
-  ? (req, res, next) => {
-      console.warn(`[payments] AUTH BYPASS ENABLED for ${req.method} ${req.originalUrl}`);
-      req.user = req.user || {
-        _id: "000000000000000000000000",
-        email: "bypass@local",
-        name: "Auth Bypass",
-        role: "admin",
-      };
-      next();
-    }
-  : (req, res, next) => {
-      if (!hasBearerToken(req)) {
-        req.user = req.user || {
-          _id: "000000000000000000000000",
-          email: "guest@nouveau.local",
-          name: "Guest",
-          role: "guest",
-        };
-        return next();
-      }
-
-      return protect(req, res, next);
-    };
 const paymentAuth = shouldBypassPaymentAuth
   ? (req, res, next) => {
       console.warn(`[payments] AUTH BYPASS ENABLED for ${req.method} ${req.originalUrl}`);
@@ -108,6 +72,145 @@ const sendPaymentConfirmationEmail = async (order, fallbackName = "Customer") =>
   });
 };
 
+const createRazorpayOrder = asyncHandler(async (req, res) => {
+  try {
+    const payload = {
+      amount: Number(req.body.total ?? req.body.amount),
+      userId: req.user?._id?.toString?.() || String(req.user?._id || ""),
+      userEmail: req.user?.email || "",
+      userName: req.user?.name || "",
+    };
+
+    console.log("[razorpay] create-order request", {
+      path: req.originalUrl,
+      payload,
+      authUserId: req.user?._id?.toString?.() || String(req.user?._id || ""),
+    });
+
+    const { key_id } = getRazorpayConfig();
+    const requestedAmount = Number(req.body.total ?? req.body.amount);
+    const amount = Math.round(requestedAmount * 100);
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    const client = getRazorpayClient();
+    console.log("[razorpay] creating order", { amount, currency: "INR" });
+
+    const order = await client.orders.create({
+      amount: amount,
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+      notes: {
+        userId: req.user?._id?.toString?.() || String(req.user?._id || ""),
+        userEmail: req.user?.email || "",
+      },
+    });
+
+    console.log("[razorpay] order created", {
+      orderId: order?.id,
+      amount: order?.amount,
+      currency: order?.currency,
+      keyPrefix: key_id.slice(0, 8),
+    });
+
+    return res.json({
+      success: true,
+      order,
+      orderId: order?.id,
+    });
+  } catch (error) {
+    console.error("[razorpay] create-order failed", {
+      message: error?.message,
+      statusCode: error?.statusCode,
+      status: error?.status,
+      responseStatus: error?.response?.status,
+      responseData: error?.response?.data,
+    });
+
+    const statusCode = error?.statusCode || error?.status || error?.response?.status || 500;
+    return res.status(statusCode).json({
+      success: false,
+      message: error?.response?.data?.error?.description || error?.message || "Failed to create Razorpay order",
+      error: error?.message || "Failed to create Razorpay order",
+    });
+  }
+});
+
+const verifyRazorpayPayment = asyncHandler(async (req, res) => {
+  try {
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(500).json({ message: "Razorpay is not configured on the server." });
+    }
+
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = req.body;
+    console.log("[razorpay] verify request", {
+      orderId,
+      razorpay_order_id,
+      razorpay_payment_id,
+      hasSignature: Boolean(razorpay_signature),
+    });
+
+    const expected = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
+
+    if (expected !== razorpay_signature) {
+      return res.status(400).json({ message: "Invalid signature" });
+    }
+
+    if (orderId) {
+      const order = await Order.findById(orderId);
+      if (order) {
+        order.paymentStatus = "paid";
+        order.paymentId = razorpay_payment_id;
+        if (String(order.paymentMethod || "").toUpperCase() === "RAZORPAY") {
+          order.orderStatus = "Placed";
+        }
+        await order.save();
+
+        try {
+          await sendPaymentConfirmationEmail(order, req.user?.name || "Customer");
+        } catch (error) {
+          console.log("Payment confirmation email error:", error.message);
+        }
+
+        const phone = order.shippingAddress?.phone;
+        if (phone) {
+          sendPaymentSuccess({
+            phone,
+            customerName: order.shippingAddress?.name || req.user?.name || "Customer",
+            trackingId: order.trackingId,
+            orderId: order._id,
+            paidAmount: order.totalAmount ?? order.total ?? order.subtotal ?? 0,
+            paymentId: razorpay_payment_id,
+            paymentMethod: "Razorpay",
+          }).catch((error) => console.log("WhatsApp payment success error:", error.message));
+        }
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: "Payment verified",
+      razorpay_order_id,
+      razorpay_payment_id,
+    });
+  } catch (error) {
+    console.error("[razorpay] verify failed", {
+      message: error?.message,
+      statusCode: error?.statusCode,
+      status: error?.status,
+    });
+    return res.status(error?.statusCode || error?.status || 500).json({
+      success: false,
+      message: error?.message || "Failed to verify payment",
+    });
+  }
+});
+
 payRouter.get(
   "/razorpay/test",
   (req, res) => {
@@ -120,156 +223,24 @@ payRouter.get(
 );
 
 // POST /api/payments/razorpay/create-order
-payRouter.post(
-  "/razorpay/create-order",
-  optionalPaymentAuth,
-  [body("amount").isFloat({ gt: 0 }).withMessage("amount must be greater than 0"), validate],
-  asyncHandler(async (req, res) => {
-    try {
-      const payload = {
-        amount: Number(req.body.amount),
-        userId: req.user?._id?.toString(),
-        userEmail: req.user?.email || "",
-        userName: req.user?.name || "",
-      };
-
-      console.log("[razorpay] create-order request", {
-        path: req.originalUrl,
-        payload,
-        authUserId: req.user?._id?.toString(),
-      });
-
-      const { key_id } = getRazorpayConfig();
-      const amount = Number(req.body.amount) * 100;
-
-      if (!Number.isFinite(amount) || amount <= 0) {
-        return res.status(400).json({ message: "Invalid amount" });
-      }
-
-      const client = getRazorpayClient();
-      console.log("[razorpay] creating order", { amount, currency: "INR" });
-
-      const order = await client.orders.create({
-        amount: amount,
-        currency: "INR",
-        receipt: `receipt_${Date.now()}`,
-        notes: {
-          userId: req.user?._id?.toString?.() || String(req.user?._id || ""),
-          userEmail: req.user?.email || "",
-        },
-      });
-
-      console.log("[razorpay] order created", {
-        orderId: order?.id,
-        amount: order?.amount,
-        currency: order?.currency,
-        keyPrefix: key_id.slice(0, 8),
-      });
-
-      return res.json({
-        success: true,
-        order,
-        ...order,
-      });
-    } catch (error) {
-      console.error("[razorpay] create-order failed", {
-        message: error?.message,
-        statusCode: error?.statusCode,
-        status: error?.status,
-        responseStatus: error?.response?.status,
-        responseData: error?.response?.data,
-      });
-
-      const statusCode = error?.statusCode || error?.status || error?.response?.status || 500;
-      return res.status(statusCode).json({
-        message: error?.response?.data?.error?.description || error?.message || "Failed to create Razorpay order",
-      });
-    }
-  })
-);
+payRouter.post("/create-order", paymentAuth, [body("amount").optional().isFloat({ gt: 0 }).withMessage("amount must be greater than 0"), body("total").optional().isFloat({ gt: 0 }).withMessage("total must be greater than 0"), validate], createRazorpayOrder);
+payRouter.post("/razorpay/create-order", paymentAuth, [body("amount").optional().isFloat({ gt: 0 }).withMessage("amount must be greater than 0"), body("total").optional().isFloat({ gt: 0 }).withMessage("total must be greater than 0"), validate], createRazorpayOrder);
 
 // POST /api/payments/razorpay/verify
-payRouter.post(
-  "/razorpay/verify",
-  optionalPaymentAuth,
-  [
-    body("razorpay_order_id").notEmpty(),
-    body("razorpay_payment_id").notEmpty(),
-    body("razorpay_signature").notEmpty(),
-    body("orderId").optional().isMongoId().withMessage("Valid orderId is required"),
-    validate,
-  ],
-  asyncHandler(async (req, res) => {
-    try {
-      if (!process.env.RAZORPAY_KEY_SECRET) {
-        return res.status(500).json({ message: "Razorpay is not configured on the server." });
-      }
-
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = req.body;
-      console.log("[razorpay] verify request", {
-        orderId,
-        razorpay_order_id,
-        razorpay_payment_id,
-        hasSignature: Boolean(razorpay_signature),
-      });
-
-      const expected = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-        .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-        .digest("hex");
-
-      if (expected !== razorpay_signature) {
-        return res.status(400).json({ message: "Invalid signature" });
-      }
-
-      if (orderId) {
-        const order = await Order.findById(orderId);
-        if (order) {
-          order.paymentStatus = "paid";
-          order.paymentId = razorpay_payment_id;
-          if (String(order.paymentMethod || "").toUpperCase() === "RAZORPAY") {
-            order.orderStatus = "Placed";
-          }
-          await order.save();
-
-          try {
-            await sendPaymentConfirmationEmail(order, req.user?.name || "Customer");
-          } catch (error) {
-            console.log("Payment confirmation email error:", error.message);
-          }
-
-          const phone = order.shippingAddress?.phone;
-          if (phone) {
-            sendPaymentSuccess({
-              phone,
-              customerName: order.shippingAddress?.name || req.user?.name || "Customer",
-              trackingId: order.trackingId,
-              orderId: order._id,
-              paidAmount: order.totalAmount ?? order.total ?? order.subtotal ?? 0,
-              paymentId: razorpay_payment_id,
-              paymentMethod: "Razorpay",
-            }).catch((error) => console.log("WhatsApp payment success error:", error.message));
-          }
-        }
-      }
-
-      return res.json({
-        message: "Payment verified",
-        razorpay_order_id,
-        razorpay_payment_id,
-      });
-    } catch (error) {
-      console.error("[razorpay] verify failed", {
-        message: error?.message,
-        statusCode: error?.statusCode,
-        status: error?.status,
-      });
-      return res.status(error?.statusCode || error?.status || 500).json({
-        message: error?.message || "Failed to verify payment",
-      });
-    }
-  })
-);
+payRouter.post("/verify", paymentAuth, [
+  body("razorpay_order_id").notEmpty(),
+  body("razorpay_payment_id").notEmpty(),
+  body("razorpay_signature").notEmpty(),
+  body("orderId").optional().isMongoId().withMessage("Valid orderId is required"),
+  validate,
+], verifyRazorpayPayment);
+payRouter.post("/razorpay/verify", paymentAuth, [
+  body("razorpay_order_id").notEmpty(),
+  body("razorpay_payment_id").notEmpty(),
+  body("razorpay_signature").notEmpty(),
+  body("orderId").optional().isMongoId().withMessage("Valid orderId is required"),
+  validate,
+], verifyRazorpayPayment);
 
 // POST /api/payments/stripe/create-intent
 payRouter.post(

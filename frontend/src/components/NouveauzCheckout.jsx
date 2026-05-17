@@ -1,6 +1,7 @@
 import { useState } from "react";
 import apiService from "../services/apiService";
 import { loadRazorpayScript } from "../utils/loadRazorpay";
+import { getStoredToken } from "../utils/authSession";
 
 const METHOD_BADGES = ["UPI", "PhonePe", "GPay", "Cards", "NetBanking", "Wallets"];
 
@@ -24,25 +25,11 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
   const [loading, setLoading] = useState(false);
 
   const hasAuthToken = () => {
-    try {
-      const direct = String(localStorage.getItem("token") || "").trim();
-      if (direct) return true;
-      const nested = JSON.parse(localStorage.getItem("nouveau_auth") || "{}");
-      return Boolean(String(nested?.token || "").trim());
-    } catch {
-      return false;
-    }
+    return Boolean(getStoredToken());
   };
 
   const getAuthToken = () => {
-    try {
-      const direct = String(localStorage.getItem("token") || "").trim();
-      if (direct) return direct;
-      const nested = JSON.parse(localStorage.getItem("nouveau_auth") || "{}");
-      return String(nested?.token || "").trim();
-    } catch {
-      return "";
-    }
+    return getStoredToken();
   };
 
   const openRazorpay = async () => {
@@ -50,14 +37,12 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
 
     if (!keyId) {
       const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
-      alert(message);
       onFailure?.({ reason: "missing-key", description: message });
       return;
     }
 
     if (!hasAuthToken()) {
       const message = "Please login again to continue checkout.";
-      alert(message);
       onFailure?.({ reason: "auth", description: message });
       return;
     }
@@ -118,21 +103,33 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
               paymentId: response.razorpay_payment_id,
               hasToken: Boolean(token),
             });
-            await apiService.verifyRazorpayPayment({
+            const verification = await apiService.verifyRazorpayPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
+              items: cartItems.map((item) => ({
+                product: item._id,
+                title: item.title,
+                image: item.images?.[0] || "",
+                price: item.price,
+                size: item.size,
+                qty: item.qty,
+              })),
+              shippingAddress: customerInfo,
+              paymentMethod: "RAZORPAY",
+              paymentReference: response.razorpay_payment_id,
+              total: Number(amount),
             }, token);
 
             onSuccess?.({
               paymentId: response.razorpay_payment_id,
               orderId: response.razorpay_order_id,
               signature: response.razorpay_signature,
+              verification,
             });
           } catch (error) {
             const message = error?.message || "Payment verification failed";
             onFailure?.({ reason: "verification_failed", description: message });
-            alert(message);
           } finally {
             setLoading(false);
           }
@@ -155,7 +152,6 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
     } catch (error) {
       setLoading(false);
       const message = error?.message || "Unable to start payment";
-      alert(message);
       onFailure?.({ reason: "start_failed", description: message });
     }
   };

@@ -1,6 +1,7 @@
 import axios from "axios";
 import API_URL from "../config/api";
 import { PRODUCTS as INITIAL_PRODUCTS } from "../data/products";
+import { clearAuthSession } from "../utils/authSession";
 
 const normalizeSizeLabel = (value) => {
   const raw = String(value || "").trim();
@@ -137,12 +138,13 @@ const getStoredToken = () => {
   return nestedToken;
 };
 
-const clearStoredAuth = () => {
+const clearStoredAuth = async () => {
+  clearAuthSession();
+
   try {
-    localStorage.removeItem("nouveau_auth");
-    localStorage.removeItem("token");
-    localStorage.removeItem("admin");
-  } catch { }
+    await primaryClient.post("/auth/logout");
+  } catch {
+  }
 };
 
 const emitAuthExpired = (message = "Session expired. Please login again.") => {
@@ -154,7 +156,7 @@ const createClient = (baseURL) => {
   const client = axios.create({
     baseURL,
     timeout: 20000,
-    withCredentials: false,
+    withCredentials: true,
   });
 
   client.interceptors.request.use((config) => {
@@ -217,7 +219,7 @@ const request = async (config) => {
     const message = error?.response?.data?.message || error?.message || "Request failed";
 
     if (status === 401) {
-      clearStoredAuth();
+      await clearStoredAuth();
       emitAuthExpired(message || "Token invalid or expired");
     }
 
@@ -228,6 +230,7 @@ const request = async (config) => {
 const apiService = {
   register: (data) => request({ url: "/auth/register", method: "POST", data }),
   login: (data) => request({ url: "/auth/login", method: "POST", data }),
+  logout: () => request({ url: "/auth/logout", method: "POST" }),
   getMe: () => request({ url: "/auth/me", method: "GET" }),
 
   getProducts: async (params = {}) => {
@@ -251,13 +254,13 @@ const apiService = {
   addReview: (id, data) => request({ url: `/reviews/${id}`, method: "POST", data }),
   uploadImages: (formData) => request({ url: "/upload", method: "POST", data: formData }),
   createRazorpayOrder: (data, tokenOverride) => request({
-    url: "/payments/razorpay/create-order",
+    url: "/razorpay/create-order",
     method: "POST",
     data,
     headers: tokenOverride ? { Authorization: `Bearer ${tokenOverride}` } : undefined,
   }),
   verifyRazorpayPayment: (data, tokenOverride) => request({
-    url: "/payments/razorpay/verify",
+    url: "/razorpay/verify",
     method: "POST",
     data,
     headers: tokenOverride ? { Authorization: `Bearer ${tokenOverride}` } : undefined,

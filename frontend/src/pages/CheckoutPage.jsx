@@ -9,6 +9,7 @@ import { THEME } from "../styles/theme";
 import { BtnOutline, BtnPrimary } from "../components/Buttons";
 import { fixImageUrl } from "../utils/imageUrl";
 import { getShippingCharge } from "../data/constants";
+import { ToastContext } from "../context/Providers";
 
 const GOLD = "#C9A227";
 const CRIMSON = "#B71C1C";
@@ -25,6 +26,7 @@ const ADDRESS_FIELDS = [
 export default function CheckoutPage({ setPage }) {
   const { cart, dispatch: cartDispatch } = useContext(CartContext);
   const { placeOrder } = useContext(AppDataContext);
+  const toast = useContext(ToastContext);
   const { isAuthenticated, token } = useContext(AuthContext);
   const { formatPrice } = useContext(CurrencyContext);
   const isAdminSession = (() => {
@@ -68,18 +70,27 @@ export default function CheckoutPage({ setPage }) {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleRazorpaySuccess = async ({ paymentId }) => {
+  const handleRazorpaySuccess = async ({ paymentId, verification }) => {
     if (!isAuthenticated) return;
 
     setProcessing(true);
     try {
+      const savedOrderId = verification?.order?._id || verification?.order?.id || verification?.orderId || "";
+
+      if (savedOrderId) {
+        cartDispatch({ type: "CLEAR" });
+        localStorage.setItem("lastOrderId", savedOrderId);
+        setPage("OrderSuccess");
+        return;
+      }
+
       const orderId = await placeOrder(address, cart, "RAZORPAY", paymentId || `RZP-${Date.now()}`);
       cartDispatch({ type: "CLEAR" });
       localStorage.setItem("lastOrderId", orderId);
       setPage("OrderSuccess");
     } catch (error) {
       console.error("Razorpay order failed:", error);
-      alert("Payment was completed but order creation failed. Please contact support.");
+      toast(error.message || "Payment was completed but order creation failed.", "error");
     } finally {
       setProcessing(false);
     }
@@ -180,8 +191,16 @@ export default function CheckoutPage({ setPage }) {
                     customerInfo={address}
                     onSuccess={handleRazorpaySuccess}
                     onFailure={(error) => {
+                      if (error?.reason === "auth" || error?.reason === "auth_required") {
+                        localStorage.setItem("nouveau_post_auth_page", "Checkout");
+                        toast("Session expired. Please login again.", "error");
+                        setPage("Auth");
+                        return;
+                      }
+
                       if (error?.reason !== "cancelled") {
                         console.error("Razorpay payment failed:", error);
+                        toast(error?.description || "Payment failed", "error");
                       }
                     }}
                   />

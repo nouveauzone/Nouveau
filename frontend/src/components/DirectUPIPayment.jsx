@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { AuthContext } from '../context/AuthContext';
+import { ToastContext } from '../context/Providers';
 import { BUSINESS_UPI_ID, isValidUpiId } from '../config/payment';
 
 // ============================================================
@@ -42,6 +43,7 @@ const DirectUPIPayment = ({
   onPending,
 }) => {
   const { isAuthenticated } = useContext(AuthContext);
+  const toast = useContext(ToastContext);
   const [isMobile, setIsMobile] = useState(false);
   const [activeApp, setActiveApp] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -64,13 +66,13 @@ const DirectUPIPayment = ({
   const handleAppClick = (app) => {
     if (!isAuthenticated) {
       const message = 'Please login first to use UPI payment.';
-      alert(message);
+      toast(message, 'error');
       if (onPending) onPending({ method: app?.id, status: 'auth_required', note: txnNote });
       return;
     }
 
     if (!upiIdValid) {
-      alert('Configured UPI ID is invalid. Please contact support.');
+      toast('Configured UPI ID is invalid. Please contact support.', 'error');
       return;
     }
 

@@ -2,6 +2,8 @@ import { useContext, useMemo, useState } from "react";
 import apiService from "../services/apiService";
 import { AuthContext } from "../context/AuthContext";
 import { loadRazorpayScript } from "../utils/loadRazorpay";
+import { ToastContext } from "../context/Providers";
+import { getStoredToken } from "../utils/authSession";
 
 const DEFAULT_MERCHANT = "Nouveauz";
 
@@ -79,16 +81,7 @@ const getOrderIdForVerification = (orderId) => {
   return undefined;
 };
 
-const getStoredAuthToken = () => {
-  try {
-    const direct = String(localStorage.getItem("token") || "").trim();
-    if (direct) return direct;
-    const nested = JSON.parse(localStorage.getItem("nouveau_auth") || "{}");
-    return String(nested?.token || "").trim();
-  } catch {
-    return "";
-  }
-};
+const getStoredAuthToken = () => getStoredToken();
 
 const Spinner = () => (
   <span style={{
@@ -113,6 +106,7 @@ const CardPayment = ({
   onFailure,
 }) => {
   const { isAuthenticated } = useContext(AuthContext);
+  const toast = useContext(ToastContext);
   const [cardName, setCardName] = useState(customerInfo.name || "");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
@@ -146,7 +140,7 @@ const CardPayment = ({
   const handleSubmit = async () => {
     if (!isAuthenticated) {
       const message = "Please login first to use card payment.";
-      alert(message);
+      toast(message, "error");
       onFailure?.({ reason: "auth_required", description: message });
       return;
     }
@@ -167,7 +161,7 @@ const CardPayment = ({
     const keyId = process.env.REACT_APP_RAZORPAY_KEY_ID;
     if (!keyId) {
       const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
-      alert(message);
+      toast(message, "error");
       onFailure?.({ reason: "missing-key", description: message });
       return;
     }
@@ -244,7 +238,7 @@ const CardPayment = ({
           } catch (error) {
             const message = error?.message || "Payment verification failed";
             onFailure?.({ reason: "verification_failed", description: message });
-            alert(message);
+            toast(message, "error");
           } finally {
             setLoading(false);
           }
@@ -264,7 +258,7 @@ const CardPayment = ({
     } catch (error) {
       setLoading(false);
       const message = error?.message || "Unable to start card payment";
-      alert(message);
+      toast(message, "error");
       onFailure?.({ reason: "start_failed", description: message });
     }
   };
