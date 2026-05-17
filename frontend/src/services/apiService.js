@@ -114,20 +114,28 @@ const getRazorpayKeyId = async () => {
     "/payments/config",
     "/payment/config",
   ];
-  
+
   let data;
   let lastError;
 
   for (const url of configPaths) {
     try {
-      data = await request({ url, method: "GET" });\n      console.log("[razorpay] fetched from", url, data);
+      data = await request({ url, method: "GET" });
+      console.log("[razorpay] fetched from", url, data);
       break;
     } catch (error) {
       console.log("[razorpay] fetch failed for", url, error.message);
       lastError = error;
-    }\n  }
+    }
+  }
 
-  if (data) {\n    const keyId = String(data?.keyId || data?.key_id || data?.razorpayKeyId || data?.razorpay_key_id || "").trim();\n    if (keyId) {\n      cachedRazorpayKeyId = keyId;\n      return keyId;\n    }\n  }
+  if (data) {
+    const keyId = String(data?.keyId || data?.key_id || data?.razorpayKeyId || data?.razorpay_key_id || "").trim();
+    if (keyId) {
+      cachedRazorpayKeyId = keyId;
+      return keyId;
+    }
+  }
 
   try {
     console.log("[razorpay] trying direct fetch from root /razorpay/config");
