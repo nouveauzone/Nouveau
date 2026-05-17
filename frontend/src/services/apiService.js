@@ -91,7 +91,10 @@ const normalizeFallback = (value) => {
 let cachedRazorpayKeyId = null;
 
 const getRazorpayKeyId = async () => {
-  const envKey = String(process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
+  const reactEnvKey = String(process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
+  const viteEnvKey = String(process.env.VITE_RAZORPAY_KEY_ID || "").trim();
+  const envKey = reactEnvKey || viteEnvKey;
+
   if (envKey) {
     cachedRazorpayKeyId = envKey;
     return envKey;

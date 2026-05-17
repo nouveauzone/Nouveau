@@ -1,4 +1,6 @@
-const envApiUrl = String(process.env.REACT_APP_API_URL || "").trim().replace(/\/api\/?$/i, "");
+const reactApiUrl = String(process.env.REACT_APP_API_URL || "").trim();
+const viteApiUrl = String(process.env.VITE_API_URL || "").trim();
+const envApiUrl = (reactApiUrl || viteApiUrl).replace(/\/api\/?$/i, "");
 const API_URL = envApiUrl;
 
 export default API_URL;
