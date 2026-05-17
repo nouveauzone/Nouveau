@@ -28,8 +28,16 @@ const paymentAuth = shouldBypassPaymentAuth
 const cleanEnvValue = (value) => String(value || "").trim().replace(/^['"]|['"]$/g, "");
 
 const getRazorpayConfig = () => {
-  const key_id = cleanEnvValue(process.env.RAZORPAY_KEY_ID);
-  const key_secret = cleanEnvValue(process.env.RAZORPAY_KEY_SECRET);
+  const key_id = cleanEnvValue(
+    process.env.RAZORPAY_KEY_ID ||
+    process.env.REACT_APP_RAZORPAY_KEY_ID ||
+    process.env.VITE_RAZORPAY_KEY_ID
+  );
+  const key_secret = cleanEnvValue(
+    process.env.RAZORPAY_KEY_SECRET ||
+    process.env.REACT_APP_RAZORPAY_KEY_SECRET ||
+    process.env.VITE_RAZORPAY_KEY_SECRET
+  );
 
   console.log("[razorpay] env status", {
     keyLoaded: Boolean(key_id),
@@ -140,7 +148,8 @@ const createRazorpayOrder = asyncHandler(async (req, res) => {
 
 const verifyRazorpayPayment = asyncHandler(async (req, res) => {
   try {
-    if (!process.env.RAZORPAY_KEY_SECRET) {
+    const { key_secret } = getRazorpayConfig();
+    if (!key_secret) {
       return res.status(500).json({ message: "Razorpay is not configured on the server." });
     }
 
@@ -153,7 +162,7 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
     });
 
     const expected = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .createHmac("sha256", key_secret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
