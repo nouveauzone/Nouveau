@@ -247,7 +247,7 @@ const request = async (config) => {
     const status = Number(error?.response?.status || 0);
     const message = error?.response?.data?.message || error?.message || "Request failed";
 
-    const requestUrl = `${client?.defaults?.baseURL || ""}${String(config?.url || "")}`;
+    const requestUrl = `${primaryClient?.defaults?.baseURL || ""}${String(config?.url || "")}`;
     console.error("[api] request failed", {
       requestUrl,
       status,
