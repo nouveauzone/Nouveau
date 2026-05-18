@@ -3,6 +3,11 @@ import API_URL from "../config/api";
 import { PRODUCTS as INITIAL_PRODUCTS } from "../data/products";
 import { clearAuthSession } from "../utils/authSession";
 
+const isProd = process.env.NODE_ENV === "production";
+const logDebug = (...args) => { if (!isProd) console.debug(...args); };
+const logInfo = (...args) => { if (!isProd) console.log(...args); };
+const logError = (...args) => { if (!isProd) console.error(...args); };
+
 const normalizeSizeLabel = (value) => {
   const raw = String(value || "").trim();
   if (!raw) return "";
@@ -97,12 +102,12 @@ const getRazorpayKeyId = async () => {
 
   if (envKey) {
     cachedRazorpayKeyId = envKey;
-    console.log("[razorpay] using env key");
+    logDebug("[razorpay] using env key");
     return envKey;
   }
 
   if (cachedRazorpayKeyId) {
-    console.log("[razorpay] using cached key");
+    logDebug("[razorpay] using cached key");
     return cachedRazorpayKeyId;
   }
 
@@ -121,10 +126,10 @@ const getRazorpayKeyId = async () => {
   for (const url of configPaths) {
     try {
       data = await request({ url, method: "GET" });
-      console.log("[razorpay] fetched from", url, data);
+      logDebug("[razorpay] fetched from", url, data);
       break;
     } catch (error) {
-      console.log("[razorpay] fetch failed for", url, error.message);
+      logDebug("[razorpay] fetch failed for", url, error.message);
       lastError = error;
     }
   }
@@ -138,19 +143,19 @@ const getRazorpayKeyId = async () => {
   }
 
   try {
-    console.log("[razorpay] trying direct fetch from root /razorpay/config");
+    logDebug("[razorpay] trying direct fetch from root /razorpay/config");
     const res = await fetch("/razorpay/config");
     if (res.ok) {
       const json = await res.json();
       const keyId = String(json?.keyId || json?.key_id || json?.razorpayKeyId || json?.razorpay_key_id || "").trim();
       if (keyId) {
         cachedRazorpayKeyId = keyId;
-        console.log("[razorpay] got key from direct fetch");
+        logDebug("[razorpay] got key from direct fetch");
         return keyId;
       }
     }
   } catch (err) {
-    console.log("[razorpay] direct fetch also failed:", err.message);
+    logDebug("[razorpay] direct fetch also failed:", err.message);
   }
 
   const message = lastError?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID or enable /razorpay/config on the API server.";
@@ -242,8 +247,8 @@ const createClient = (baseURL) => {
   return client;
 };
 
-const primaryClient = createClient(buildApiBase(API_URL));
-const fallbackClient = API_FALLBACK ? createClient(buildApiBase(API_FALLBACK)) : null;
+const primaryClient = createClient(buildApiBase(API_URL || API_FALLBACK));
+const fallbackClient = API_URL && API_FALLBACK ? createClient(buildApiBase(API_FALLBACK)) : null;
 
 const requestWithClient = async (client, config) => {
   const safeConfig = { ...config, headers: { ...(config?.headers || {}) } };
@@ -258,7 +263,7 @@ const requestWithClient = async (client, config) => {
     }
   }
 
-  console.debug("[api] request", {
+  logDebug("[api] request", {
     url: safeConfig.url,
     method: safeConfig.method,
     baseURL: client.defaults.baseURL,
@@ -296,7 +301,7 @@ const request = async (config) => {
     const message = error?.response?.data?.message || error?.message || "Request failed";
 
     const requestUrl = `${primaryClient?.defaults?.baseURL || ""}${String(config?.url || "")}`;
-    console.error("[api] request failed", {
+    logError("[api] request failed", {
       requestUrl,
       status,
       message,
@@ -321,11 +326,11 @@ const request = async (config) => {
 
 const apiService = {
   register: (data) => {
-    console.log("[auth] register request", { email: data?.email });
+    logInfo("[auth] register request", { email: data?.email });
     return request({ url: "/auth/register", method: "POST", data });
   },
   login: (data) => {
-    console.log("[auth] login request", { email: data?.email });
+    logInfo("[auth] login request", { email: data?.email });
     return request({ url: "/auth/login", method: "POST", data });
   },
   logout: () => request({ url: "/auth/logout", method: "POST" }),

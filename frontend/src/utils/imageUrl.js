@@ -1,3 +1,5 @@
+import API_URL from "../config/api";
+
 const FALLBACK = '/product1.jpeg';
 
 // Images that don't exist on server - use fallback
@@ -34,7 +36,9 @@ export const fixImageUrl = (url) => {
     return targetUrl;
   }
 
-  const uploadsBase = String(process.env.REACT_APP_UPLOADS_BASE_URL || '').trim().replace(/\/+$/, '');
+  const envUploadsBase = String(process.env.REACT_APP_UPLOADS_BASE_URL || '').trim().replace(/\/+$/, '');
+  const apiUploadsBase = String(API_URL || '').trim().replace(/\/+$/, '');
+  const uploadsBase = envUploadsBase || apiUploadsBase;
 
   if (uploadsBase) {
     if (targetUrl.includes('/uploads/')) {

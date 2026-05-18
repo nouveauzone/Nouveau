@@ -1,5 +1,8 @@
 import React, { createContext, useState, useEffect, useContext, useMemo, useRef } from "react";
 
+const isProd = process.env.NODE_ENV === "production";
+const logWarn = (...args) => { if (!isProd) console.warn(...args); };
+
 export const CurrencyContext = createContext(null);
 
 const COUNTRY_TO_CURRENCY = {
@@ -103,7 +106,7 @@ export const CurrencyProvider = ({ children }) => {
               }
             } catch (rateErr) {
               if (!warnedRef.current) {
-                console.warn("Currency API Error; using fallback rates.");
+                logWarn("Currency API Error; using fallback rates.");
                 warnedRef.current = true;
               }
               setExchangeRate(FALLBACK_RATES[code] || 1);
@@ -112,7 +115,7 @@ export const CurrencyProvider = ({ children }) => {
         }
       } catch (err) {
         if (!warnedRef.current) {
-          console.warn("Geo IP tracking failed; defaulting to INR.");
+          logWarn("Geo IP tracking failed; defaulting to INR.");
           warnedRef.current = true;
         }
         // Default stays INR
