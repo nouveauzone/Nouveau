@@ -1,6 +1,7 @@
 import { useState } from "react";
 import apiService from "../services/apiService";
 import { loadRazorpayScript } from "../utils/loadRazorpay";
+import { getStoredToken } from "../utils/authSession";
 
 const METHOD_BADGES = ["UPI", "PhonePe", "GPay", "Cards", "NetBanking", "Wallets"];
 
@@ -40,7 +41,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
       return;
     }
 
-    const token = localStorage.getItem("token");
+    const token = getStoredToken();
 
     if (!token) {
       const message = "Please login again to continue checkout.";
