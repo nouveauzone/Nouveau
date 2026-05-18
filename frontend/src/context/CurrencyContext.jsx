@@ -72,20 +72,8 @@ export const CurrencyProvider = ({ children }) => {
           }
         }
 
-        // 1. Fetch User Geo Location (cached, CORS-friendly)
-        const cachedGeo = readCache(GEO_CACHE_KEY);
-        let geoData = cachedGeo;
-
-        if (!geoData) {
-          const geoRes = await fetch("https://ipwho.is/?fields=country_code,in_eu,success,message");
-          if (geoRes.ok) {
-            const parsed = await geoRes.json();
-            if (parsed?.success !== false) {
-              geoData = parsed;
-              writeCache(GEO_CACHE_KEY, geoData);
-            }
-          }
-        }
+        // Geo lookup is intentionally disabled to avoid third-party API failures.
+        const geoData = readCache(GEO_CACHE_KEY);
         
         if (geoData) {
           const country = geoData?.country_code || "IN";

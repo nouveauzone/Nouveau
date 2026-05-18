@@ -22,42 +22,28 @@ const Spinner = () => (
 
 export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure }) {
   const [loading, setLoading] = useState(false);
+  const totalPrice = Number(amount) || 0;
 
-  const hasAuthToken = () => {
+  const handlePayment = async () => {
+    let keyId;
     try {
-      const direct = String(localStorage.getItem("token") || "").trim();
-      if (direct) return true;
-      const nested = JSON.parse(localStorage.getItem("nouveau_auth") || "{}");
-      return Boolean(String(nested?.token || "").trim());
-    } catch {
-      return false;
-    }
-  };
-
-  const getAuthToken = () => {
-    try {
-      const direct = String(localStorage.getItem("token") || "").trim();
-      if (direct) return direct;
-      const nested = JSON.parse(localStorage.getItem("nouveau_auth") || "{}");
-      return String(nested?.token || "").trim();
-    } catch {
-      return "";
-    }
-  };
-
-  const openRazorpay = async () => {
-    const keyId = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_live_ShIb6CLyEFQUrG";
-
-    if (!keyId) {
-      const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
-      alert(message);
+      keyId = await apiService.getRazorpayKeyId();
+    } catch (error) {
+      const message = error?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID in the frontend build env or enable the backend /razorpay/config route.";
       onFailure?.({ reason: "missing-key", description: message });
       return;
     }
 
-    if (!hasAuthToken()) {
+    if (!keyId) {
+      const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
+      onFailure?.({ reason: "missing-key", description: message });
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
       const message = "Please login again to continue checkout.";
-      alert(message);
       onFailure?.({ reason: "auth", description: message });
       return;
     }
@@ -66,14 +52,20 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
 
     try {
       await loadRazorpayScript();
-      const token = getAuthToken();
-      const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) }, token);
+      const gatewayOrder = await apiService.createRazorpayOrder({ amount: totalPrice }, token);
+      const orderId = gatewayOrder?.order?.id || gatewayOrder?.orderId || gatewayOrder?.id || gatewayOrder?.order?.orderId;
+
+      if (!orderId) {
+        throw new Error("Razorpay order creation failed. Missing order id.");
+      }
+
+      const orderData = gatewayOrder.order || gatewayOrder || {};
 
       const options = {
         key: keyId,
-        amount: gatewayOrder.amount,
-        currency: gatewayOrder.currency || "INR",
-        order_id: gatewayOrder.orderId,
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
+        order_id: orderId,
         name: "Nouveau™",
         description: cartItems.length > 0
           ? `${cartItems.length} item(s) — ${cartItems.map(getItemLabel).join(", ")}`
@@ -103,21 +95,38 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
         },
         handler: async (response) => {
           try {
-            await apiService.verifyRazorpayPayment({
+            console.log("[razorpay] frontend verify request", {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              hasToken: Boolean(token),
+            });
+            const verification = await apiService.verifyRazorpayPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
+              items: cartItems.map((item) => ({
+                product: item._id,
+                title: item.title,
+                image: item.images?.[0] || "",
+                price: item.price,
+                size: item.size,
+                qty: item.qty,
+              })),
+              shippingAddress: customerInfo,
+              paymentMethod: "RAZORPAY",
+              paymentReference: response.razorpay_payment_id,
+              total: Number(amount),
             }, token);
 
             onSuccess?.({
               paymentId: response.razorpay_payment_id,
               orderId: response.razorpay_order_id,
               signature: response.razorpay_signature,
+              verification,
             });
           } catch (error) {
             const message = error?.message || "Payment verification failed";
             onFailure?.({ reason: "verification_failed", description: message });
-            alert(message);
           } finally {
             setLoading(false);
           }
@@ -140,7 +149,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
     } catch (error) {
       setLoading(false);
       const message = error?.message || "Unable to start payment";
-      alert(message);
+      console.error("PAYMENT ERROR:", error);
       onFailure?.({ reason: "start_failed", description: message });
     }
   };
@@ -148,7 +157,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
   return (
     <div>
       <button
-        onClick={openRazorpay}
+        onClick={handlePayment}
         disabled={loading || !amount}
         style={{
           width: "100%",

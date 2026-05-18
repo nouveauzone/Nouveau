@@ -87,7 +87,7 @@ const productSchema = new mongoose.Schema(
     gender: { type: String, enum: ["Women", "Men", "Unisex"], default: "Women" },
     images: [{ type: String, set: normalizeImagePathForStorage }],
     sizes: { type: [sizeQuantitySchema], default: [] },
-    isNew: { type: Boolean, default: false },
+    _isNew: { type: Boolean, default: false, alias: "isNew" },
     isFeatured: { type: Boolean, default: false },
     discount: { type: Number, default: 0 },
     reviews: [reviewSchema],

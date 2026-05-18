@@ -5,6 +5,8 @@ import DirectUPIPayment from "./DirectUPIPayment";
 import { AuthContext } from "../context/AuthContext";
 import { BUSINESS_UPI_ID } from "../config/payment";
 import { loadRazorpayScript } from "../utils/loadRazorpay";
+import { ToastContext } from "../context/Providers";
+import { getStoredToken } from "../utils/authSession";
 
 const BANKS = [
   { id: "sbi", name: "State Bank of India", short: "SBI" },
@@ -33,6 +35,8 @@ const Spinner = () => (
 
 const isMongoId = (value) => typeof value === "string" && /^[a-f\d]{24}$/i.test(value);
 
+const getStoredAuthToken = () => getStoredToken();
+
 const PaymentPage = ({
   amount = 1426,
   orderId,
@@ -44,6 +48,7 @@ const PaymentPage = ({
   onFailure,
 }) => {
   const { isAuthenticated } = useContext(AuthContext);
+  const toast = useContext(ToastContext);
   const [activeTab, setActiveTab] = useState("upi");
   const [paid, setPaid] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
@@ -66,15 +71,24 @@ const PaymentPage = ({
   const startNetBanking = async () => {
     if (!selectedBank) {
       const message = "Please select a bank.";
-      alert(message);
+      toast(message, "error");
       handleFailure({ reason: "validation_failed", description: message });
       return;
     }
 
-    const keyId = process.env.REACT_APP_RAZORPAY_KEY_ID;
+    let keyId;
+    try {
+      keyId = await apiService.getRazorpayKeyId();
+    } catch (error) {
+      const message = error?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID in the frontend build env or enable the backend /razorpay/config route.";
+      toast(message, "error");
+      handleFailure({ reason: "missing-key", description: message });
+      return;
+    }
+
     if (!keyId) {
       const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
-      alert(message);
+      toast(message, "error");
       handleFailure({ reason: "missing-key", description: message });
       return;
     }
@@ -83,14 +97,25 @@ const PaymentPage = ({
 
     try {
       await loadRazorpayScript();
-      const gatewayOrder = await apiService.createRazorpayOrder({ amount: amountNumber });
+      const authToken = getStoredAuthToken();
+      console.log("[razorpay] payment page create-order request", {
+        amount: amountNumber,
+        bank: selectedBank,
+        hasToken: Boolean(authToken),
+      });
+      const gatewayOrder = await apiService.createRazorpayOrder({ amount: amountNumber }, authToken);
+      const razorpayOrderId = gatewayOrder?.id || gatewayOrder?.orderId || gatewayOrder?.order?.id || gatewayOrder?.order?.orderId;
+
+      if (!razorpayOrderId) {
+        throw new Error("Razorpay order creation failed. Missing order id.");
+      }
       const verificationOrderId = isMongoId(orderId) ? orderId : undefined;
 
       const options = {
         key: keyId,
         amount: gatewayOrder.amount,
         currency: gatewayOrder.currency || "INR",
-        order_id: gatewayOrder.orderId,
+        order_id: razorpayOrderId,
         name: merchantName || "Nouveauz",
         description: `Net banking payment for ${orderId || "order"}`,
         prefill: {
@@ -112,6 +137,12 @@ const PaymentPage = ({
         },
         handler: async (response) => {
           try {
+            console.log("[razorpay] payment page verify request", {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              bank: selectedBank,
+              hasToken: Boolean(authToken),
+            });
             const payload = {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -122,7 +153,7 @@ const PaymentPage = ({
               payload.orderId = verificationOrderId;
             }
 
-            await apiService.verifyRazorpayPayment(payload);
+            await apiService.verifyRazorpayPayment(payload, authToken);
 
             handleSuccess({
               paymentId: response.razorpay_payment_id,
@@ -134,7 +165,7 @@ const PaymentPage = ({
           } catch (error) {
             const message = error?.message || "Payment verification failed";
             handleFailure({ reason: "verification_failed", description: message });
-            alert(message);
+            toast(message, "error");
           } finally {
             setBankLoading(false);
           }
@@ -154,7 +185,7 @@ const PaymentPage = ({
     } catch (error) {
       setBankLoading(false);
       const message = error?.message || "Unable to start payment";
-      alert(message);
+      toast(message, "error");
       handleFailure({ reason: "start_failed", description: message });
     }
   };

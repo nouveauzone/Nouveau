@@ -4,9 +4,41 @@ import { THEME } from "../styles/theme";
 import API from "../services/apiService";
 import Footer from "../components/Footer";
 import { fixImageUrl } from "../utils/imageUrl";
+import { persistAuthSession } from "../utils/authSession";
 
 const GOLD    = "#C9A227";
 const CRIMSON = "#B71C1C";
+
+const ROUTE_TO_PAGE = {
+  "/": "Home",
+  "/home": "Home",
+  "/shop": "Shop",
+  "/cart": "Cart",
+  "/checkout": "Checkout",
+  "/order-success": "OrderSuccess",
+  "/auth": "Auth",
+  "/account": "Account",
+  "/wishlist": "Wishlist",
+  "/admin": "Admin",
+  "/about": "About",
+  "/contact": "Contact",
+  "/size-guide": "SizeGuide",
+  "/shipping": "Shipping",
+  "/track-order": "TrackOrder",
+  "/faq": "FAQ",
+  "/terms": "Terms",
+};
+
+const mapRedirectTarget = (value) => {
+  const raw = String(value || "").trim().toLowerCase();
+  if (!raw) return "";
+  if (ROUTE_TO_PAGE[raw]) return ROUTE_TO_PAGE[raw];
+  if (raw.startsWith("/checkout")) return "Checkout";
+  if (raw.startsWith("/account")) return "Account";
+  if (raw.startsWith("/admin")) return "Admin";
+  if (raw.startsWith("/shop")) return "Shop";
+  return "";
+};
 
 export default function AuthPage({ setPage }) {
   const { dispatch } = useContext(AuthContext);
@@ -35,6 +67,16 @@ export default function AuthPage({ setPage }) {
     setLoading(true); setApiErr("");
 
     const goAfterAuth = () => {
+      try {
+        const searchParams = new URLSearchParams(window.location.search || "");
+        const redirectPage = mapRedirectTarget(searchParams.get("redirect"));
+        if (redirectPage) {
+          setPage(redirectPage);
+          return;
+        }
+      } catch {
+      }
+
       const nextPage = localStorage.getItem("nouveau_post_auth_page");
       if (nextPage) {
         localStorage.removeItem("nouveau_post_auth_page");
@@ -63,9 +105,11 @@ export default function AuthPage({ setPage }) {
         isAuthenticated: true,
       };
       try {
-        localStorage.setItem("nouveau_auth", JSON.stringify(authPayload));
-        localStorage.setItem("token", authPayload.token || "");
-      } catch {}
+        localStorage.setItem("token", res.token);
+        document.cookie = `token=${res.token}; path=/; ${process.env.NODE_ENV === "production" ? "secure; samesite=none" : "samesite=lax"}`;
+      } catch {
+      }
+      persistAuthSession(authPayload);
 
       dispatch({ type:"LOGIN", payload:authPayload.user, token:authPayload.token });
       goAfterAuth();

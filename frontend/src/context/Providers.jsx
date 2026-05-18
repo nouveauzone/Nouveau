@@ -5,6 +5,7 @@ import { WishlistContext } from "./WishlistContext";
 import { CurrencyProvider } from "./CurrencyContext";
 import { getShippingCharge } from "../data/constants";
 import { AUTH_EXPIRED_EVENT } from "../services/apiService";
+import { clearAuthSession, hydrateAuthSession, persistAuthSession } from "../utils/authSession";
 
 export const AppDataContext = createContext(null);
 export const ToastContext   = createContext(null);
@@ -42,11 +43,7 @@ const ls = {
 const asArray = (value) => (Array.isArray(value) ? value : []);
 
 const hydrateAuthState = () => {
-  const raw = ls.get("nouveau_auth", { user:null, token:null, isAuthenticated:false });
-  const hasUser = Boolean(raw?.user?._id);
-  const hasToken = typeof raw?.token === "string" && raw.token.trim().length > 0;
-  if (raw?.isAuthenticated && hasUser && hasToken) return raw;
-  return { user:null, token:null, isAuthenticated:false };
+  return hydrateAuthSession();
 };
 
 // ── GLOBAL shared orders store (single source of truth) ──────────────────────
@@ -192,11 +189,22 @@ export default function Providers({ children }) {
 
   const dispatchAuth = useCallback((action) => {
     if (action?.type === "LOGOUT") {
+      clearAuthSession();
+      import("../services/apiService")
+        .then(({ default: API }) => API.logout?.())
+        .catch(() => {});
       cartDispatch({ type: "CLEAR" });
       // ✅ CRITICAL: clear cached orders on logout so the next user never
       // sees orders left over from a previous session.
       setAllOrders([]);
       try { localStorage.removeItem("nouveau_all_orders"); } catch {}
+    }
+    if (action?.type === "LOGIN") {
+      persistAuthSession({
+        user: action.payload,
+        token: action.token,
+        isAuthenticated: true,
+      });
     }
     authDispatch(action);
   }, []);
@@ -230,7 +238,7 @@ export default function Providers({ children }) {
   };
 
   // ── Persist ───────────────────────────────────────────────────────────────
-  useEffect(() => { ls.set("nouveau_auth",   authState); }, [authState]);
+  useEffect(() => { persistAuthSession(authState); }, [authState]);
   useEffect(() => { ls.set("nouveau_cart",   cart);      }, [cart]);
   useEffect(() => { ls.set("nouveau_wish",   wishlist);  }, [wishlist]);
   useEffect(() => { ls.set("nouveau_all_orders", allOrders); }, [allOrders]);
@@ -343,7 +351,7 @@ export default function Providers({ children }) {
 
       // NEW: Refresh product list after order to update stock in localStorage and UI
       try {
-        const products = await API.getProducts({ limit: 200 });
+        const products = await API.getProducts();
         if (products && products.length > 0) {
           localStorage.setItem("nouveau_local_products", JSON.stringify(products));
           // Optionally, dispatch a custom event to notify listeners

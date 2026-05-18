@@ -25,7 +25,9 @@ const products = [
   }
 ];
 
-mongoose.connect(process.env.MONGO_URI)
+const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+
+mongoose.connect(mongoUri)
   .then(async () => {
     console.log("MongoDB Connected");
 

@@ -1,64 +1,6 @@
-import { useEffect, useState } from "react";
 import NouveauLogo from "./Logo";
 import { THEME } from "../styles/theme";
-import API from "../services/apiService";
 import { TrustWhatsApp, TrustEmail } from "./TrustIcons";
-
-function VisitorCount() {
-  const [count, setCount] = useState(null);
-
-  useEffect(() => {
-    const loadMonthlyViews = async () => {
-      try {
-        const now = new Date();
-        const monthKey = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
-        const sessionKey = `nouveau_monthly_viewed_${monthKey}`;
-
-        let response;
-        if (!sessionStorage.getItem(sessionKey)) {
-          response = await API.incrementMonthlyViews(monthKey);
-          sessionStorage.setItem(sessionKey, "true");
-        } else {
-          response = await API.getMonthlyViews(monthKey);
-        }
-
-        setCount(Number(response?.views || 0));
-      } catch {
-        setCount(null);
-      }
-    };
-
-    loadMonthlyViews();
-  }, []);
-
-  if (count == null) return null;
-
-  return (
-    <span
-      style={{
-        fontFamily: "'Poppins', sans-serif",
-        fontSize: "11px",
-        color: "rgba(255,255,255,0.5)",
-        letterSpacing: "1px",
-        display: "flex",
-        alignItems: "center",
-        gap: "5px",
-      }}
-    >
-      <span
-        style={{
-          width: "7px",
-          height: "7px",
-          borderRadius: "50%",
-          background: "#22c55e",
-          display: "inline-block",
-          boxShadow: "0 0 5px #22c55e",
-        }}
-      />
-      {count.toLocaleString("en-IN")} views this month
-    </span>
-  );
-}
 
 export default function Footer({ setPage }) {
   const quickLinks = [
@@ -201,7 +143,6 @@ export default function Footer({ setPage }) {
 
         <div className="footer-bottom-row" style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
           <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", fontFamily: "'Poppins',sans-serif" }}>© 2026 Nouveau™. All rights reserved. Women's Wear Only.</p>
-          <VisitorCount />
           <div style={{ display: "flex", gap: "16px" }}>
             <span
               style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", fontFamily: "'Poppins',sans-serif", cursor: "pointer" }}

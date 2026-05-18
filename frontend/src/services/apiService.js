@@ -1,6 +1,7 @@
 import axios from "axios";
-import API from "../config/api";
+import API_URL from "../config/api";
 import { PRODUCTS as INITIAL_PRODUCTS } from "../data/products";
+import { clearAuthSession } from "../utils/authSession";
 
 const normalizeSizeLabel = (value) => {
   const raw = String(value || "").trim();
@@ -37,6 +38,22 @@ const normalizeProduct = (product) => ({
   sizes: normalizeSizes(product),
 });
 
+const mergeProductsById = (primary = [], secondary = []) => {
+  const seen = new Set();
+  const merged = [];
+
+  [...primary, ...secondary].forEach((item) => {
+    const normalized = normalizeProduct(item);
+    const id = String(normalized?._id || normalized?.id || "");
+    const fingerprint = id || `${normalized?.title || ""}-${normalized?.price || 0}-${normalized?.category || ""}-${normalized?.subcategory || ""}-${String(normalized?.images?.[0] || "")}`;
+    if (!fingerprint || seen.has(fingerprint)) return;
+    seen.add(fingerprint);
+    merged.push(normalized);
+  });
+
+  return merged;
+};
+
 const prepareProductWritePayload = (data = {}) => {
   const normalized = normalizeProduct(data);
   const { _id, id, rating, reviews, avgRating, numReviews, stock, createdAt, updatedAt, __v, ...rest } = normalized;
@@ -71,12 +88,83 @@ const normalizeFallback = (value) => {
   return normalized.replace(/\/api$/i, "");
 };
 
-const API_FALLBACK = normalizeFallback(process.env.REACT_APP_API_FALLBACK_URL || process.env.VITE_API_FALLBACK_URL);
+let cachedRazorpayKeyId = null;
+
+const getRazorpayKeyId = async () => {
+  const reactEnvKey = String(process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
+  const viteEnvKey = String(process.env.VITE_RAZORPAY_KEY_ID || "").trim();
+  const envKey = reactEnvKey || viteEnvKey;
+
+  if (envKey) {
+    cachedRazorpayKeyId = envKey;
+    console.log("[razorpay] using env key");
+    return envKey;
+  }
+
+  if (cachedRazorpayKeyId) {
+    console.log("[razorpay] using cached key");
+    return cachedRazorpayKeyId;
+  }
+
+  const configPaths = [
+    "/razorpay/config",
+    "/config",
+    "/payments/razorpay/config",
+    "/payment/razorpay/config",
+    "/payments/config",
+    "/payment/config",
+  ];
+
+  let data;
+  let lastError;
+
+  for (const url of configPaths) {
+    try {
+      data = await request({ url, method: "GET" });
+      console.log("[razorpay] fetched from", url, data);
+      break;
+    } catch (error) {
+      console.log("[razorpay] fetch failed for", url, error.message);
+      lastError = error;
+    }
+  }
+
+  if (data) {
+    const keyId = String(data?.keyId || data?.key_id || data?.razorpayKeyId || data?.razorpay_key_id || "").trim();
+    if (keyId) {
+      cachedRazorpayKeyId = keyId;
+      return keyId;
+    }
+  }
+
+  try {
+    console.log("[razorpay] trying direct fetch from root /razorpay/config");
+    const res = await fetch("/razorpay/config");
+    if (res.ok) {
+      const json = await res.json();
+      const keyId = String(json?.keyId || json?.key_id || json?.razorpayKeyId || json?.razorpay_key_id || "").trim();
+      if (keyId) {
+        cachedRazorpayKeyId = keyId;
+        console.log("[razorpay] got key from direct fetch");
+        return keyId;
+      }
+    }
+  } catch (err) {
+    console.log("[razorpay] direct fetch also failed:", err.message);
+  }
+
+  const message = lastError?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID or enable /razorpay/config on the API server.";
+  throw new Error(message);
+};
+
+const API_FALLBACK = normalizeFallback(process.env.REACT_APP_API_FALLBACK_URL || "");
 const AUTH_EXPIRED_EVENT = "nouveau:auth-expired";
 
 const buildApiBase = (base) => {
   const normalized = String(base || "").replace(/\/+$/, "");
-  return normalized ? `${normalized}/api` : "/api";
+  if (!normalized) return "/api";
+  if (/\/(api|payment|payments|razorpay)$/i.test(normalized)) return normalized;
+  return `${normalized}/api`;
 };
 
 const isLikelyServerFailure = (status) => status === 404 || status === 500 || status === 502 || status === 503 || status === 504 || status >= 520;
@@ -109,14 +197,24 @@ const getStoredToken = () => {
   } catch { }
 
   const nestedToken = String(getStoredAuth()?.token || "").trim();
+  if (nestedToken) return nestedToken;
+
+  try {
+    const adminSession = JSON.parse(localStorage.getItem("admin") || "null");
+    const adminToken = String(adminSession?.token || adminSession?.user?.token || "").trim();
+    if (adminToken) return adminToken;
+  } catch { }
+
   return nestedToken;
 };
 
-const clearStoredAuth = () => {
+const clearStoredAuth = async () => {
+  clearAuthSession();
+
   try {
-    localStorage.removeItem("nouveau_auth");
-    localStorage.removeItem("token");
-  } catch { }
+    await primaryClient.post("/auth/logout");
+  } catch {
+  }
 };
 
 const emitAuthExpired = (message = "Session expired. Please login again.") => {
@@ -128,12 +226,13 @@ const createClient = (baseURL) => {
   const client = axios.create({
     baseURL,
     timeout: 20000,
-    withCredentials: false,
+    withCredentials: true,
   });
 
   client.interceptors.request.use((config) => {
+    const explicitAuth = String(config.headers?.Authorization || config.headers?.authorization || "").trim();
     const token = getStoredToken();
-    if (token) {
+    if (!explicitAuth && token) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -143,7 +242,7 @@ const createClient = (baseURL) => {
   return client;
 };
 
-const primaryClient = createClient(buildApiBase(API));
+const primaryClient = createClient(buildApiBase(API_URL));
 const fallbackClient = API_FALLBACK ? createClient(buildApiBase(API_FALLBACK)) : null;
 
 const requestWithClient = async (client, config) => {
@@ -158,6 +257,13 @@ const requestWithClient = async (client, config) => {
       safeConfig.headers.Accept = "application/json";
     }
   }
+
+  console.debug("[api] request", {
+    url: safeConfig.url,
+    method: safeConfig.method,
+    baseURL: client.defaults.baseURL,
+    params: safeConfig.params,
+  });
 
   const response = await client.request(safeConfig);
   return response.data;
@@ -189,9 +295,24 @@ const request = async (config) => {
     const status = Number(error?.response?.status || 0);
     const message = error?.response?.data?.message || error?.message || "Request failed";
 
+    const requestUrl = `${primaryClient?.defaults?.baseURL || ""}${String(config?.url || "")}`;
+    console.error("[api] request failed", {
+      requestUrl,
+      status,
+      message,
+      url: config?.url,
+      data: config?.data,
+      response: error?.response?.data,
+    });
+
     if (status === 401) {
-      clearStoredAuth();
-      emitAuthExpired(message || "Token invalid or expired");
+      const url = String(config?.url || "");
+      const skipAuthReset = Boolean(config?.skipAuthResetOn401) || /\/razorpay\//i.test(url);
+
+      if (!skipAuthReset) {
+        await clearStoredAuth();
+        emitAuthExpired(message || "Token invalid or expired");
+      }
     }
 
     throw new Error(message);
@@ -199,29 +320,50 @@ const request = async (config) => {
 };
 
 const apiService = {
-  register: (data) => request({ url: "/auth/register", method: "POST", data }),
-  login: (data) => request({ url: "/auth/login", method: "POST", data }),
+  register: (data) => {
+    console.log("[auth] register request", { email: data?.email });
+    return request({ url: "/auth/register", method: "POST", data });
+  },
+  login: (data) => {
+    console.log("[auth] login request", { email: data?.email });
+    return request({ url: "/auth/login", method: "POST", data });
+  },
+  logout: () => request({ url: "/auth/logout", method: "POST" }),
   getMe: () => request({ url: "/auth/me", method: "GET" }),
 
-  getProducts: (params = {}) => {
-    return request({ url: "/products", method: "GET", params }).catch(() => INITIAL_PRODUCTS.map(normalizeProduct));
+  getProducts: async (params = {}) => {
+    try {
+      const data = await request({ url: "/products", method: "GET", params });
+      const backendProducts = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.products)
+          ? data.products
+          : [];
+
+      return mergeProductsById(backendProducts, INITIAL_PRODUCTS);
+    } catch {
+      return INITIAL_PRODUCTS.map(normalizeProduct);
+    }
   },
   getProduct: (id) => request({ url: `/products/${id}`, method: "GET" }),
+  getRazorpayKeyId: () => getRazorpayKeyId(),
   createProduct: (data) => request({ url: "/products", method: "POST", data: prepareProductWritePayload(data) }),
   updateProduct: (id, data) => request({ url: `/products/${id}`, method: "PUT", data: prepareProductWritePayload(data) }),
   deleteProduct: (id) => request({ url: `/products/${id}`, method: "DELETE" }),
   addReview: (id, data) => request({ url: `/reviews/${id}`, method: "POST", data }),
   uploadImages: (formData) => request({ url: "/upload", method: "POST", data: formData }),
   createRazorpayOrder: (data, tokenOverride) => request({
-    url: "/payments/razorpay/create-order",
+    url: "/razorpay/create-order",
     method: "POST",
     data,
+    skipAuthResetOn401: true,
     headers: tokenOverride ? { Authorization: `Bearer ${tokenOverride}` } : undefined,
   }),
   verifyRazorpayPayment: (data, tokenOverride) => request({
-    url: "/payments/razorpay/verify",
+    url: "/razorpay/verify",
     method: "POST",
     data,
+    skipAuthResetOn401: true,
     headers: tokenOverride ? { Authorization: `Bearer ${tokenOverride}` } : undefined,
   }),
 
@@ -241,8 +383,6 @@ const apiService = {
   addAddress: (data) => request({ url: "/auth/addresses", method: "POST", data }),
   deleteAddress: (addressId) => request({ url: `/auth/addresses/${addressId}`, method: "DELETE" }),
 
-  getMonthlyViews: (month) => request({ url: "/metrics/views", method: "GET", params: month ? { month } : {} }),
-  incrementMonthlyViews: (month) => request({ url: "/metrics/views", method: "POST", data: month ? { month } : {} }),
   getTraffic: () => request({ url: "/auth/traffic", method: "GET" }),
 };
 

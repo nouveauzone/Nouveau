@@ -34,7 +34,7 @@ export default function HomePage({ setPage, setSelectedProduct }) {
       }
     } catch {}
     // Then try backend API
-    API.getProducts({ limit: 50 }).then((data) => {
+    API.getProducts().then((data) => {
       if (data.products && data.products.length > 0) setPRODUCTS(data.products);
       else if (Array.isArray(data) && data.length > 0) setPRODUCTS(data);
       else setPRODUCTS(INITIAL_PRODUCTS);

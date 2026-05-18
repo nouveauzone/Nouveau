@@ -365,7 +365,7 @@ export default function AdminPage({ setPage }) {
       const [backendOrders, backendUsers, prodRes] = await Promise.allSettled([
         fetchAllPages(API.getAllOrders, "orders"),
         fetchAllPages(API.getAllUsers, "users"),
-        API.getProducts({ limit: 100 }),
+        API.getProducts(),
       ]);
 
       const backendOrderList = backendOrders.status === "fulfilled" ? backendOrders.value : [];
@@ -470,6 +470,7 @@ export default function AdminPage({ setPage }) {
       try {
         localStorage.setItem("nouveau_auth", JSON.stringify(authPayload));
         localStorage.setItem("token", authPayload.token || "");
+        localStorage.setItem("admin", JSON.stringify(authPayload));
       } catch { }
 
       authDispatch({

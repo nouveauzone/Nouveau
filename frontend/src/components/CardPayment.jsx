@@ -2,6 +2,8 @@ import { useContext, useMemo, useState } from "react";
 import apiService from "../services/apiService";
 import { AuthContext } from "../context/AuthContext";
 import { loadRazorpayScript } from "../utils/loadRazorpay";
+import { ToastContext } from "../context/Providers";
+import { getStoredToken } from "../utils/authSession";
 
 const DEFAULT_MERCHANT = "Nouveauz";
 
@@ -79,6 +81,8 @@ const getOrderIdForVerification = (orderId) => {
   return undefined;
 };
 
+const getStoredAuthToken = () => getStoredToken();
+
 const Spinner = () => (
   <span style={{
     display: "inline-block",
@@ -102,6 +106,7 @@ const CardPayment = ({
   onFailure,
 }) => {
   const { isAuthenticated } = useContext(AuthContext);
+  const toast = useContext(ToastContext);
   const [cardName, setCardName] = useState(customerInfo.name || "");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
@@ -135,7 +140,7 @@ const CardPayment = ({
   const handleSubmit = async () => {
     if (!isAuthenticated) {
       const message = "Please login first to use card payment.";
-      alert(message);
+      toast(message, "error");
       onFailure?.({ reason: "auth_required", description: message });
       return;
     }
@@ -153,10 +158,19 @@ const CardPayment = ({
       return;
     }
 
-    const keyId = process.env.REACT_APP_RAZORPAY_KEY_ID;
+    let keyId;
+    try {
+      keyId = await apiService.getRazorpayKeyId();
+    } catch (error) {
+      const message = error?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID in the frontend build env or enable the backend /razorpay/config route.";
+      toast(message, "error");
+      onFailure?.({ reason: "missing-key", description: message });
+      return;
+    }
+
     if (!keyId) {
       const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
-      alert(message);
+      toast(message, "error");
       onFailure?.({ reason: "missing-key", description: message });
       return;
     }
@@ -165,14 +179,25 @@ const CardPayment = ({
 
     try {
       await loadRazorpayScript();
-      const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) });
+      const authToken = getStoredAuthToken();
+      console.log("[razorpay] card create-order request", {
+        amount: Number(amount),
+        hasToken: Boolean(authToken),
+        orderId,
+      });
+      const gatewayOrder = await apiService.createRazorpayOrder({ amount: Number(amount) }, authToken);
+      const razorpayOrderId = gatewayOrder?.id || gatewayOrder?.orderId || gatewayOrder?.order?.id || gatewayOrder?.order?.orderId;
+
+      if (!razorpayOrderId) {
+        throw new Error("Razorpay order creation failed. Missing order id.");
+      }
       const verificationOrderId = getOrderIdForVerification(orderId);
 
       const options = {
         key: keyId,
         amount: gatewayOrder.amount,
         currency: gatewayOrder.currency || "INR",
-        order_id: gatewayOrder.orderId,
+        order_id: razorpayOrderId,
         name: merchantName || DEFAULT_MERCHANT,
         description: `Card payment for ${orderId || "order"}`,
         prefill: {
@@ -193,6 +218,11 @@ const CardPayment = ({
         },
         handler: async (response) => {
           try {
+            console.log("[razorpay] card verify request", {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              hasToken: Boolean(authToken),
+            });
             const payload = {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -203,7 +233,7 @@ const CardPayment = ({
               payload.orderId = verificationOrderId;
             }
 
-            await apiService.verifyRazorpayPayment(payload);
+            await apiService.verifyRazorpayPayment(payload, authToken);
 
             onSuccess?.({
               paymentId: response.razorpay_payment_id,
@@ -217,7 +247,7 @@ const CardPayment = ({
           } catch (error) {
             const message = error?.message || "Payment verification failed";
             onFailure?.({ reason: "verification_failed", description: message });
-            alert(message);
+            toast(message, "error");
           } finally {
             setLoading(false);
           }
@@ -237,7 +267,7 @@ const CardPayment = ({
     } catch (error) {
       setLoading(false);
       const message = error?.message || "Unable to start card payment";
-      alert(message);
+      toast(message, "error");
       onFailure?.({ reason: "start_failed", description: message });
     }
   };

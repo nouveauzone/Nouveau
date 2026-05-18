@@ -1,3 +1,4 @@
+const http = require("http");
 const express  = require("express");
 const cors     = require("cors");
 const dotenv   = require("dotenv");
@@ -7,7 +8,7 @@ const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 const hpp = require("hpp");
 const morgan = require("morgan");
-const { validateEnv } = require("./config/env");
+const { validateEnv, getClientOrigins } = require("./config/env");
 const { connectToDatabase } = require("./config/db");
 const { notFound, errorHandler } = require("./middleware/error");
 dotenv.config();
@@ -16,32 +17,25 @@ validateEnv();
 const app = express();
 app.set("trust proxy", 1);
 
-const allowedOrigins = [
-  ...(process.env.CLIENT_URLS || "").split(","),
-  process.env.CLIENT_URL,
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
-  "https://nouveauz.com",
-  "https://www.nouveauz.com",
-  "http://localhost:3000",
-  "http://localhost:3001",
-]
-  .map((origin) => String(origin || "").trim())
-  .filter(Boolean);
+const allowedOrigins = new Set(getClientOrigins());
 
 const isAllowedOrigin = (origin) => {
+  // Allow non-browser/server-to-server requests without Origin header
   if (!origin) return true;
-  if (allowedOrigins.includes(origin)) return true;
+
+  if (allowedOrigins.has(origin)) return true;
 
   try {
-    const parsed = new URL(origin);
-    if (parsed.protocol === "https:" && parsed.hostname.endsWith(".cloudfront.net")) return true;
-    if (parsed.protocol === "https:" && parsed.hostname.endsWith(".vercel.app")) return true;
-    if (parsed.protocol === "https:" && parsed.hostname.endsWith(".vercel.dev")) return true;
+    const { hostname } = new URL(origin);
+
+    if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1") {
+      return true;
+    }
+
+    return hostname.endsWith(".vercel.app") || hostname.endsWith(".vercel.dev");
   } catch {
     return false;
   }
-
-  return false;
 };
 
 const corsOptions = {
@@ -108,7 +102,9 @@ app.use("/api/auth",     authLimiter, require("./routes/auth"));
 app.use("/api/products", require("./routes/products"));
 app.use("/api/orders",   require("./routes/orders"));
 app.use("/api/users",    require("./routes/users"));
+app.use("/api/payment",  require("./routes/payments"));
 app.use("/api/payments", require("./routes/payments"));
+app.use("/api/razorpay", require("./routes/payments"));
 app.use("/api/upload",   require("./routes/upload"));
 app.use("/api/reviews",  require("./routes/reviews"));
 app.use("/api/email",    require("./routes/email"));
@@ -123,5 +119,19 @@ app.get("/api", (req, res) => res.json({ message: "API Working" }));
 // ── Error handler ───────────────────────────────────────────────────────────
 app.use(notFound);
 app.use(errorHandler);
+
+if (require.main === module) {
+  const port = process.env.PORT || 5000;
+  connectToDatabase()
+    .then(() => {
+      http.createServer(app).listen(port, "0.0.0.0", () => {
+        console.log(`API listening on http://0.0.0.0:${port}`);
+      });
+    })
+    .catch((err) => {
+      console.error("Failed to start server:", err);
+      process.exit(1);
+    });
+}
 
 module.exports = app;
