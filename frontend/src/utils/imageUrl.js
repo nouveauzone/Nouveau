@@ -1,6 +1,7 @@
 import API_URL from "../config/api";
 
 const FALLBACK = '/product1.jpeg';
+const LOCAL_HOST_RE = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i;
 
 // Images that don't exist on server - use fallback
 const BROKEN_IMAGES = ['ethnic1.jpeg', 'ethnic1.jpg'];
@@ -31,8 +32,8 @@ export const fixImageUrl = (url) => {
     return targetUrl;
   }
 
-  // If it's a full URL to the production server, return as-is (the backend serves /uploads directly)
-  if (targetUrl.startsWith('http') && !targetUrl.includes('localhost')) {
+  // If it's a full URL to a non-localhost server, return as-is
+  if (targetUrl.startsWith('http') && !LOCAL_HOST_RE.test(targetUrl)) {
     return targetUrl;
   }
 
@@ -41,6 +42,22 @@ export const fixImageUrl = (url) => {
   const uploadsBase = envUploadsBase || apiUploadsBase;
 
   if (uploadsBase) {
+    if (targetUrl.startsWith('http') && LOCAL_HOST_RE.test(targetUrl)) {
+      try {
+        const parsed = new URL(targetUrl);
+        const pathname = String(parsed.pathname || '').trim();
+        if (pathname.includes('/uploads/')) {
+          const cleanPath = pathname.split('/uploads/')[1];
+          if (cleanPath) return `${uploadsBase}/uploads/${cleanPath}`;
+        }
+
+        const cleanPath = pathname.replace(/^\/+/, '');
+        if (cleanPath) return `${uploadsBase}/uploads/${cleanPath}`;
+      } catch {
+        return FALLBACK;
+      }
+    }
+
     if (targetUrl.includes('/uploads/')) {
       const cleanPath = targetUrl.split('/uploads/')[1];
       if (cleanPath) return `${uploadsBase}/uploads/${cleanPath}`;
@@ -54,6 +71,10 @@ export const fixImageUrl = (url) => {
     if (!targetUrl.startsWith('/') && !targetUrl.startsWith('http')) {
       return `${uploadsBase}/uploads/${targetUrl}`;
     }
+  }
+
+  if (LOCAL_HOST_RE.test(targetUrl)) {
+    return FALLBACK;
   }
 
   return targetUrl;

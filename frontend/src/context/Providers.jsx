@@ -6,6 +6,7 @@ import { CurrencyProvider } from "./CurrencyContext";
 import { getShippingCharge } from "../data/constants";
 import { AUTH_EXPIRED_EVENT } from "../services/apiService";
 import { clearAuthSession, hydrateAuthSession, persistAuthSession } from "../utils/authSession";
+import { fixImageUrl } from "../utils/imageUrl";
 
 export const AppDataContext = createContext(null);
 export const ToastContext   = createContext(null);
@@ -186,6 +187,34 @@ export default function Providers({ children }) {
   const [authState, authDispatch] = useReducer(authReducer, hydrateAuthState());
   const [cart,      cartDispatch] = useReducer(cartReducer, asArray(ls.get("nouveau_cart", [])));
   const [wishlist,  setWishlist]  = useState(() => asArray(ls.get("nouveau_wish", [])));
+
+  useEffect(() => {
+    try {
+      const storedProducts = JSON.parse(localStorage.getItem("nouveau_local_products") || "[]");
+      if (Array.isArray(storedProducts) && storedProducts.length) {
+        const sanitized = storedProducts.map((product) => ({
+          ...product,
+          images: Array.isArray(product?.images)
+            ? product.images.map((image) => fixImageUrl(image))
+            : product.images,
+        }));
+        localStorage.setItem("nouveau_local_products", JSON.stringify(sanitized));
+      }
+
+      const storedCart = JSON.parse(localStorage.getItem("nouveau_cart") || "[]");
+      if (Array.isArray(storedCart) && storedCart.length) {
+        const sanitizedCart = storedCart.map((item) => ({
+          ...item,
+          images: Array.isArray(item?.images)
+            ? item.images.map((image) => fixImageUrl(image))
+            : item.images,
+        }));
+        localStorage.setItem("nouveau_cart", JSON.stringify(sanitizedCart));
+      }
+    } catch {
+      // Ignore local cache cleanup errors.
+    }
+  }, []);
 
   const dispatchAuth = useCallback((action) => {
     if (action?.type === "LOGOUT") {
