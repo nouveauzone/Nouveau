@@ -23,7 +23,7 @@ export default function Footer({ setPage }) {
     { label: "Instagram", href: "https://www.instagram.com/nouveauzon?igsh=aWc4bGltMGxkOWU2" },
     { label: "Facebook", href: "https://www.facebook.com/nouveauzone" },
     { label: "WhatsApp", href: "https://wa.me/917733881577" },
-    { label: "Email Us", href: "mailto:nouveauzone@email.com" },
+    { label: "Email Us", href: "mailto:nouveauzone@gmail.com" },
   ];
 
   const linkStyle = {
@@ -58,7 +58,7 @@ export default function Footer({ setPage }) {
             <div className="footer-social" style={{ marginTop: "14px" }}>
               {[
                 [<TrustWhatsApp size={16} />, "WhatsApp", "https://wa.me/917733881577"],
-                [<TrustEmail size={16} />, "Email", "mailto:nouveauzone@email.com"]
+                [<TrustEmail size={16} />, "Email", "mailto:nouveauzone@gmail.com"]
               ].map(([Icon, label, href]) => (
                 <a
                   key={label}
