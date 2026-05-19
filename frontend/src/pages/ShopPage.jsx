@@ -37,7 +37,9 @@ const norm = (p) => {
   return {
     ...p,
     category: normalizeCategory(p.category),
-    images: Array.isArray(p.images) && p.images.length ? p.images : ["/product1.jpeg"],
+    images: Array.isArray(p.images) && p.images.length
+      ? p.images.map((image) => fixImageUrl(image))
+      : [fixImageUrl("/product1.jpeg")],
     price: Number(p.price) || 0,
     originalPrice: Number(p.originalPrice) || Number(p.price) || 0,
     rating: Number(p.rating) || 0,
@@ -46,31 +48,36 @@ const norm = (p) => {
   };
 };
 
+const dedupeProducts = (items = []) => {
+  const seen = new Set();
+  const merged = [];
+
+  items.forEach((item) => {
+    const normalized = norm(item);
+    const id = String(normalized?._id || normalized?.id || "");
+    const fingerprint = id || `${normalized?.title || ""}-${normalized?.price || 0}-${normalized?.category || ""}-${normalized?.subcategory || ""}-${String(normalized?.images?.[0] || "")}`;
+    if (!fingerprint || seen.has(fingerprint)) return;
+    seen.add(fingerprint);
+    merged.push(normalized);
+  });
+
+  return merged;
+};
+
 // Get products from localStorage OR fallback to built-in 16 products
 const getLocalProducts = () => {
   try {
     const s = localStorage.getItem("nouveau_local_products");
     if (s) {
       const p = JSON.parse(s);
-      if (Array.isArray(p) && p.length > 0) return p.map(norm);
+      if (Array.isArray(p) && p.length > 0) return dedupeProducts(p);
     }
   } catch { }
-  return INITIAL_PRODUCTS.map(norm);
+  return dedupeProducts(INITIAL_PRODUCTS);
 };
 
 export default function ShopPage({ setPage, setSelectedProduct, initialCategory }) {
 
-const mergeById = (primary = [], secondary = []) => {
-  const seen = new Set();
-  const merged = [];
-  [...primary, ...secondary].forEach((item) => {
-    const id = String(item?._id || item?.id || "");
-    if (!id || seen.has(id)) return;
-    seen.add(id);
-    merged.push(item);
-  });
-  return merged;
-};
   const [products, setProducts] = useState(getLocalProducts);
   const [cat, setCat] = useState(initialCategory || "All");
   const [search, setSearch] = useState("");
@@ -87,7 +94,7 @@ const mergeById = (primary = [], secondary = []) => {
         const list = data?.products?.length ? data.products
           : Array.isArray(data) && data.length ? data : null;
         if (list && list.length > 0) {
-          const normalized = list.map(norm);
+          const normalized = dedupeProducts(list);
           setProducts(normalized);
           try { localStorage.setItem("nouveau_local_products", JSON.stringify(normalized)); } catch { }
         }
@@ -102,7 +109,7 @@ const mergeById = (primary = [], secondary = []) => {
       if (e.key === "nouveau_local_products" && e.newValue) {
         try {
           const p = JSON.parse(e.newValue);
-          if (Array.isArray(p) && p.length > 0) setProducts(p.map(norm));
+          if (Array.isArray(p) && p.length > 0) setProducts(dedupeProducts(p));
         } catch { }
       }
     };
@@ -111,7 +118,7 @@ const mergeById = (primary = [], secondary = []) => {
         const s = localStorage.getItem("nouveau_local_products");
         if (!s) return;
         const p = JSON.parse(s);
-        if (Array.isArray(p) && p.length > 0) setProducts(p.map(norm));
+        if (Array.isArray(p) && p.length > 0) setProducts(dedupeProducts(p));
       } catch { }
     };
     window.addEventListener("storage", onStorage);

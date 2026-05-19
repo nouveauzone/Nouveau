@@ -6,6 +6,7 @@ import { GLOBAL_CSS } from "./styles/globalStyles";
 import "./styles/storefront.css";
 import { AuthContext } from "./context/AuthContext";
 import { AUTH_EXPIRED_EVENT } from "./services/apiService";
+import apiService from "./services/apiService";
 
 const HomePage        = lazy(() => import("./pages/HomePage"));
 const ShopPage        = lazy(() => import("./pages/ShopPage"));
@@ -165,6 +166,17 @@ export default function App() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const dayKey = new Date().toISOString().slice(0, 10);
+    const sessionKey = `nouveau_view_${dayKey}`;
+    if (sessionStorage.getItem(sessionKey)) return;
+
+    sessionStorage.setItem(sessionKey, "1");
+    apiService.incrementSiteView().catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleAuthExpired = () => {

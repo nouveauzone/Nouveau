@@ -285,6 +285,7 @@ export default function AdminPage({ setPage }) {
   const [tab, setTab] = useState("dashboard");
   const [trafficData, setTrafficData] = useState(null);
   const [trafficLoading, setTrafficLoading] = useState(false);
+  const [siteViews, setSiteViews] = useState(null);
 
   useEffect(() => {
     const updateViewport = () => setIsMobile(window.innerWidth < 768);
@@ -414,9 +415,18 @@ export default function AdminPage({ setPage }) {
     if (!isAdminAuthenticated) return;
     if (tab === "traffic" && !trafficData && !trafficLoading) {
       setTrafficLoading(true);
-      API.getTraffic()
-        .then(data => setTrafficData(data))
-        .catch(() => setTrafficData({ india: 0, international: 0, unknown: 0, countryCount: {}, total: 0 }))
+      Promise.all([
+        API.getTraffic(),
+        API.getSiteViews(),
+      ])
+        .then(([traffic, views]) => {
+          setTrafficData(traffic);
+          setSiteViews(views);
+        })
+        .catch(() => {
+          setTrafficData({ india: 0, international: 0, unknown: 0, countryCount: {}, total: 0 });
+          setSiteViews({ monthKey: "", views: 0 });
+        })
         .finally(() => setTrafficLoading(false));
     }
   }, [tab, isAdminAuthenticated, trafficData, trafficLoading]);
@@ -1431,6 +1441,7 @@ export default function AdminPage({ setPage }) {
               <div style={{ textAlign: "center", padding: "72px", fontFamily: "'Poppins',sans-serif", color: THEME.textMuted }}>Loading traffic data...</div>
             ) : trafficData ? (() => {
               const total = trafficData.total || 1;
+              const viewCount = Number(siteViews?.views || 0);
               const indiaPct = Math.round((trafficData.india / total) * 100) || 0;
               const intlPct = Math.round((trafficData.international / total) * 100) || 0;
               const unknPct = 100 - indiaPct - intlPct;
@@ -1499,10 +1510,11 @@ export default function AdminPage({ setPage }) {
                   </div>
 
                   <div style={{ gridColumn: isMobile ? "auto" : "1/-1", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: "16px" }}>
-                    {[
+                    {[ 
                       { label: "Total Registered Users", value: total, icon: "👥", color: THEME.crimson },
                       { label: "India Users", value: trafficData.india, icon: "🇮🇳", color: THEME.crimson },
                       { label: "International Users", value: trafficData.international, icon: "🌍", color: "#4ECDC4" },
+                      { label: "Site Views (This Month)", value: viewCount, icon: "👁️", color: THEME.goldDark },
                     ].map(s => (
                       <div
                         key={s.label}

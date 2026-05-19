@@ -43,11 +43,11 @@ const normalizeProduct = (product) => ({
   sizes: normalizeSizes(product),
 });
 
-const mergeProductsById = (primary = [], secondary = []) => {
+const dedupeProducts = (items = []) => {
   const seen = new Set();
   const merged = [];
 
-  [...primary, ...secondary].forEach((item) => {
+  items.forEach((item) => {
     const normalized = normalizeProduct(item);
     const id = String(normalized?._id || normalized?.id || "");
     const fingerprint = id || `${normalized?.title || ""}-${normalized?.price || 0}-${normalized?.category || ""}-${normalized?.subcategory || ""}-${String(normalized?.images?.[0] || "")}`;
@@ -345,9 +345,13 @@ const apiService = {
           ? data.products
           : [];
 
-      return mergeProductsById(backendProducts, INITIAL_PRODUCTS);
+      if (backendProducts.length > 0) {
+        return dedupeProducts(backendProducts);
+      }
+
+      return dedupeProducts(INITIAL_PRODUCTS);
     } catch {
-      return INITIAL_PRODUCTS.map(normalizeProduct);
+      return dedupeProducts(INITIAL_PRODUCTS);
     }
   },
   getProduct: (id) => request({ url: `/products/${id}`, method: "GET" }),
@@ -389,6 +393,16 @@ const apiService = {
   deleteAddress: (addressId) => request({ url: `/auth/addresses/${addressId}`, method: "DELETE" }),
 
   getTraffic: () => request({ url: "/auth/traffic", method: "GET" }),
+  getSiteViews: (month) => request({
+    url: "/metrics/views",
+    method: "GET",
+    params: month ? { month } : undefined,
+  }),
+  incrementSiteView: (month) => request({
+    url: "/metrics/views",
+    method: "POST",
+    data: month ? { month } : {},
+  }),
 };
 
 export { AUTH_EXPIRED_EVENT };

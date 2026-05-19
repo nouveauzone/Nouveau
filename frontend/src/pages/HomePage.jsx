@@ -11,6 +11,35 @@ import { BtnOutline, BtnPrimary } from "../components/Buttons";
 import Footer from "../components/Footer";
 import API from "../services/apiService";
 import { SHIPPING_FREE_THRESHOLD, normalizeCategory } from "../data/constants";
+import { fixImageUrl } from "../utils/imageUrl";
+
+const normalizeProduct = (product = {}) => ({
+  ...product,
+  category: normalizeCategory(product?.category),
+  images: Array.isArray(product?.images) && product.images.length
+    ? product.images.map((image) => fixImageUrl(image))
+    : [fixImageUrl("/product1.jpeg")],
+  price: Number(product?.price) || 0,
+  originalPrice: Number(product?.originalPrice) || Number(product?.price) || 0,
+  rating: Number(product?.rating) || 0,
+  discount: Number(product?.discount) || 0,
+});
+
+const dedupeProducts = (items = []) => {
+  const seen = new Set();
+  const merged = [];
+
+  items.forEach((item) => {
+    const normalized = normalizeProduct(item);
+    const id = String(normalized?._id || normalized?.id || "");
+    const fingerprint = id || `${normalized?.title || ""}-${normalized?.price || 0}-${normalized?.category || ""}-${normalized?.subcategory || ""}-${String(normalized?.images?.[0] || "")}`;
+    if (!fingerprint || seen.has(fingerprint)) return;
+    seen.add(fingerprint);
+    merged.push(normalized);
+  });
+
+  return merged;
+};
 
 export default function HomePage({ setPage, setSelectedProduct }) {
   const { isAuthenticated, user } = useContext(AuthContext);
@@ -27,7 +56,7 @@ export default function HomePage({ setPage, setSelectedProduct }) {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setPRODUCTS(parsed);
+          setPRODUCTS(dedupeProducts(parsed));
           setIsLoading(false);
           return;
         }
@@ -35,11 +64,16 @@ export default function HomePage({ setPage, setSelectedProduct }) {
     } catch {}
     // Then try backend API
     API.getProducts().then((data) => {
-      if (data.products && data.products.length > 0) setPRODUCTS(data.products);
-      else if (Array.isArray(data) && data.length > 0) setPRODUCTS(data);
-      else setPRODUCTS(INITIAL_PRODUCTS);
+      const list = Array.isArray(data?.products)
+        ? data.products
+        : Array.isArray(data)
+          ? data
+          : [];
+
+      if (list.length > 0) setPRODUCTS(dedupeProducts(list));
+      else setPRODUCTS(dedupeProducts(INITIAL_PRODUCTS));
     }).catch(() => {
-      setPRODUCTS(INITIAL_PRODUCTS);
+      setPRODUCTS(dedupeProducts(INITIAL_PRODUCTS));
     }).finally(() => {
       setIsLoading(false);
     });
@@ -52,7 +86,7 @@ export default function HomePage({ setPage, setSelectedProduct }) {
         if (!saved) return;
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setPRODUCTS(parsed);
+          setPRODUCTS(dedupeProducts(parsed));
         }
       } catch { }
     };
