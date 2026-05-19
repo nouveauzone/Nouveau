@@ -44,6 +44,8 @@ const getClientOrigins = () => {
 
   if (process.env.NODE_ENV === "production") {
     origins.add("https://nouveau-delta.vercel.app");
+    origins.add("https://nouveauz.com");
+    origins.add("https://www.nouveauz.com");
   } else {
     origins.add("http://localhost:3000");
     origins.add("http://localhost:3001");
