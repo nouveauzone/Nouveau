@@ -21,7 +21,7 @@ export default function Footer({ setPage }) {
 
   const connectLinks = [
     { label: "Instagram", href: "https://www.instagram.com/nouveauzon?igsh=aWc4bGltMGxkOWU2" },
-    { label: "Facebook", href: "https://www.facebook.com/nouveauzone" },
+    { label: "Facebook", href: "https://www.facebook.com/share/19294L8VGF/?mibextid=wwXIfr" },
     { label: "WhatsApp", href: "https://wa.me/917733881577" },
     { label: "Email Us", href: "mailto:nouveauzone@gmail.com" },
   ];
