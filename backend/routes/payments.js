@@ -170,6 +170,8 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
       return res.status(400).json({ message: "Invalid signature" });
     }
 
+    let updatedOrder = null;
+
     if (orderId) {
       const order = await Order.findById(orderId);
       if (order) {
@@ -179,6 +181,7 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
           order.orderStatus = "Placed";
         }
         await order.save();
+        updatedOrder = order;
 
         try {
           await sendPaymentConfirmationEmail(order, req.user?.name || "Customer");
@@ -206,6 +209,7 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
       message: "Payment verified",
       razorpay_order_id,
       razorpay_payment_id,
+      order: updatedOrder,
     });
   } catch (error) {
     console.error("[razorpay] verify failed", {

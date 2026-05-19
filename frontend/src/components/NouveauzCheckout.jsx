@@ -95,13 +95,17 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
           },
         },
         handler: async (response) => {
+          let verification = null;
+          let verificationError = null;
+
           try {
             console.log("[razorpay] frontend verify request", {
               orderId: response.razorpay_order_id,
               paymentId: response.razorpay_payment_id,
               hasToken: Boolean(token),
             });
-            const verification = await apiService.verifyRazorpayPayment({
+
+            verification = await apiService.verifyRazorpayPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
@@ -118,17 +122,21 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
               paymentReference: response.razorpay_payment_id,
               total: Number(amount),
             }, token);
-
-            onSuccess?.({
-              paymentId: response.razorpay_payment_id,
-              orderId: response.razorpay_order_id,
-              signature: response.razorpay_signature,
-              verification,
-            });
           } catch (error) {
-            const message = error?.message || "Payment verification failed";
-            onFailure?.({ reason: "verification_failed", description: message });
+            verificationError = error;
+            console.error("[razorpay] verify failed", error);
           } finally {
+            try {
+              await Promise.resolve(onSuccess?.({
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+                signature: response.razorpay_signature,
+                verification,
+                verificationError,
+              }));
+            } catch (error) {
+              console.error("[razorpay] post-payment handler failed", error);
+            }
             setLoading(false);
           }
         },

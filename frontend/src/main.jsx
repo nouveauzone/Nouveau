@@ -4,11 +4,16 @@ import "./index.css";
 import App from "./App";
 import Providers from "./context/Providers";
 
-if (process.env.NODE_ENV === "production") {
-  console.log = () => {};
-  console.warn = () => {};
-  console.error = () => {};
-  console.debug = () => {};
+if (typeof window !== "undefined") {
+  window.addEventListener("error", (event) => {
+    const error = event?.error || event?.message || event;
+    console.error("[global] error", error);
+  });
+
+  window.addEventListener("unhandledrejection", (event) => {
+    const reason = event?.reason || event;
+    console.error("[global] unhandledrejection", reason);
+  });
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

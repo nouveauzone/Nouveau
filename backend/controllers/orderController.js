@@ -38,7 +38,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
   const normalizedPaymentReference = String(paymentReference || "").trim();
 
   const isValidUpiReference = /^\d{12}$/.test(normalizedPaymentReference);
-  const isValidRazorpayReference = /^[A-Za-z0-9\-_]{8,40}$/.test(normalizedPaymentReference);
+  const isValidRazorpayReference = /^[A-Za-z0-9\-_]{6,64}$/.test(normalizedPaymentReference);
 
   if ((isUpiOrder && !isValidUpiReference) || (isRazorpayOrder && !isValidRazorpayReference)) {
     return res.status(400).json({

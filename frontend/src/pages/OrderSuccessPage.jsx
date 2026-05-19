@@ -9,7 +9,8 @@ const GOLD    = "#C9A227";
 const CRIMSON = "#B71C1C";
 
 export default function OrderSuccessPage({ setPage }) {
-  const { myOrders } = useContext(AppDataContext)||{};
+  const { myOrders } = useContext(AppDataContext) || {};
+  const safeOrders = Array.isArray(myOrders) ? myOrders : [];
   const [orderId, setOrderId] = useState("");
   const [showEmailNotice, setShowEmailNotice] = useState(false);
 
@@ -18,7 +19,7 @@ export default function OrderSuccessPage({ setPage }) {
     setOrderId(id);
   },[]);
 
-  const order = myOrders?.find(o=>o._id===orderId);
+  const order = safeOrders.find((o) => o?._id === orderId);
   const trackingId = order?.trackingId || localStorage.getItem("lastTrackingId") || "";
   const isAwaitingPayment =
     order?.orderStatus === "Awaiting Payment Verification" &&

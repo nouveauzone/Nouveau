@@ -66,7 +66,7 @@ const orderCreateValidation = [
       throw new Error("A valid 12-digit UPI UTR/Reference number is required for UPI orders.");
     }
 
-    if (method === "RAZORPAY" && !/^[A-Za-z0-9\-_]{8,40}$/.test(ref)) {
+    if (method === "RAZORPAY" && !/^[A-Za-z0-9\-_]{6,64}$/.test(ref)) {
       throw new Error("Valid Razorpay paymentReference is required for online orders");
     }
     return true;

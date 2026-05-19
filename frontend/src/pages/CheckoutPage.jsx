@@ -25,7 +25,7 @@ const ADDRESS_FIELDS = [
 
 export default function CheckoutPage({ setPage }) {
   const { cart, dispatch: cartDispatch } = useContext(CartContext);
-  const { placeOrder } = useContext(AppDataContext);
+  const { placeOrder, refreshMyOrders } = useContext(AppDataContext);
   const toast = useContext(ToastContext);
   const { isAuthenticated, token } = useContext(AuthContext);
   const { formatPrice } = useContext(CurrencyContext);
@@ -78,23 +78,86 @@ export default function CheckoutPage({ setPage }) {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleRazorpaySuccess = async ({ paymentId, verification }) => {
-    if (!isAuthenticated) return;
+  const normalizeOrderId = (value) => {
+    const raw = String(value || "").trim();
+    if (!raw) return "";
+    return /^[a-f\d]{24}$/i.test(raw) ? raw : "";
+  };
+
+  const getVerificationOrderId = (verification) => {
+    const order = verification?.order || verification?.data?.order || verification?.orderInfo;
+    const candidate =
+      normalizeOrderId(order?._id) ||
+      normalizeOrderId(order?.id) ||
+      normalizeOrderId(verification?.orderId) ||
+      normalizeOrderId(verification?.order_id) ||
+      normalizeOrderId(verification?.orderID);
+    return candidate;
+  };
+
+  const handleRazorpaySuccess = async ({ paymentId, verification, verificationError }) => {
+    if (processing) return;
 
     setProcessing(true);
     try {
-      const savedOrderId = verification?.order?._id || verification?.order?.id || verification?.orderId || "";
-
-      if (savedOrderId) {
-        cartDispatch({ type: "CLEAR" });
-        localStorage.setItem("lastOrderId", savedOrderId);
-        setPage("OrderSuccess");
+      const hasAuthToken = Boolean(String(token || storedAuthToken || "").trim());
+      const canProceed = hasAuthToken || isAdminSession || isAuthenticated;
+      if (!canProceed) {
+        toast("Login expired. Please login again to confirm your order.", "error");
+        setPage("Auth");
         return;
       }
 
-      const orderId = await placeOrder(address, cart, "RAZORPAY", paymentId || `RZP-${Date.now()}`);
-      cartDispatch({ type: "CLEAR" });
+      if (verificationError) {
+        const message = String(verificationError?.message || "");
+        if (/invalid signature/i.test(message)) {
+          throw new Error("Payment verification failed. Please contact support with your payment ID.");
+        }
+        toast("Payment received. Finalizing your order...", "warning");
+      }
+
+      let orderId = getVerificationOrderId(verification);
+
+      if (!orderId) {
+        if (!Array.isArray(cart) || cart.length === 0) {
+          throw new Error("Payment received, but the cart is empty. Please contact support with your payment ID.");
+        }
+
+        const reference = String(
+          paymentId ||
+          verification?.razorpay_payment_id ||
+          verification?.paymentId ||
+          ""
+        ).trim();
+
+        if (!reference) {
+          throw new Error("Missing Razorpay payment reference. Please contact support.");
+        }
+
+        orderId = await placeOrder(address, cart, "RAZORPAY", reference);
+      } else {
+        cartDispatch({ type: "CLEAR" });
+      }
+
+      if (!orderId) {
+        throw new Error("Order ID missing after payment. Please contact support.");
+      }
+
       localStorage.setItem("lastOrderId", orderId);
+      const trackingId = String(verification?.order?.trackingId || verification?.trackingId || "").trim();
+      if (trackingId) {
+        localStorage.setItem("lastTrackingId", trackingId);
+      }
+
+      try {
+        await refreshMyOrders?.();
+      } catch {
+        // Ignore refresh failures; order id is still persisted locally.
+      }
+
+      if (typeof window !== "undefined") {
+        window.history.pushState({}, "", "/order-success");
+      }
       setPage("OrderSuccess");
     } catch (error) {
       console.error("Razorpay order failed:", error);
