@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "../config/api";
+import API_URL from "../config/api";
 
 export const metricsService = {
   /**
@@ -6,25 +6,50 @@ export const metricsService = {
    */
   async getSearchCount() {
     try {
-      const response = await fetch(`${API_BASE_URL}/metrics/searches`, {
+<<<<<<< HEAD
+      const response = await fetch(`${API_URL}/api/metrics/searches`, {
+  /**
+   * Get current month site view count
+   */
+  async getSiteViews() {
+    try {
+      const response = await fetch(`${API_URL}/api/metrics/views`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
-      if (!response.ok) throw new Error("Failed to fetch search count");
+      if (!response.ok) throw new Error("Failed to fetch site views");
       const data = await response.json();
-      return data.totalSearches || 0;
+      return data.views || 0;
     } catch (error) {
-      console.error("Error fetching search count:", error);
+      console.error("Error fetching site views:", error);
+      return 0;
+    }
+  },
+    try {
+      const response = await fetch(`${API_URL}/api/metrics/views`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) throw new Error("Failed to fetch site views");
+      const data = await response.json();
+      return data.views || 0;
+    } catch (error) {
+      console.error("Error fetching site views:", error);
       return 0;
     }
   },
 
   /**
+>>>>>>> e3a8116 (Footer: surface site views + restore Made with ♥ in India; metrics helper added)
    * Track a user search
    */
   async trackSearch(query) {
     try {
-      const response = await fetch(`${API_BASE_URL}/metrics/searches`, {
+<<<<<<< HEAD
+      const response = await fetch(`${API_URL}/api/metrics/searches`, {
+=======
+      const response = await fetch(`${API_URL}/api/metrics/searches`, {
+>>>>>>> e3a8116 (Footer: surface site views + restore Made with ♥ in India; metrics helper added)
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: query || "" }),

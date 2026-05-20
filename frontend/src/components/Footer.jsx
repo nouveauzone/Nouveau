@@ -6,10 +6,25 @@ import { metricsService } from "../services/metricsService";
 
 export default function Footer({ setPage }) {
   const [searchCount, setSearchCount] = useState(0);
+<<<<<<< HEAD
 
   useEffect(() => {
     // Fetch initial search count
     metricsService.getSearchCount().then(setSearchCount);
+=======
+  const [siteViewCount, setSiteViewCount] = useState(0);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    // Fetch footer metrics on load
+    Promise.all([metricsService.getSearchCount(), metricsService.getSiteViews()]).then(([searches, views]) => {
+      if (!isMounted) return;
+      setSearchCount(searches);
+      setSiteViewCount(views);
+      const [searchCount, setSearchCount] = useState(0);
+      const [siteViewCount, setSiteViewCount] = useState(0);
+>>>>>>> e3a8116 (Footer: surface site views + restore Made with ♥ in India; metrics helper added)
 
     // Listen for search events to update count in real-time
     const handleSearch = (event) => {
@@ -20,7 +35,14 @@ export default function Footer({ setPage }) {
     };
 
     window.addEventListener("nouveau:shop-search", handleSearch);
+<<<<<<< HEAD
     return () => window.removeEventListener("nouveau:shop-search", handleSearch);
+=======
+    return () => {
+      isMounted = false;
+      window.removeEventListener("nouveau:shop-search", handleSearch);
+    };
+>>>>>>> e3a8116 (Footer: surface site views + restore Made with ♥ in India; metrics helper added)
   }, []);
 
   const quickLinks = [
@@ -161,9 +183,19 @@ export default function Footer({ setPage }) {
           </div>
         </div>
 
+<<<<<<< HEAD
         <div className="footer-bottom-row" style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
           <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", fontFamily: "'Poppins',sans-serif" }}>© 2026 Nouveau™. All rights reserved. Women's Wear Only.</p>
           <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+=======
+        <div className="footer-bottom-row" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "16px", alignItems: "center" }}>
+          <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", fontFamily: "'Poppins',sans-serif", margin: 0, justifySelf: "start" }}>© 2026 Nouveau™. All rights reserved. Women's Wear Only.</p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", justifySelf: "center" }}>
+            <span style={{ color: "rgba(255,255,255,0.65)", fontSize: "11px", fontFamily: "'Poppins',sans-serif", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              <span style={{ color: THEME.gold }}>👁️</span>
+              Site views {siteViewCount.toLocaleString()}
+            </span>
+>>>>>>> e3a8116 (Footer: surface site views + restore Made with ♥ in India; metrics helper added)
             <span
               style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", fontFamily: "'Poppins',sans-serif", cursor: "pointer" }}
               onClick={() => setPage("Terms")}
@@ -174,6 +206,7 @@ export default function Footer({ setPage }) {
                 e.target.style.color = "rgba(255,255,255,0.4)";
               }}
             >
+<<<<<<< HEAD
               Terms & Conditions
             </span>
             <span style={{ color: THEME.gold, fontSize: "11px", fontFamily: "'Poppins',sans-serif", opacity: 0.7 }}>
@@ -184,6 +217,12 @@ export default function Footer({ setPage }) {
             </span>
           </div>
           <p className="footer-made" style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", fontFamily: "'Poppins',sans-serif" }}>Made with ♥ in India</p>
+=======
+              Terms & Condition
+            </span>
+          </div>
+          <span className="footer-made" style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", fontFamily: "'Poppins',sans-serif", justifySelf: "end" }}>Made with ♥ in India</span>
+>>>>>>> e3a8116 (Footer: surface site views + restore Made with ♥ in India; metrics helper added)
         </div>
       </div>
     </footer>
