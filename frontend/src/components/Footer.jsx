@@ -22,6 +22,7 @@ export default function Footer({ setPage }) {
     window.addEventListener("nouveau:shop-search", handleSearch);
     return () => window.removeEventListener("nouveau:shop-search", handleSearch);
   }, []);
+
   const quickLinks = [
     { label: "Home", page: "Home" },
     { label: "Shop", page: "Shop" },
