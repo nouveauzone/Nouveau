@@ -18,6 +18,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 img, svg {
   max-width: 100%;
   height: auto;
@@ -106,6 +115,19 @@ input, textarea, select {
 
   .footer-made {
     text-align: center !important;
+  }
+
+  .marquee-track {
+    animation-duration: 18s !important;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-35%);
+    }
   }
 
 }
