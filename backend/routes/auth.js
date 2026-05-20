@@ -99,9 +99,8 @@ router.post(
             <h1 style="font-family:Georgia,serif;color:#B76E79;font-size:32px;margin-bottom:8px">Welcome, ${name}! 🪷</h1>
             <p style="color:#555;font-size:15px;line-height:1.7">You have successfully joined <strong>Nouveau™</strong> — India's premium ethnic & western wear destination for women.</p>
             <div style="background:#B76E79;color:#fff;padding:20px 28px;border-radius:10px;margin:24px 0">
-              <p style="margin:0;font-size:14px;letter-spacing:2px">YOUR FIRST ORDER COUPON</p>
-              <p style="font-size:28px;font-weight:bold;margin:8px 0;letter-spacing:4px">NOUVEAU10</p>
-              <p style="margin:0;font-size:13px;opacity:0.85">10% off on your first order</p>
+              <p style="font-size:28px;font-weight:bold;margin:8px 0;letter-spacing:4px">NOUVEAU</p>
+              <p style="margin:0;font-size:13px;opacity:0.85">5% off on your order</p>
             </div>
             <p style="color:#888;font-size:13px">Start exploring our two exclusive collections:<br>• Indian Ethnic Wear (Sarees, Lehengas, Anarkalis…)<br>• Indian Western Wear (Dresses, Blazers, Jumpsuits…)</p>
             <p style="color:#B76E79;font-size:12px;margin-top:32px">Team Nouveau™ · Own Your Aura</p>
