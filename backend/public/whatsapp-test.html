@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nouveau WhatsApp Test</title>
+  <style>
+    :root {
+      --bg: #f8f5f1;
+      --card: #ffffff;
+      --ink: #1f1f1f;
+      --muted: #6b6b6b;
+      --accent: #1a7f5a;
+      --border: #e5e1dc;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Poppins", Arial, sans-serif;
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+    }
+    p {
+      margin: 0 0 16px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-size: 13px;
+      color: var(--ink);
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button.secondary {
+      background: #2b2b2b;
+    }
+    .result {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f2f8f5;
+      border: 1px solid #d9efe4;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+    .hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    @media (max-width: 640px) {
+      .row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>WhatsApp Test Sender</h1>
+      <p>Send a test WhatsApp message using the Twilio Business API integration.</p>
+
+      <form id="wa-form">
+        <div class="row">
+          <div>
+            <label for="phone">Customer phone</label>
+            <input id="phone" name="phone" placeholder="e.g. 9876543210" required />
+          </div>
+          <div>
+            <label for="testKey">Test key (optional)</label>
+            <input id="testKey" name="testKey" placeholder="WHATSAPP_TEST_KEY" />
+          </div>
+        </div>
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required>Test from Nouveau WhatsApp integration.</textarea>
+
+        <div class="actions">
+          <button type="submit">Send message</button>
+          <button type="button" class="secondary" id="clear">Clear</button>
+        </div>
+      </form>
+
+      <div class="hint">
+        Note: In Twilio sandbox, the recipient must have joined your sandbox first.
+      </div>
+
+      <div id="result" class="result" aria-live="polite">Ready.</div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("wa-form");
+    const result = document.getElementById("result");
+    const clearBtn = document.getElementById("clear");
+
+    const setResult = (text) => {
+      result.textContent = text;
+    };
+
+    clearBtn.addEventListener("click", () => {
+      form.reset();
+      setResult("Ready.");
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setResult("Sending...");
+
+      const payload = {
+        phone: form.phone.value.trim(),
+        message: form.message.value.trim(),
+        testKey: form.testKey.value.trim(),
+      };
+
+      try {
+        const res = await fetch("/api/whatsapp/send-test", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        setResult(JSON.stringify(data, null, 2));
+      } catch (err) {
+        setResult("Request failed: " + (err && err.message ? err.message : String(err)));
+      }
+    });
+  </script>
+</body>
+</html>
