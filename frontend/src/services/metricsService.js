@@ -20,7 +20,7 @@ export const metricsService = {
   },
 
   /**
-   * Get lifetime site view count
+    * Get site view count
    */
   async getSiteViews() {
     try {

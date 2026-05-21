@@ -1514,7 +1514,7 @@ export default function AdminPage({ setPage }) {
                       { label: "Total Registered Users", value: total, icon: "👥", color: THEME.crimson },
                       { label: "India Users", value: trafficData.india, icon: "🇮🇳", color: THEME.crimson },
                       { label: "International Users", value: trafficData.international, icon: "🌍", color: "#4ECDC4" },
-                      { label: "Site Views (All Time)", value: viewCount, icon: "👁️", color: THEME.goldDark },
+                      { label: "Site Views", value: viewCount, icon: "👁️", color: THEME.goldDark },
                     ].map(s => (
                       <div
                         key={s.label}
