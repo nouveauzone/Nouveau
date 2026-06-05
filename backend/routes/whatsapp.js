@@ -121,15 +121,14 @@ const getChatbotReply = async (incomingMsg) => {
   // Return/Refund
   if (["return","refund","exchange","cancel"].includes(msg)) {
     return [
-      `🔄 *Return Policy — Nouveau™*`,
+      `🔄 *Return & Exchange Policy — Nouveau™*`,
       ``,
-      `⚠️ *No Return / No Exchange policy.*`,
+      `• Return: In case of returning the product, 30% restocking fees will be deducted from the product price paid by the customer.`,
+      `• Exchange: In case of exchange, one-side courier charges will be borne by the customer.`,
+      `• Products must be returned unused and in original packaging.`,
+      `• Refunds will be processed after quality inspection of the returned product.`,
       ``,
-      `All sales are final. Please verify:`,
-      `  ✅ Size before ordering`,
-      `  ✅ Product details`,
-      ``,
-      `*Damaged/Wrong item?* Reply *SUPPORT* within 24hrs of delivery.`,
+      `Reply *SUPPORT* if you need help.`,
     ].join("\n");
   }
 

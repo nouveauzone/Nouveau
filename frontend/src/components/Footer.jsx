@@ -174,11 +174,7 @@ export default function Footer({ setPage }) {
 					<div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", justifySelf: "center" }}>
 						<span style={{ color: "rgba(255,255,255,0.65)", fontSize: "11px", fontFamily: "'Poppins',sans-serif", display: "inline-flex", alignItems: "center", gap: "4px" }}>
 							<span style={{ color: THEME.gold }}>👁️</span>
-<<<<<<< HEAD
 							Site views (All Time) {siteViewCount.toLocaleString()}
-=======
-							Site views {siteViewCount.toLocaleString()}
->>>>>>> c48e986d247157165f933c9cfe76aa24622bf357
 						</span>
 						<span
 							style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", fontFamily: "'Poppins',sans-serif", cursor: "pointer" }}

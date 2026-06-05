@@ -115,7 +115,12 @@ export default function OrderSuccessPage({ setPage }) {
           {/* Policy reminder */}
           <div style={{background:"#fff5f5",border:`1px solid ${CRIMSON}30`,borderRadius:"10px",padding:"14px 18px",marginBottom:"32px",textAlign:"left"}}>
             <p style={{fontFamily:"'Poppins',sans-serif",fontSize:"11px",color:THEME.textMuted,lineHeight:1.7}}>
-              <strong style={{color:CRIMSON}}>⚠️ No Return / No Exchange:</strong> All sales are final. For queries, WhatsApp <strong style={{color:GOLD}}>+91 7733881577</strong>
+              <strong style={{color:CRIMSON}}>⚠️ Return & Exchange Policy:</strong>
+              <br />• Return: In case of returning the product, 30% restocking fees will be deducted from the product price paid by the customer.
+              <br />• Exchange: In case of exchange, one-side courier charges will be borne by the customer.
+              <br />• Products must be returned unused and in original packaging.
+              <br />• Refunds will be processed after quality inspection of the returned product.
+              <br />For queries, WhatsApp <strong style={{color:GOLD}}>+91 7733881577</strong>
             </p>
           </div>
 

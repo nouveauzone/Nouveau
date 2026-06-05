@@ -21,11 +21,14 @@ export default function TermsPage({ setPage }) {
 
         {/* 1. Returns & Exchanges */}
         <div style={{ marginBottom:"40px", background:THEME.bgCard, border:`1.5px solid ${THEME.crimson}30`, borderRadius:"16px", padding:"32px" }}>
-          <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:"22px", fontWeight:700, color:THEME.crimson, marginBottom:"12px" }}>❌ No Returns & Exchanges</h2>
+          <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:"22px", fontWeight:700, color:THEME.crimson, marginBottom:"12px" }}>🔁 Return & Exchange Policy</h2>
           <div style={{ height:"1px", background:`linear-gradient(to right, ${THEME.crimson}40, transparent)`, marginBottom:"16px" }} />
-          <p style={{ fontFamily:"'Poppins',sans-serif", fontSize:"15px", color:THEME.textMuted, lineHeight:1.85, marginBottom:"12px" }}>
-            We do not accept Returns or Exchanges on any orders.
-          </p>
+          <ul style={{ fontFamily:"'Poppins',sans-serif", fontSize:"15px", color:THEME.textMuted, lineHeight:1.85, marginBottom:"12px", paddingLeft:"18px" }}>
+            <li>Return: In case of returning the product, 30% restocking fees will be deducted from the product price paid by the customer.</li>
+            <li>Exchange: In case of exchange, one-side courier charges will be borne by the customer.</li>
+            <li>Products must be returned unused and in original packaging.</li>
+            <li>Refunds will be processed after quality inspection of the returned product.</li>
+          </ul>
           <div style={{ background:`${THEME.gold}15`, border:`1px solid ${THEME.gold}40`, borderRadius:"10px", padding:"14px 18px" }}>
             <p style={{ fontFamily:"'Poppins',sans-serif", fontSize:"14px", color:THEME.text, fontWeight:600, margin:0 }}>
               📏 Please refer to the Size Chart carefully before placing your order. If you have any doubts regarding sizing, contact us before ordering — we are happy to help!

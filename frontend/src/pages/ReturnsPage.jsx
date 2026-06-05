@@ -15,54 +15,54 @@ export default function ReturnsPage({ setPage }) {
   const returnSteps = [
     {
       step: "01",
-      title: "Raise a return request",
-      desc: "Message us on WhatsApp within 7 days of delivery with your order ID, item details, and reason for return.",
-      meta: "Fastest response on WhatsApp",
+      title: "Raise a return or exchange request",
+      desc: "Message us on WhatsApp within the allowed policy period with your order ID, item details, and reason.",
+      meta: "Support on WhatsApp",
     },
     {
       step: "02",
-      title: "Schedule pickup",
-      desc: "We arrange a free doorstep pickup from your address within 2-3 business days after approval.",
-      meta: "No pickup fee",
+      title: "Arrange return shipment",
+      desc: "For returns, ship the product back in unused condition with original packaging after approval.",
+      meta: "Secure packaging",
     },
     {
       step: "03",
-      title: "Quality check",
-      desc: "Once the item reaches us, our team checks its condition within 48 hours before processing.",
-      meta: "48-hour inspection window",
+      title: "Quality inspection",
+      desc: "Once the item reaches us, we inspect its condition before processing.",
+      meta: "Inspection required",
     },
     {
       step: "04",
       title: "Refund or exchange",
-      desc: "Approved refunds are credited to the original payment method or issued as store credit within 5-7 business days.",
-      meta: "Refund or exchange",
+      desc: "Refunds are processed after inspection with a 30% restocking fee on returns. Exchanges require one-side courier charges borne by the customer.",
+      meta: "Refunds or exchange",
     },
   ];
 
   const policyItems = [
     {
-      title: "Eligible items",
-      desc: "Unworn, unwashed products with original tags and packaging can be returned within 7 days of delivery.",
+      title: "Return fee",
+      desc: "A 30% restocking fee will be deducted from the product price paid by the customer for returns.",
     },
     {
-      title: "Non-returnable items",
-      desc: "Custom-made pieces, draped sarees, innerwear, and products purchased during sale events are final sale.",
+      title: "Exchange shipping",
+      desc: "In case of exchange, one-side courier charges will be borne by the customer.",
     },
     {
-      title: "Exchange policy",
-      desc: "We offer free size exchanges within 14 days of delivery, subject to stock availability.",
+      title: "Return condition",
+      desc: "Products must be returned unused and in original packaging.",
     },
     {
-      title: "Damaged or wrong items",
-      desc: "Report any damage or mismatch within 48 hours of delivery so we can arrange a priority resolution.",
+      title: "Refund processing",
+      desc: "Refunds will be processed after quality inspection of the returned product.",
     },
   ];
 
   const quickFacts = [
-    { label: "Return window", value: "7 days" },
-    { label: "Pickup charge", value: "Free" },
-    { label: "Inspection", value: "48 hrs" },
-    { label: "Refund time", value: "5-7 days" },
+    { label: "Restocking fee", value: "30%" },
+    { label: "Exchange shipping", value: "One-side" },
+    { label: "Condition", value: "Unused + packaging" },
+    { label: "Inspection", value: "Required" },
   ];
 
   return (
@@ -105,7 +105,7 @@ export default function ReturnsPage({ setPage }) {
               border: `1px solid rgba(212,175,55,0.2)`,
             }}
           >
-            Hassle-free returns
+            Return & Exchange Policy
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1.45fr 0.95fr", gap: "34px", alignItems: "end" }} className="returns-hero-grid">
@@ -123,7 +123,7 @@ export default function ReturnsPage({ setPage }) {
                 Returns & Exchanges
               </h1>
               <p style={{ color: "rgba(255,255,255,0.72)", fontSize: "15px", lineHeight: 1.85, maxWidth: "640px", fontFamily: "'Poppins',sans-serif" }}>
-                If something does not feel right, we make the return process simple, transparent, and quick. You get a clear timeline, free pickup, and support that actually responds.
+                We keep returns and exchanges transparent and policy-led, with clear steps and quality checks before any refund or exchange is processed.
               </p>
             </div>
 

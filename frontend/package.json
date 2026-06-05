@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
+    "build": "cross-env CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -40,6 +40,7 @@
   },
   "proxy": "http://localhost:5000",
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "@tailwindcss/postcss": "^4.2.2",
     "autoprefixer": "^10.5.0",
     "postcss": "^8.5.9",
