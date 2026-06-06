@@ -363,8 +363,13 @@ export default function ProductPage({ product, setPage }) {
                   <li>Exchange: In case of exchange, one-side courier charges will be borne by the customer.</li>
                   <li>Products must be returned unused and in original packaging.</li>
                   <li>Refunds will be processed after quality inspection of the returned product.</li>
+                  <li>All sales are final</li>
+                  <li>Refund will be initiated between 5-7 business days</li>
                 </ul>
-                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "8px" }}>
+                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "8px", marginBottom: "6px" }}>
+                  🌍 International Buyer - For buying our product in your country, Please communicate with us on WhatsApp.
+                </p>
+                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "2px" }}>
                   For queries: WhatsApp <strong style={{ color: "#D4AF37" }}>+91 7733881577</strong>
                 </p>
               </div>

@@ -28,6 +28,8 @@ export default function TermsPage({ setPage }) {
             <li>Exchange: In case of exchange, one-side courier charges will be borne by the customer.</li>
             <li>Products must be returned unused and in original packaging.</li>
             <li>Refunds will be processed after quality inspection of the returned product.</li>
+            <li>All sales are final</li>
+            <li>Refund will be initiated between 5-7 business days</li>
           </ul>
           <div style={{ background:`${THEME.gold}15`, border:`1px solid ${THEME.gold}40`, borderRadius:"10px", padding:"14px 18px" }}>
             <p style={{ fontFamily:"'Poppins',sans-serif", fontSize:"14px", color:THEME.text, fontWeight:600, margin:0 }}>
@@ -83,7 +85,7 @@ export default function TermsPage({ setPage }) {
             For any sizing queries or questions, please contact us <strong>before placing your order</strong>. 
             <br /><br />
             <span style={{ display: "inline-block", background: `${THEME.gold}20`, color: THEME.goldDark, padding: "8px 16px", borderRadius: "8px", fontWeight: 700, border: `1px solid ${THEME.gold}40` }}>
-              🌍 International Buyers: For buying our products in your country, please communicate with us on WhatsApp.
+              🌍 International Buyer - For buying our product in your country, Please communicate with us on WhatsApp
             </span>
           </p>
           {[
