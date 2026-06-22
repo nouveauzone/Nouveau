@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { CurrencyContext } from "../context/CurrencyContext";
+import { AuthContext } from "../context/AuthContext";
 import { THEME } from "../styles/theme";
 import { BtnOutline, BtnPrimary } from "../components/Buttons";
 import Footer from "../components/Footer";
@@ -13,6 +14,7 @@ const CRIMSON = "#B71C1C";
 export default function CartPage({ setPage }) {
   const { cart, dispatch } = useContext(CartContext);
   const { formatPrice } = useContext(CurrencyContext);
+  const { isAuthenticated } = useContext(AuthContext);
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const shipping = getShippingCharge(subtotal);
@@ -123,6 +125,15 @@ export default function CartPage({ setPage }) {
               {shipping === 0 && (
                 <div style={{ background: "#2ecc7110", color: "#2ecc71", padding: "8px 12px", borderRadius: "8px", fontSize: "12px", marginBottom: "20px", display: "flex", gap: "8px", alignItems: "center" }}>
                   Free shipping applied!
+                </div>
+              )}
+
+              {isAuthenticated && (
+                <div style={{ background: "#10b98110", color: "#059669", padding: "12px", borderRadius: "8px", fontSize: "12px", marginBottom: "20px", display: "flex", gap: "8px", alignItems: "center", border: "1px solid #10b98140" }}>
+                  <span style={{ fontSize: "16px" }}>✨</span>
+                  <span>
+                    <strong>Returning Customer?</strong> Get 10% automatic discount at checkout!
+                  </span>
                 </div>
               )}
 

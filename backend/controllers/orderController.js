@@ -7,6 +7,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const { sendOrderEmail, customerOrderConfirmationHTML, shippedEmailHTML } = require("../utils/email");
 const { calculateOrderTotals } = require("../services/pricingService");
 const { normalizeOrderOutput } = require("../utils/imageUrl");
+const { isReturningCustomer, calculateReturningCustomerDiscount } = require("../services/customerDiscountService");
 
 const hasSuspiciousUpiPattern = (value) => {
   if (!/^\d{12}$/.test(value)) return true;
@@ -31,7 +32,11 @@ exports.createOrder = asyncHandler(async (req, res) => {
   const orderArray = products || items;
   if (!orderArray?.length) return res.status(400).json({ message: "No items in order" });
 
-  const totals = calculateOrderTotals(orderArray, couponCode);
+  // ── Check if customer is returning (has 1+ paid orders) ──────────────────
+  const isReturning = await isReturningCustomer(req.user._id);
+  
+  const totals = calculateOrderTotals(orderArray, couponCode, isReturning);
+  
   const normalizedPaymentMethod = String(paymentMethod || "COD").toUpperCase();
   const isUpiOrder = normalizedPaymentMethod === "UPI";
   const isRazorpayOrder = normalizedPaymentMethod === "RAZORPAY";
@@ -136,6 +141,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
         couponCode:    totals.couponCode,
         subtotal:      totals.subtotal,
         discount:      totals.discount,
+        discountType:  totals.discountType,
         shippingCharge:totals.shippingCharge,
         totalAmount:   totals.total,
       });

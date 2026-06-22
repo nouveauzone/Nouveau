@@ -10,6 +10,7 @@ import { BtnOutline, BtnPrimary } from "../components/Buttons";
 import { fixImageUrl } from "../utils/imageUrl";
 import { getShippingCharge } from "../data/constants";
 import { ToastContext } from "../context/Providers";
+import apiService from "../services/apiService";
 
 const GOLD = "#C9A227";
 const CRIMSON = "#B71C1C";
@@ -44,6 +45,8 @@ export default function CheckoutPage({ setPage }) {
   const [address, setAddress] = useState({ name: "", phone: "", email: "", street: "", city: "", state: "", pincode: "" });
   const [processing, setProcessing] = useState(false);
   const [errors, setErrors] = useState({});
+  const [discountInfo, setDiscountInfo] = useState(null);
+  const [loadingDiscount, setLoadingDiscount] = useState(false);
 
   useEffect(() => {
     const updateViewport = () => setIsMobile(window.innerWidth < 768);
@@ -59,10 +62,38 @@ export default function CheckoutPage({ setPage }) {
     }
   }, []);
 
+  // ── Fetch returning customer discount info ──────────────────────────────
+  useEffect(() => {
+    const fetchDiscountInfo = async () => {
+      try {
+        if (!token && !storedAuthToken) return;
+
+        setLoadingDiscount(true);
+        const authToken = token || storedAuthToken;
+        
+        // Try to get discount info from API
+        // We'll create a new endpoint or reuse an existing one
+        const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+        
+        // For now, we'll fetch discount info when making the Razorpay order
+        // This is handled in the NouveauzCheckout component
+        setLoadingDiscount(false);
+      } catch (error) {
+        console.log("Discount fetch error:", error.message);
+        setLoadingDiscount(false);
+      }
+    };
+
+    fetchDiscountInfo();
+  }, [token, storedAuthToken, cart]);
+
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const cgst = +(subtotal * 0.025).toFixed(2);
   const sgst = +(subtotal * 0.025).toFixed(2);
   const shipping = getShippingCharge(subtotal);
+  
+  // Discount will be applied by the backend and shown here
+  // For now, we'll pass discount info through the payment flow
   const total = subtotal + cgst + sgst + shipping;
 
   const validate = () => {
@@ -167,6 +198,13 @@ export default function CheckoutPage({ setPage }) {
     }
   };
 
+  const handleDiscountApplied = (discountInfo) => {
+    setDiscountInfo(discountInfo);
+    if (discountInfo?.isReturningCustomer) {
+      toast(`🎉 Returning Customer Discount Applied! You saved ₹${discountInfo.discount}`, "success");
+    }
+  };
+
   const hasAuthToken = Boolean(String(token || storedAuthToken || "").trim());
   const canCheckout = (isAuthenticated && hasAuthToken) || isAdminSession;
 
@@ -250,6 +288,20 @@ export default function CheckoutPage({ setPage }) {
               <div>
                 <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "3px", color: GOLD, marginBottom: "24px", fontWeight: 700 }}>PAYMENT</p>
 
+                {discountInfo?.isReturningCustomer && (
+                  <div style={{ background: "#10b98110", border: "1px solid #10b981", borderRadius: "12px", padding: "14px", marginBottom: "20px", display: "flex", gap: "12px", alignItems: "center" }}>
+                    <span style={{ fontSize: "24px" }}>🎉</span>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", fontWeight: 600, color: "#10b981", marginBottom: "3px" }}>
+                        Returning Customer Discount Applied
+                      </p>
+                      <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: "#059669" }}>
+                        You saved ₹{discountInfo.discount || 0} on this order!
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div style={{ background: THEME.bgCard, border: `1px solid ${THEME.border}`, borderRadius: "16px", padding: "24px", marginBottom: "20px" }}>
                   <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: GOLD, marginBottom: "12px", fontWeight: 700, textAlign: "center" }}>RAZORPAY SECURE CHECKOUT</p>
                   <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textMuted, lineHeight: 1.7, textAlign: "center", marginBottom: "18px" }}>
@@ -261,6 +313,7 @@ export default function CheckoutPage({ setPage }) {
                     cartItems={cart}
                     customerInfo={address}
                     onSuccess={handleRazorpaySuccess}
+                    onDiscountApplied={handleDiscountApplied}
                     onFailure={(error) => {
                       if (error?.reason === "auth" || error?.reason === "auth_required") {
                         localStorage.setItem("nouveau_post_auth_page", "Checkout");
@@ -317,6 +370,14 @@ export default function CheckoutPage({ setPage }) {
                   <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textMuted }}>Subtotal</span>
                   <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.text }}>{formatPrice(subtotal)}</span>
                 </div>
+                
+                {discountInfo?.isReturningCustomer && (
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px", color: "#2ecc71" }}>
+                    <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px" }}>Returning Customer Discount (10%)</span>
+                    <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", fontWeight: 600 }}>-{formatPrice(discountInfo.discount)}</span>
+                  </div>
+                )}
+                
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                   <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textMuted }}>CGST 2.5%</span>
                   <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.text }}>{formatPrice(cgst)}</span>

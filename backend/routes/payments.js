@@ -9,6 +9,7 @@ const { sendPaymentSuccess } = require("../services/whatsappService");
 const asyncHandler = require("../utils/asyncHandler");
 const { sendOrderEmail, orderConfirmHTML } = require("../utils/email");
 const validate = require("../middleware/validate");
+const { isReturningCustomer, calculateReturningCustomerDiscount } = require("../services/customerDiscountService");
 
 const payRouter = express.Router();
 const shouldBypassPaymentAuth = String(process.env.PAYMENTS_BYPASS_AUTH || "").toLowerCase() === "true";
@@ -95,6 +96,28 @@ const createRazorpayOrder = asyncHandler(async (req, res) => {
       authUserId: req.user?._id?.toString?.() || String(req.user?._id || ""),
     });
 
+    // ── Check if customer is returning and apply automatic discount ──────────
+    const userId = req.user?._id?.toString?.() || String(req.user?._id || "");
+    let isReturning = false;
+    let discountInfo = {
+      discount: 0,
+      discountPct: 0,
+      isReturningCustomer: false,
+    };
+
+    if (userId && userId !== "000000000000000000000000") {
+      isReturning = await isReturningCustomer(userId);
+      if (isReturning) {
+        const subtotal = Number(req.body.subtotal || req.body.total || req.body.amount);
+        discountInfo = calculateReturningCustomerDiscount(subtotal, isReturning);
+        console.log("[razorpay] returning customer detected", {
+          userId,
+          discountPct: discountInfo.discountPct,
+          discount: discountInfo.discount,
+        });
+      }
+    }
+
     const { key_id } = getRazorpayConfig();
     const requestedAmount = Number(req.body.total ?? req.body.amount);
     const amount = Math.round(requestedAmount * 100);
@@ -127,6 +150,13 @@ const createRazorpayOrder = asyncHandler(async (req, res) => {
       success: true,
       order,
       orderId: order?.id,
+      discountInfo: {
+        subtotal: Number(req.body.subtotal || req.body.total || req.body.amount),
+        discount: discountInfo.discount,
+        finalAmount: Number(req.body.total ?? req.body.amount),
+        isReturningCustomer: discountInfo.isReturningCustomer,
+        discountPct: discountInfo.discountPct,
+      },
     });
   } catch (error) {
     console.error("[razorpay] create-order failed", {

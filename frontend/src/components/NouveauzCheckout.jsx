@@ -22,7 +22,7 @@ const Spinner = () => (
   </span>
 );
 
-export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure }) {
+export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure, onDiscountApplied }) {
   const [loading, setLoading] = useState(false);
   const totalPrice = Number(amount) || 0;
   const { formatPrice } = useCurrency();
@@ -55,11 +55,26 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
 
     try {
       await loadRazorpayScript();
-      const gatewayOrder = await apiService.createRazorpayOrder({ amount: totalPrice }, token);
+      
+      // Calculate subtotal for discount calculation
+      const subtotal = cartItems.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
+      
+      // Create Razorpay order with amount and pass subtotal for discount calculation
+      const gatewayOrder = await apiService.createRazorpayOrder({ 
+        amount: totalPrice,
+        subtotal: subtotal,
+        items: cartItems 
+      }, token);
+      
       const orderId = gatewayOrder?.order?.id || gatewayOrder?.orderId || gatewayOrder?.id || gatewayOrder?.order?.orderId;
 
       if (!orderId) {
         throw new Error("Razorpay order creation failed. Missing order id.");
+      }
+
+      // Check if discount was applied by backend
+      if (gatewayOrder?.discountInfo && gatewayOrder.discountInfo.isReturningCustomer) {
+        onDiscountApplied?.(gatewayOrder.discountInfo);
       }
 
       const orderData = gatewayOrder.order || gatewayOrder || {};

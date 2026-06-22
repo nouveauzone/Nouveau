@@ -60,6 +60,7 @@ const orderSchema = new mongoose.Schema(
     shippingCharge: { type: Number, default: 0 },
     totalAmount:    { type: Number, default: 0 },
     couponCode:     { type: String, default: "" },
+    discountType:   { type: String, enum: ["coupon", "returning_customer", "none"], default: "none" },
     emailSent:      { type: Boolean, default: false },
 
     // ── Estimated Delivery ────────────────────────────────────────────────
