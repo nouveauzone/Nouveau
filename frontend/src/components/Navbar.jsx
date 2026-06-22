@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 import Icons from "./Icons";
 import CurrencySelector from "./CurrencySelector";
 import { fixImageUrl } from "../utils/imageUrl";
+import logoImg from "../assets/images/nouveau-logo.png";
 
 export default function Navbar({ page, setPage }) {
   const { cart } = useContext(CartContext);
@@ -68,7 +69,7 @@ export default function Navbar({ page, setPage }) {
       <nav className="sf-navbar" aria-label="Main navigation">
         <div className="sf-container sf-navbar-inner">
           <button type="button" className="sf-logo" onClick={() => setPage("Home")}>
-            <img src={fixImageUrl("/nouveau-logo.png")} alt="Nouveau" className="sf-logo-mark" />
+            <img src={logoImg} alt="Nouveau" className="sf-logo-mark" />
             <span
               className="sf-logo-word"
               style={{
