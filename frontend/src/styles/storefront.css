@@ -754,16 +754,10 @@
 }
 
 @media (min-width: 768px) {
-.sf-mobile-user-card {
-  display: none;
-}
-  .sf-search-wrap {
-
-@media (max-width: 899px) {
-  .sf-profile-wrap {
+  .sf-mobile-user-card {
     display: none;
   }
-}
+  .sf-search-wrap {
     display: block;
   }
 
@@ -789,6 +783,145 @@
   .sf-shell .sidebar {
     width: 100%;
   }
+
+  /* Mobile Header / Navigation Responsiveness Fixes */
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  .sf-navbar {
+    width: 100%;
+  }
+
+  .sf-navbar-inner {
+    height: auto !important;
+    min-height: 56px;
+    padding: 8px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  /* Logo styling and centering */
+  .sf-navbar .sf-logo {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+    min-width: 0 !important;
+  }
+
+  .sf-navbar .sf-logo-mark {
+    width: 32px !important;
+    height: 42px !important;
+    flex-shrink: 0 !important;
+    object-fit: contain !important;
+  }
+
+  .sf-navbar .sf-logo-word {
+    display: inline-block !important;
+    font-size: 16px !important;
+    letter-spacing: 1px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 110px !important;
+  }
+
+  /* Currency selector styles */
+  .sf-currency-switcher {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .sf-currency-switcher span {
+    display: none !important;
+  }
+
+  .sf-currency-switcher select {
+    min-width: 70px !important;
+    max-width: 90px !important;
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+    flex-shrink: 1 !important;
+    border: 1px solid rgba(26, 26, 26, 0.12) !important;
+  }
+
+  /* Action buttons & controls */
+  .sf-nav-actions {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
+  }
+
+  .sf-navbar .sf-icon-btn {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sf-navbar .sf-icon-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  /* Account profile trigger */
+  .sf-profile-wrap {
+    display: block !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sf-profile-trigger {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    height: 34px !important;
+    width: 34px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .sf-profile-trigger .sf-user-avatar {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 12px !important;
+    margin: 0 !important;
+  }
+
+  .sf-profile-trigger .sf-user-name {
+    display: none !important;
+  }
+
+  .sf-menu-toggle {
+    display: inline-flex !important;
+  }
+
+  .sf-nav-links,
+  .sf-search-wrap {
+    display: none !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -796,60 +929,8 @@
     padding: 0 12px;
   }
 
-  .sf-navbar-inner {
-    height: 64px;
-    gap: 6px;
-  }
-
-  .sf-navbar .sf-logo {
-    gap: 6px;
-    min-width: 0;
-    flex: 1 1 auto;
-  }
-
-  .sf-navbar .sf-logo-mark {
-    width: 30px;
-    height: 40px;
-    flex-shrink: 0;
-  }
-
   .sf-navbar .sf-logo-word {
-    min-width: 0;
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: inline-block;
-    font-size: 15px !important;
-    letter-spacing: 0.05em !important;
-  }
-
-  .sf-nav-actions {
-    gap: 0;
-    flex-shrink: 0;
-  }
-
-  /* Keep header logo visible on small screens without causing overflow */
-  .sf-navbar .sf-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .sf-navbar .sf-logo-mark {
-    width: 34px;
-    height: 44px;
-  }
-
-  .sf-navbar .sf-icon-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-  }
-
-  .sf-navbar .sf-icon-btn svg {
-    width: 18px;
-    height: 18px;
+    display: none !important;
   }
 }
 
