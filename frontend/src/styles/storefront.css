@@ -815,10 +815,11 @@
 
   .sf-navbar .sf-logo-word {
     min-width: 0;
-    max-width: 128px;
+    max-width: 160px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: inline-block;
     font-size: 15px !important;
     letter-spacing: 0.05em !important;
   }
@@ -826,6 +827,18 @@
   .sf-nav-actions {
     gap: 0;
     flex-shrink: 0;
+  }
+
+  /* Keep header logo visible on small screens without causing overflow */
+  .sf-navbar .sf-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sf-navbar .sf-logo-mark {
+    width: 34px;
+    height: 44px;
   }
 
   .sf-navbar .sf-icon-btn {
