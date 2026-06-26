@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { normalizeImagePathForStorage } = require("../utils/imageUrl");
 
-const ALLOWED_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "4XL", "5XL", "6XL", "Free Size"];
+const ALLOWED_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "4XL", "5XL", "6XL", "7XL", "8XL", "9XL", "10XL", "Free Size"];
 
 const normalizeSizeLabel = (value) => {
   const raw = String(value || "").trim();
@@ -29,7 +29,7 @@ const sizeQuantitySchema = new mongoose.Schema(
       trim: true,
       enum: {
         values: ALLOWED_SIZES,
-        message: "Invalid size. Allowed sizes: XS, S, M, L, XL, XXL, XXXL, 4XL, 5XL, 6XL, Free Size",
+        message: "Invalid size. Allowed sizes: XS, S, M, L, XL, XXL, XXXL, 4XL, 5XL, 6XL, 7XL, 8XL, 9XL, 10XL, Free Size",
       },
       set: normalizeSizeLabel,
     },

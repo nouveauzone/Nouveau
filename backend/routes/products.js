@@ -11,7 +11,7 @@ const router = express.Router();
 
 const toSafeProduct = (doc) => normalizeProductOutput(doc?.toObject ? doc.toObject() : doc);
 
-const ALLOWED_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "4XL", "5XL", "6XL", "Free Size"];
+const ALLOWED_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "4XL", "5XL", "6XL", "7XL", "8XL", "9XL", "10XL", "Free Size"];
 const ALLOWED_CATEGORIES = ["Indian Ethnic Wear", "Indian Western Wear", "Indian Premium Western Wear"];
 const DEFAULT_CATEGORY = "Indian Ethnic Wear";
 const DEFAULT_DESCRIPTION = "Elegant premium womenswear crafted with attention to detail and all-day comfort.";
