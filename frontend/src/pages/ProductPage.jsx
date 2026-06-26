@@ -107,6 +107,7 @@ export default function ProductPage({ product, setPage }) {
   const safeTitle = cleanText(product?.title, "Nouveau Signature Piece");
   const safeCategory = cleanCategory(product?.category);
   const safeSubcategory = cleanText(product?.subcategory, "Women's Wear");
+  const safeMaterial = cleanText(product?.material || "", "");
   const safeDescription = cleanText(
     product?.description,
     "Elegant premium womenswear crafted with attention to detail and all-day comfort."
@@ -392,7 +393,7 @@ export default function ProductPage({ product, setPage }) {
             <div style={{ maxWidth: "700px" }}>
               <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "15px", color: THEME.textMuted, lineHeight: 1.9 }}>{safeDescription}</p>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginTop: "28px" }}>
-                {[["Category", safeCategory], ["Subcategory", safeSubcategory], ["Available Sizes", safeSizes.join(", ")], ["Stock", safeStock + " units"]].map(([l, v]) => (
+                {[["Category", safeCategory], ["Subcategory", safeSubcategory], ["Available Sizes", safeSizes.join(", ")], ["Stock", safeStock + " units"], ...(safeMaterial ? [["Material / Fabric", safeMaterial]] : [])].map(([l, v]) => (
                   <div key={l} style={{ background: THEME.bgCard, border: `1px solid ${THEME.border}`, borderRadius: "10px", padding: "14px 18px" }}>
                     <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", color: THEME.textLight, letterSpacing: "2px", marginBottom: "4px" }}>{l.toUpperCase()}</p>
                     <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "14px", color: THEME.text, fontWeight: 600 }}>{v}</p>

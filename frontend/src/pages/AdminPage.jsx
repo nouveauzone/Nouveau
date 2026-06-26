@@ -158,7 +158,7 @@ const normalizeSizeRows = (sizes = []) => {
   return SIZE_OPTIONS.map((size) => rows.get(size));
 };
 
-const EMPTY_PRODUCT = { title: "", price: "", originalPrice: "", category: "Indian Ethnic Wear", subcategory: "", sizes: normalizeSizeRows(), discount: "0", description: "", isNew: true, images: ["/product1.jpeg"] };
+const EMPTY_PRODUCT = { title: "", price: "", originalPrice: "", category: "Indian Ethnic Wear", subcategory: "", material: "", sizes: normalizeSizeRows(), discount: "0", description: "", isNew: true, images: ["/product1.jpeg"] };
 
 const getSizeStockTotal = (sizes = []) => (
   Array.isArray(sizes)
@@ -1006,10 +1006,11 @@ export default function AdminPage({ setPage }) {
                     { field: "originalPrice", label: "Original / MRP (₹)", inputType: "number", fullWidth: false },
                     { field: "discount", label: "Discount %", inputType: "number", fullWidth: false },
                     { field: "subcategory", label: "Subcategory (Kurta, Dress…)", inputType: "text", fullWidth: false },
+                    { field: "material", label: "Material/Fabric", inputType: "text", fullWidth: false, placeholder: "Cotton, Rayon, Silk, Georgette..." },
                   ].map((item) => (
                     <div key={item.field} style={{ gridColumn: item.fullWidth ? "1/-1" : "auto" }}>
                       <label style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "2px", color: THEME.crimson, display: "block", marginBottom: "6px", fontWeight: 700 }}>{item.label.toUpperCase()}</label>
-                      <input type={item.inputType} value={productForm[item.field]} onChange={e => setProductForm(f => ({ ...f, [item.field]: e.target.value }))} style={iStyle} />
+                      <input type={item.inputType} value={productForm[item.field]} onChange={e => setProductForm(f => ({ ...f, [item.field]: e.target.value }))} placeholder={item.placeholder || ""} style={iStyle} />
                     </div>
                   ))}
                   <div>

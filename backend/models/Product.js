@@ -84,6 +84,7 @@ const productSchema = new mongoose.Schema(
       enum: ["Indian Ethnic Wear", "Indian Western Wear", "Indian Premium Western Wear"],
     },
     subcategory: { type: String, default: "" },
+    material: { type: String, default: "" },
     gender: { type: String, enum: ["Women", "Men", "Unisex"], default: "Women" },
     images: [{ type: String, set: normalizeImagePathForStorage }],
     sizes: { type: [sizeQuantitySchema], default: [] },
