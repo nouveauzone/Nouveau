@@ -74,6 +74,85 @@ a.nvz-gold-underline { position: relative; color: inherit; }
 a.nvz-gold-underline::after { content: ''; position: absolute; left:0; right:0; bottom:-3px; height:2px; background: transparent; transition: background .35s ease; }
 a.nvz-gold-underline:hover::after { background: var(--nvz-muted-gold); }
 
+/* === Hero-specific overrides (visual redesign only) === */
+.hero-wrapper {
+  background: linear-gradient(90deg, rgba(47,79,62,0.86) 0%, rgba(46,46,46,0.05) 55%);
+  color: var(--nvz-ivory);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg-image {
+  filter: saturate(0.85) contrast(0.9) brightness(0.85);
+  mix-blend-mode: normal;
+  right: 0; left: auto;
+  width: 58%;
+  max-width: 900px;
+  box-shadow: none;
+}
+
+.hero-bg-container::before {
+  /* subtle dark vignette on left to push focus to copy */
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0; width: 58%;
+  background: linear-gradient(90deg, rgba(47,79,62,0.72) 0%, rgba(47,79,62,0.18) 40%, rgba(0,0,0,0) 100%);
+  pointer-events: none;
+}
+
+/* Tiny rain overlay - subtle dots and motion */
+.hero-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 6px 12px;
+  opacity: 0.55;
+  mix-blend-mode: overlay;
+  animation: nvz-rain 20s linear infinite;
+  pointer-events: none;
+}
+
+/* Emphasize heading style to match attachment (serif, large, ivory with gold highlight) */
+.main-title {
+  font-family: 'Cormorant Garamond', 'Playfair Display', serif !important;
+  color: #FAF8F4 !important;
+  -webkit-text-stroke: 0.2px rgba(0,0,0,0.02);
+}
+
+.subtitle { color: var(--nvz-muted-gold) !important; font-weight: 600; }
+
+/* Override inline btn styles with important rules to match Monsoon palette */
+.btn-shop {
+  background: var(--nvz-forest) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 30px rgba(46,46,46,0.18) !important;
+}
+.btn-shop:hover { background: var(--nvz-muted-gold) !important; transform: translateY(-3px) !important; }
+
+/* Header: glass blur, light border */
+.sf-navbar {
+  background: rgba(250,248,244,0.92) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border-bottom: 1px solid var(--nvz-divider) !important;
+}
+.sf-nav-link { color: var(--nvz-text) !important; }
+.sf-nav-link:hover, .sf-nav-link.active { color: var(--nvz-muted-gold) !important; }
+
+/* Search box rounded, soft shadow */
+.sf-search { border-radius: 999px !important; box-shadow: 0 6px 20px rgba(46,46,46,0.06) !important; }
+
+/* Badges + filters */
+.sf-badge { background: var(--nvz-forest) !important; color: #fff !important; }
+
+/* Ensure hero copy remains readable on all breakpoints */
+@media (max-width: 1024px) {
+  .hero-bg-image { width: 100% !important; opacity: 0.92; }
+  .hero-bg-container::before { width: 100%; }
+  .hero-main { padding-left: clamp(20px,6vw,40px) !important; }
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0);
