@@ -16,7 +16,63 @@ html {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Monsoon Luxury defaults */
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  color: var(--nvz-text, #2E2E2E);
+  background-color: var(--nvz-bg, #FAF8F4);
 }
+
+:root {
+  /* Monsoon Luxury design tokens */
+  --nvz-forest: #2F4F3E;
+  --nvz-moss: #445C48;
+  --nvz-sage: #7A8F73;
+  --nvz-rain: #E9EFEA;
+  --nvz-ivory: #FAF8F4;
+  --nvz-muted-gold: #C6A86B;
+  --nvz-champagne: #D8B97D;
+  --nvz-beige: #F5F1EB;
+  --nvz-brown: #6A5646;
+  --nvz-text: #2E2E2E;
+  --nvz-text-muted: #6B6B6B;
+  --nvz-divider: #E2DED6;
+  --nvz-shadow: 0 10px 30px rgba(46,46,46,0.06);
+}
+
+/* Typography helpers */
+h1,h2,h3,h4,h5,h6 { font-family: 'Cormorant Garamond', 'Playfair Display', serif; color: var(--nvz-text); }
+p, input, textarea, select, label { color: var(--nvz-text-muted); }
+
+/* Buttons (global fallbacks if components use classes) */
+.nvz-btn-primary { background: var(--nvz-forest); color: #fff; border-radius: 99px; transition: all .35s ease; }
+.nvz-btn-primary:hover { background: var(--nvz-muted-gold); color: #fff; }
+.nvz-btn-outline { background: transparent; border: 1.5px solid var(--nvz-forest); color: var(--nvz-forest); border-radius: 99px; }
+.nvz-btn-outline:hover { background: var(--nvz-forest); color: #fff; }
+
+/* Hero and ambient animations */
+.nvz-hero-bg { background: linear-gradient(180deg, rgba(250,248,244,0.9), rgba(233,239,234,0.9)); }
+.nvz-parallax { transform: translateZ(0); will-change: transform; }
+
+@keyframes nvz-fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes nvz-float { 0% { transform: translateY(0);} 50% { transform: translateY(-6px);} 100% { transform: translateY(0);} }
+@keyframes nvz-rain { 0% { background-position: 0 0; } 100% { background-position: -400px 800px; } }
+
+/* Soft floating leaves overlay (lightweight) */
+.nvz-leaf { position: absolute; pointer-events:none; opacity:0.14; filter: blur(0.6px); animation: nvz-float 6s ease-in-out infinite; }
+
+/* Tiny rain ripple background - subtle, non-intrusive */
+.nvz-rain-subtle { background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 6px 12px; animation: nvz-rain 18s linear infinite; }
+
+/* Product card luxury hover (safe broad selectors) */
+.product-card, .productCard {
+  border-radius: 16px; box-shadow: var(--nvz-shadow); transition: transform .4s ease, box-shadow .4s ease;
+}
+.product-card:hover, .productCard:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(46,46,46,0.12); }
+
+/* Utility: gold underline on hover for links */
+a.nvz-gold-underline { position: relative; color: inherit; }
+a.nvz-gold-underline::after { content: ''; position: absolute; left:0; right:0; bottom:-3px; height:2px; background: transparent; transition: background .35s ease; }
+a.nvz-gold-underline:hover::after { background: var(--nvz-muted-gold); }
 
 @keyframes marquee {
   0% {

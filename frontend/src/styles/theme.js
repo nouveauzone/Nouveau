@@ -1,19 +1,28 @@
 export const THEME = {
-  crimson: "#B76E79",
-  crimsonDark: "#9f5b65",
-  crimsonLight: "#cb8f97",
-  gold: "#D4AF37",
-  goldLight: "#e4c76d",
-  goldDark: "#b8962e",
-  bg: "#FAF7F2",
-  bgDark: "#f3ede5",
-  accent: "#EADBD2",
-  bgCard: "#ffffff",
-  text: "#1A1A1A",
-  textMuted: "#555555",
+  // Primary greens (mapped to existing keys used across the codebase)
+  crimson: "#2F4F3E",        // Primary Forest Green
+  crimsonDark: "#445C48",    // Deep Moss Green
+  crimsonLight: "#7A8F73",   // Sage Green
+
+  // Golds for accents
+  gold: "#C6A86B",           // Muted Gold
+  goldLight: "#D8B97D",      // Champagne Gold
+  goldDark: "#6A5646",       // Earth Brown (used for darker gold accents)
+
+  // Backgrounds & surfaces
+  bg: "#FAF8F4",             // Ivory White
+  bgDark: "#F5F1EB",         // Soft Beige
+  accent: "#E9EFEA",         // Rain Mist
+  bgCard: "#FFFFFF",
+
+  // Typography
+  text: "#2E2E2E",           // Charcoal Text
+  textMuted: "#6B6B6B",      // Secondary Text
   textLight: "#8d8177",
-  border: "#EADBD2",
-  borderDark: "#ddcbc2",
+
+  // Borders
+  border: "#E2DED6",         // Divider
+  borderDark: "#D3CBBF",
 };
 
 // Responsive utilities
