@@ -28,7 +28,7 @@ const FALLBACK_RATES = {
 
 const STORAGE_KEY = "nouveau_selected_currency";
 const RATE_CACHE_KEY = "nouveau_currency_rate_cache";
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const CACHE_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours cache for exchange rates
 
 const CURRENCY_BY_CODE = SUPPORTED_CURRENCIES.reduce((accumulator, currency) => {
   accumulator[currency.code] = currency;
@@ -66,9 +66,11 @@ const readCachedRates = () => {
   return cached.rates;
 };
 
-const persistSelectedCurrency = (code) => {
+// Persist only when the user explicitly selects a currency (manual override).
+const persistSelectedCurrency = (code, manual = false) => {
   if (typeof window === "undefined") return;
   try {
+    if (!manual) return; // do not persist automatic detection
     localStorage.setItem(STORAGE_KEY, code);
   } catch {
     // Ignore storage failures.
@@ -86,9 +88,7 @@ export const CurrencyProvider = ({ children }) => {
   const [error, setError] = useState("");
   const initializedRef = useRef(false);
 
-  useEffect(() => {
-    persistSelectedCurrency(currencyCode);
-  }, [currencyCode]);
+  // Persist only when user manually overrides; handled in setCurrencyCode below.
 
   useEffect(() => {
     if (initializedRef.current) return;
@@ -113,7 +113,9 @@ export const CurrencyProvider = ({ children }) => {
         setRates(nextRates);
         setCurrencyCodeState(() => {
           const saved = readSavedCurrency();
-          return CURRENCY_BY_CODE[saved] ? saved : nextDetectedCode;
+          // Use saved only if it matches detected country (user previously selected for that country)
+          if (CURRENCY_BY_CODE[saved]) return saved;
+          return nextDetectedCode;
         });
 
         writeJSON(RATE_CACHE_KEY, { timestamp: Date.now(), rates: nextRates });
@@ -160,6 +162,8 @@ export const CurrencyProvider = ({ children }) => {
   const setCurrencyCode = (nextCode) => {
     const code = CURRENCY_BY_CODE[String(nextCode || "").toUpperCase()] ? String(nextCode || "").toUpperCase() : "INR";
     setCurrencyCodeState(code);
+    // Mark this as a manual override so we remember the preference
+    try { persistSelectedCurrency(code, true); } catch {}
   };
 
   const formatPrice = useMemo(() => {
