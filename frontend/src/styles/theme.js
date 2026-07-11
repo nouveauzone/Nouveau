@@ -1,28 +1,28 @@
 export const THEME = {
-  // Rainbow-inspired palette for clothing and lifestyle presentation
-  crimson: "#D63384",        // Pink Magenta
-  crimsonDark: "#5E35B1",    // Purple
-  crimsonLight: "#FFB74D",   // Warm Apricot
+  // Monsoon apparel palette
+  crimson: "#556739",        // Deep Olive
+  crimsonDark: "#3f572b",    // Forest Green
+  crimsonLight: "#b7c991",   // Sage Green
 
   // Accent colors
-  gold: "#F06292",           // Soft Rose
-  goldLight: "#4DD0E1",      // Sky Blue
-  goldDark: "#7E57C2",       // Lavender
+  gold: "#b88e55",           // Warm Bronze
+  goldLight: "#d6b675",      // Champagne Gold
+  goldDark: "#7d6542",       // Earth Brown
 
   // Backgrounds & surfaces
-  bg: "#FEF5FF",             // Soft Ivory
-  bgDark: "#FFF2F8",         // Light blush
-  accent: "#E3F2FD",         // Powder Blue
-  bgCard: "#FFFFFF",
+  bg: "#e6ebc8",             // Pale Sage
+  bgDark: "#dee4ae",         // Soft Moss
+  accent: "#f4f1dc",         // Cream Mist
+  bgCard: "#f7f5e6",
 
   // Typography
-  text: "#2B2233",           // Deep charcoal
-  textMuted: "#6B6B7F",      // Soft muted grey
-  textLight: "#8D8CA7",
+  text: "#28331f",           // Dark Moss
+  textMuted: "#6b6a53",      // Muted Olive
+  textLight: "#8e8a6f",
 
   // Borders
-  border: "#E1D7F6",         // Lavender divider
-  borderDark: "#C0B3E0",
+  border: "#d3d0b1",         // Soft Khaki
+  borderDark: "#a89f7f",
 };
 
 // Responsive utilities

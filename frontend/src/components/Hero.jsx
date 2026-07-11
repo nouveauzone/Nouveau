@@ -8,11 +8,11 @@ export default function Hero({ setPage }) {
           position: relative;
           width: 100%;
           min-height: 90vh;
-          background: linear-gradient(135deg, #dee8c3 0%, #d1dcaa 35%, #c7d78f 70%, #b8c38c 100%);
+          background: linear-gradient(135deg, #eef1d7 0%, #d8e0a9 45%, #c3cd80 100%);
           display: flex;
           align-items: stretch;
           overflow: hidden;
-          color: #2f3b26;
+          color: #28331f;
         }
 
         .nvz-hero-bg-container {
@@ -26,9 +26,9 @@ export default function Hero({ setPage }) {
           content: '';
           position: absolute;
           inset: 0;
-          background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.32), transparent 24%),
-                      radial-gradient(circle at 80% 15%, rgba(255,255,255,0.18), transparent 24%),
-                      linear-gradient(180deg, rgba(255,255,255,0.28), transparent 60%, rgba(50,58,32,0.18));
+          background: radial-gradient(circle at 18% 22%, rgba(255,255,255,0.44), transparent 24%),
+                      radial-gradient(circle at 82% 18%, rgba(255,255,255,0.18), transparent 24%),
+                      linear-gradient(180deg, rgba(255,255,255,0.34), transparent 62%, rgba(40,51,31,0.16));
           pointer-events: none;
         }
 
@@ -129,11 +129,11 @@ export default function Hero({ setPage }) {
         .nvz-highlight {
           display: block;
           font-size: clamp(34px, 5vw, 62px);
-          color: #ffd84a;
+          color: #9c7a45;
           font-style: italic;
           margin-top: 6px;
           letter-spacing: -0.5px;
-          text-shadow: 0 8px 18px rgba(15, 10, 23, 0.22);
+          text-shadow: 0 8px 18px rgba(255,255,255,0.22);
         }
 
         .nvz-subtitle {
@@ -189,26 +189,26 @@ export default function Hero({ setPage }) {
         }
 
         .nvz-btn-shop {
-          background: linear-gradient(135deg, #ff6ec4 0%, #f5d76e 55%, #6dd5ed 100%);
-          color: #2b2233;
+          background: #556739;
+          color: #f6f1df;
           border: none;
-          box-shadow: 0 10px 28px rgba(97, 57, 110, 0.22);
+          box-shadow: 0 10px 28px rgba(60, 70, 38, 0.22);
         }
 
         .nvz-btn-shop:hover {
-          background: linear-gradient(135deg, #ff7eb3 0%, #f7d18c 55%, #76d8f8 100%);
+          background: #43572d;
           transform: translateY(-2px);
-          box-shadow: 0 14px 34px rgba(97, 57, 110, 0.26);
+          box-shadow: 0 14px 34px rgba(60, 70, 38, 0.28);
         }
 
         .nvz-btn-secondary {
-          background: rgba(255, 255, 255, 0.18);
-          border: 1.5px solid rgba(255, 255, 255, 0.85);
-          color: #2b2233;
+          background: rgba(255, 255, 255, 0.12);
+          border: 1.5px solid rgba(83, 108, 62, 0.9);
+          color: #28331f;
         }
 
         .nvz-btn-secondary:hover {
-          background: rgba(255, 255, 255, 0.28);
+          background: rgba(255, 255, 255, 0.22);
           transform: translateY(-2px);
         }
 
