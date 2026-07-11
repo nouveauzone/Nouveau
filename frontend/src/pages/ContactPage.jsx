@@ -81,9 +81,9 @@ export default function ContactPage({ setPage }) {
     <div style={{ background:THEME.bg, minHeight:"100vh" }}>
 
       {/* Header */}
-      <div style={{ background:`linear-gradient(135deg, ${THEME.crimsonDark}, #9f5b65)`, padding:"72px 40px 48px" }}>
+      <div style={{ background:`linear-gradient(135deg, ${THEME.crimsonLight}, ${THEME.bg})`, padding:"72px 40px 48px" }}>
         <div style={{ maxWidth:"1100px", margin:"0 auto" }}>
-          <h1 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(32px,5vw,52px)", fontWeight:700, color:"#fff" }}>Get in Touch</h1>
+          <h1 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(32px,5vw,52px)", fontWeight:700, color:THEME.text }}>Get in Touch</h1>
         </div>
       </div>
 
