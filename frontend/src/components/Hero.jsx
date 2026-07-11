@@ -4,26 +4,27 @@ import NouveauLogo from "./Logo";
 
 export default function Hero({ setPage }) {
   return (
-    <section className="hero-wrapper">
+    <section className="nvz-hero-wrapper">
       <style>{`
-        .hero-wrapper {
+        .nvz-hero-wrapper {
           position: relative;
           width: 100%;
           min-height: auto;
-          background: #fdfaf7;
+          background: #1e2a24;
           display: flex;
           align-items: stretch;
           overflow: hidden;
+          color: #f7f2ea;
         }
 
-        .hero-bg-container {
+        .nvz-hero-bg-container {
           position: absolute;
           inset: 0;
           z-index: 0;
           pointer-events: none;
         }
 
-        .hero-bg-image {
+        .nvz-hero-bg-image {
           position: absolute;
           top: 0;
           right: 0;
@@ -33,9 +34,10 @@ export default function Hero({ setPage }) {
           object-position: center 20%;
           mask-image: linear-gradient(to right, transparent 0%, black 25%);
           -webkit-mask-image: linear-gradient(to right, transparent 0%, black 25%);
+          filter: saturate(0.94) contrast(0.92) brightness(0.92);
         }
 
-        .hero-main {
+        .nvz-hero-main {
           position: relative;
           z-index: 1;
           width: 100%;
@@ -47,72 +49,72 @@ export default function Hero({ setPage }) {
           pointer-events: none;
         }
         
-        .hero-main > * {
+        .nvz-hero-main > * {
           pointer-events: auto;
         }
 
-        .logo-top-left {
+        .nvz-logo-top-left {
           display: flex;
           align-items: center;
           gap: 6px;
           margin-bottom: auto;
         }
 
-        .logo-text {
+        .nvz-logo-text {
           font-family: 'Playfair Display', serif;
           font-size: 26px;
-          color: #222;
+          color: #f7f2ea;
           font-weight: 500;
         }
         
-        .tm {
+        .nvz-tm {
           font-family: sans-serif;
           font-size: 11px;
           vertical-align: super;
-          color: #c89d53;
+          color: #dbb86d;
           margin-left: 2px;
           font-weight: 600;
         }
 
-        .hero-content {
+        .nvz-hero-content {
           margin-top: clamp(60px, 12vh, 140px);
           margin-bottom: clamp(60px, 10vh, 120px);
           max-width: 620px;
         }
 
-        .golden-ornament {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          margin-bottom: 24px;
-          color: #c89d53;
-        }
-        
-        .golden-ornament .line {
-          height: 1px;
-          width: 48px;
-          background: #c89d53;
+        .nvz-badge {
+          font-family: 'Inter', 'Poppins', sans-serif;
+          font-size: 11px;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: #d8b97d;
+          margin-bottom: 18px;
         }
 
-        .main-title {
+        .nvz-main-title {
           font-family: 'Playfair Display', serif;
           font-size: clamp(48px, 6vw, 86px);
-          line-height: 1.05;
-          font-weight: 600;
-          letter-spacing: -0.5px;
-          margin: 0 0 24px 0;
-          background: linear-gradient(to right, #ac4a5b 0%, #c47671 30%, #c89d53 100%);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
+          line-height: 1.02;
+          font-weight: 700;
+          margin: 0 0 18px 0;
+          color: #f7f2ea;
         }
 
-        .subtitle {
+        .nvz-highlight {
+          display: block;
+          font-size: clamp(34px, 5vw, 62px);
+          color: #d8b97d;
+          font-style: italic;
+          margin-top: 6px;
+          letter-spacing: -0.5px;
+        }
+
+        .nvz-subtitle {
           font-family: 'Inter', 'Poppins', sans-serif;
           font-size: clamp(12px, 1.2vw, 15px);
           font-weight: 500;
           letter-spacing: 4px;
-          color: #ac4a5b;
+          color: #d8b97d;
           margin: 0 0 24px 0;
           text-transform: uppercase;
           display: flex;
@@ -120,60 +122,75 @@ export default function Hero({ setPage }) {
           flex-wrap: wrap;
         }
         
-        .star-icon {
+        .nvz-star-icon {
           margin-left: 10px;
-          color: #d4a353;
+          color: #f7f2ea;
           font-size: 16px;
         }
 
-        .description {
+        .nvz-description {
           font-family: 'Inter', 'Poppins', sans-serif;
           font-size: clamp(16px, 1.5vw, 19px);
-          line-height: 1.6;
-          color: #555555;
-          margin: 0 0 44px 0;
-          max-width: 500px;
+          line-height: 1.7;
+          color: rgba(247,242,234,0.9);
+          margin: 0 0 40px 0;
+          max-width: 520px;
         }
 
-        .desktop-only {
+        .nvz-desktop-only {
           display: inline;
         }
 
-        .hero-actions {
+        .nvz-hero-actions {
           display: flex;
           gap: 16px;
           margin-bottom: clamp(60px, 10vh, 100px);
           flex-wrap: wrap;
         }
 
-        .btn-shop {
+        .nvz-btn-shop,
+        .nvz-btn-secondary {
           padding: 0 40px;
           height: 52px;
-          background: #bb864c;
-          color: #ffffff;
           font-family: 'Inter', 'Poppins', sans-serif;
           font-size: 15px;
-          font-weight: 500;
-          border: none;
+          font-weight: 600;
           border-radius: 999px;
           cursor: pointer;
           transition: all 0.3s ease;
-          box-shadow: 0 8px 24px rgba(187, 134, 76, 0.25);
-        }
-        
-        .btn-shop:hover {
-          background: #a46d2f;
-          transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(187, 134, 76, 0.35);
         }
 
-        .features-row {
+        .nvz-btn-shop {
+          background: #2f4f3e;
+          color: #fff;
+          border: none;
+          box-shadow: 0 10px 28px rgba(47,79,62,0.24);
+        }
+
+        .nvz-btn-shop:hover {
+          background: #445c48;
+          transform: translateY(-2px);
+          box-shadow: 0 14px 34px rgba(47,79,62,0.28);
+        }
+
+        .nvz-btn-secondary {
+          background: transparent;
+          border: 1.5px solid rgba(216,184,125,0.95);
+          color: #f7f2ea;
+        }
+
+        .nvz-btn-secondary:hover {
+          background: rgba(216,184,125,0.12);
+          transform: translateY(-2px);
+        }
+
+        .nvz-features-row {
           display: flex;
           gap: clamp(24px, 4vw, 48px);
           flex-wrap: wrap;
         }
 
-        .feature {
+        .nvz-feature {
           display: flex;
           align-items: center;
           gap: 12px;
@@ -181,200 +198,199 @@ export default function Hero({ setPage }) {
           position: relative;
         }
 
-        .feature:not(:last-child)::after {
+        .nvz-feature:not(:last-child)::after {
           content: "";
           width: 1px;
           height: 20px;
-          background: rgba(200, 157, 83, 0.3);
+          background: rgba(216,184,125,0.28);
           margin-left: clamp(12px, 2vw, 24px);
         }
 
-        .feature-text {
+        .nvz-feature-text {
           font-family: 'Inter', 'Poppins', sans-serif;
           font-size: 11px;
           line-height: 1.4;
           letter-spacing: 1.5px;
-          color: #222;
+          color: rgba(247,242,234,0.92);
           font-weight: 600;
           text-transform: uppercase;
         }
 
         /* --- MOBILE SPECIFIC FIXES --- */
         @media (max-width: 768px) {
-          .hero-wrapper {
+          .nvz-hero-wrapper {
             flex-direction: column;
             min-height: auto;
             position: relative;
             padding-top: 0;
-            background: #fdfaf7;
+            background: #1a261f;
           }
           
-          .desktop-only { display: none; }
+          .nvz-desktop-only { display: none; }
           
-          .hero-bg-container {
+          .nvz-hero-bg-container {
             position: relative;
             width: 100%;
-            height: 55vh;
-            min-height: 380px;
+            height: min(72vh, 500px);
+            min-height: 340px;
             order: 1;
             z-index: 0;
           }
 
-          .hero-bg-container::after {
+          .nvz-hero-bg-container::after {
             content: '';
             position: absolute;
             bottom: -2px;
             left: 0;
             width: 100%;
-            height: 120px;
-            background: linear-gradient(to top, #fdfaf7 5%, transparent 100%);
+            height: 140px;
+            background: linear-gradient(to top, rgba(26,38,31,1) 10%, transparent 100%);
             z-index: 1;
             pointer-events: none;
           }
           
-          .hero-bg-image {
+          .nvz-hero-bg-image {
             width: 100% !important;
             height: 100% !important;
             object-fit: cover !important;
-            object-position: 85% center !important;
+            object-position: 65% center !important;
             mask-image: none !important;
             -webkit-mask-image: none !important;
             left: 0 !important;
           }
           
-          .hero-main {
-            padding-top: 10px;
+          .nvz-hero-main {
+            padding-top: 0;
             padding-bottom: 40px;
             order: 2;
-            margin-top: -50px;
+            margin-top: -48px;
             align-items: center;
             text-align: center;
             z-index: 10;
           }
           
-          .logo-top-left {
+          .nvz-logo-top-left {
             margin-bottom: 24px;
           }
           
-          .hero-content {
+          .nvz-hero-content {
             margin-top: 0;
-            margin-bottom: 0px;
+            margin-bottom: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
           }
           
-          .golden-ornament {
-            margin-bottom: 16px;
-          }
+          .nvz-badge { margin-bottom: 14px; }
           
-          .golden-ornament .line {
-            width: 32px;
+          .nvz-main-title {
+            font-size: clamp(40px, 10vw, 52px);
+            margin-bottom: 14px;
           }
 
-          .main-title {
-            font-size: 42px;
-            line-height: 1.1;
-            margin-bottom: 16px;
+          .nvz-highlight {
+            font-size: clamp(28px, 8vw, 42px);
           }
           
-          .subtitle {
+          .nvz-subtitle {
             justify-content: center;
             letter-spacing: 2px;
             font-size: 10px;
             margin-bottom: 16px;
           }
           
-          .description {
+          .nvz-description {
             font-size: 15px;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
+            max-width: 100%;
           }
           
-          .hero-actions {
+          .nvz-hero-actions {
             flex-direction: column;
             width: 100%;
             margin-bottom: 40px;
           }
           
-          .btn-shop {
+          .nvz-btn-shop,
+          .nvz-btn-secondary {
             width: 100%;
-            max-width: 320px;
+            max-width: 340px;
           }
           
-          .features-row {
-            flex-direction: row;
+          .nvz-features-row {
             justify-content: center;
             gap: 16px;
           }
           
-          .feature {
+          .nvz-feature {
             flex-direction: row;
             text-align: center;
             gap: 12px;
             width: auto;
           }
           
-          .feature:not(:last-child)::after {
+          .nvz-feature:not(:last-child)::after {
             height: 12px;
             margin-left: 6px;
           }
           
-          .feature-text {
-            font-size: 8px;
+          .nvz-feature-text {
+            font-size: 9px;
             letter-spacing: 1px;
           }
         }
       `}</style>
 
-      <div className="hero-bg-container" aria-hidden="true">
-        <img className="hero-bg-image" src={heroImg} alt="Hero background" />
+      <div className="nvz-hero-bg-container" aria-hidden="true">
+        <img className="nvz-hero-bg-image" src={heroImg} alt="Hero background" />
       </div>
 
-      <div className="hero-main">
-        <div className="logo-top-left">
+      <div className="nvz-hero-main">
+        <div className="nvz-logo-top-left">
           <NouveauLogo size={28} />
-          <span className="logo-text">nouveau<span className="tm">™</span></span>
+          <span className="nvz-logo-text">nouveau<span className="nvz-tm">™</span></span>
         </div>
 
-        <div className="hero-content">
-          <div className="golden-ornament">
-            <div className="line" />
-            <NouveauLogo size={22} />
-            <div className="line" />
-          </div>
+        <div className="nvz-hero-content">
+          <p className="nvz-badge">NEW COLLECTION</p>
 
-          <h1 className="main-title">Wear Your Aura</h1>
+          <h1 className="nvz-main-title">
+            Wear your aura
+            <span className="nvz-highlight">This monsoon</span>
+          </h1>
           
-          <p className="subtitle">
-            INDIAN ETHNIC WEAR, REDEFINED <span className="star-icon">✦</span>
+          <p className="nvz-subtitle">
+            Timeless ethnic wear crafted for rainy days and festive evenings <span className="nvz-star-icon">✦</span>
           </p>
 
-          <p className="description">
-            Timeless designs that celebrate tradition<br className="desktop-only"/>
-            with a modern soul.
+          <p className="nvz-description">
+            Discover modern silhouettes and rich textures inspired by tradition, made for every celebration.
           </p>
 
-          <div className="hero-actions">
-            <button className="btn-shop" onClick={() => setPage("Shop")}>
+          <div className="nvz-hero-actions">
+            <button className="nvz-btn-shop" onClick={() => setPage("Shop")}>
               Shop Now
+            </button>
+            <button className="nvz-btn-secondary" onClick={() => setPage("Shop")}>
+              Explore Collection
             </button>
           </div>
 
-          <div className="features-row">
-            <div className="feature">
-              <div className="feature-text">
+          <div className="nvz-features-row">
+            <div className="nvz-feature">
+              <div className="nvz-feature-text">
                 PREMIUM<br/>QUALITY
               </div>
             </div>
             
-            <div className="feature">
-              <div className="feature-text">
+            <div className="nvz-feature">
+              <div className="nvz-feature-text">
                 TIMELESS<br/>DESIGNS
               </div>
             </div>
 
-            <div className="feature">
-              <div className="feature-text">
+            <div className="nvz-feature">
+              <div className="nvz-feature-text">
                 MADE FOR<br/>YOU
               </div>
             </div>
