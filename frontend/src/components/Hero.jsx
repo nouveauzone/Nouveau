@@ -7,12 +7,12 @@ export default function Hero({ setPage }) {
         .nvz-hero-wrapper {
           position: relative;
           width: 100%;
-          min-height: auto;
-          background: linear-gradient(135deg, #FFB3C7 0%, #FFE0B2 20%, #E1F5FE 45%, #C8E6C9 70%, #E1BEE7 100%);
+          min-height: 90vh;
+          background: linear-gradient(135deg, #dee8c3 0%, #d1dcaa 35%, #c7d78f 70%, #b8c38c 100%);
           display: flex;
           align-items: stretch;
           overflow: hidden;
-          color: #2b2233;
+          color: #2f3b26;
         }
 
         .nvz-hero-bg-container {
@@ -26,7 +26,9 @@ export default function Hero({ setPage }) {
           content: '';
           position: absolute;
           inset: 0;
-          background: linear-gradient(90deg, rgba(43,34,51,0.72) 0%, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0) 100%);
+          background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.32), transparent 24%),
+                      radial-gradient(circle at 80% 15%, rgba(255,255,255,0.18), transparent 24%),
+                      linear-gradient(180deg, rgba(255,255,255,0.28), transparent 60%, rgba(50,58,32,0.18));
           pointer-events: none;
         }
 
@@ -38,9 +40,26 @@ export default function Hero({ setPage }) {
           width: 60%;
           object-fit: cover;
           object-position: center 20%;
-          mask-image: linear-gradient(to right, transparent 0%, black 25%);
-          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 25%);
-          filter: saturate(0.94) contrast(0.92) brightness(0.92);
+          mask-image: linear-gradient(to right, transparent 0%, black 35%);
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%);
+          filter: saturate(0.92) contrast(0.95) brightness(0.96);
+        }
+
+        .nvz-hero-rain {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          pointer-events: none;
+          background-image: linear-gradient(120deg, rgba(255,255,255,0.2) 1px, transparent 22px);
+          background-size: 6px 36px;
+          opacity: 0.32;
+          transform: skewX(-20deg);
+          animation: nvz-rain 0.8s linear infinite;
+        }
+
+        @keyframes nvz-rain {
+          from { background-position: 0 0; }
+          to { background-position: -12px 36px; }
         }
 
         .nvz-hero-main {
@@ -122,7 +141,7 @@ export default function Hero({ setPage }) {
           font-size: clamp(12px, 1.2vw, 15px);
           font-weight: 600;
           letter-spacing: 3px;
-          color: rgba(255,255,255,0.88);
+          color: #8f7b4c;
           margin: 0 0 24px 0;
           text-transform: uppercase;
           display: flex;
@@ -355,6 +374,7 @@ export default function Hero({ setPage }) {
       <div className="nvz-hero-bg-container" aria-hidden="true">
         <img className="nvz-hero-bg-image" src={heroImg} alt="Hero background" />
       </div>
+      <div className="nvz-hero-rain" aria-hidden="true" />
 
       <div className="nvz-hero-main">
         <div className="nvz-logo-top-left">
@@ -365,24 +385,24 @@ export default function Hero({ setPage }) {
           <p className="nvz-badge">NEW COLLECTION</p>
 
           <h1 className="nvz-main-title">
-            Wear your aura
-            <span className="nvz-highlight">This monsoon</span>
+            Monsoon Mood.
+            <span className="nvz-highlight">Effortless Aura</span>
           </h1>
           
           <p className="nvz-subtitle">
-            Timeless ethnic wear crafted for rainy days and festive evenings <span className="nvz-star-icon">✦</span>
+            Timeless ethnic wear crafted for rainy days, festive evenings and every beautiful moment.
           </p>
 
           <p className="nvz-description">
-            Discover modern silhouettes and rich textures inspired by tradition, made for every celebration.
+            Soft linens, flowing silhouettes, and warm monsoon tones designed for comfort and celebration.
           </p>
 
           <div className="nvz-hero-actions">
             <button className="nvz-btn-shop" onClick={() => setPage("Shop")}>
-              Shop Now
-            </button>
-            <button className="nvz-btn-secondary" onClick={() => setPage("Shop")}>
               Explore Collection
+            </button>
+            <button className="nvz-btn-secondary" onClick={() => setPage("Shop") }>
+              Shop New Arrivals
             </button>
           </div>
 
