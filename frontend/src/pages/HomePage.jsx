@@ -150,7 +150,7 @@ export default function HomePage({ setPage, setSelectedProduct }) {
               <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(255,255,255,0.65) 0%, transparent 60%)", borderRadius:"20px" }} />
               <div style={{ position:"absolute", top:"28px", right:"28px", opacity:0.32, filter:"brightness(1.05) saturate(1.1) drop-shadow(0 0 10px rgba(151,130,78,0.25))" }}><NouveauLogo size={120} /></div>
               <div style={{ position:"relative", zIndex:1 }}>
-                <span style={{ background:THEME.gold, color:"#fff", fontSize:"9px", letterSpacing:"3px", padding:"5px 14px", fontFamily:"'Poppins',sans-serif", fontWeight:700, borderRadius:"99px", display:"inline-block", marginBottom:"14px" }}>
+                <span style={{ background:THEME.crimson, color:"#fff", fontSize:"9px", letterSpacing:"3px", padding:"5px 14px", fontFamily:"'Poppins',sans-serif", fontWeight:700, borderRadius:"99px", display:"inline-block", marginBottom:"14px" }}>
                   {ethnic.length} AESTHETICS
                 </span>
                 <h3 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(24px,3vw,38px)", fontWeight:700, color:"#fff", lineHeight:1.2, marginBottom:"10px" }}>
