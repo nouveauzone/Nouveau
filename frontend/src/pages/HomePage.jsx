@@ -144,11 +144,11 @@ export default function HomePage({ setPage, setSelectedProduct }) {
           <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap:"24px" }} className="grid-2col">
             {/* Indian Ethnic Wear */}
             <div onClick={() => setPage("EthnicWear")}
-              style={{ position:"relative", borderRadius:"20px", overflow:"hidden", cursor:"pointer", minHeight:"420px", background:`linear-gradient(135deg, ${THEME.crimsonDark}, #9f5b65)`, display:"flex", flexDirection:"column", justifyContent:"flex-end", padding:"40px", transition:"transform 0.35s" }}
+              style={{ position:"relative", borderRadius:"20px", overflow:"hidden", cursor:"pointer", minHeight:"420px", background:`linear-gradient(135deg, ${THEME.crimsonLight}, ${THEME.bg})`, display:"flex", flexDirection:"column", justifyContent:"flex-end", padding:"40px", transition:"transform 0.35s" }}
               onMouseEnter={e => e.currentTarget.style.transform="scale(1.015)"}
               onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}>
-              <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)", borderRadius:"20px" }} />
-              <div style={{ position:"absolute", top:"28px", right:"28px", opacity:0.32, filter:"brightness(1.35) saturate(1.1) drop-shadow(0 0 10px rgba(212,175,55,0.25))" }}><NouveauLogo size={120} /></div>
+              <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(255,255,255,0.65) 0%, transparent 60%)", borderRadius:"20px" }} />
+              <div style={{ position:"absolute", top:"28px", right:"28px", opacity:0.32, filter:"brightness(1.05) saturate(1.1) drop-shadow(0 0 10px rgba(151,130,78,0.25))" }}><NouveauLogo size={120} /></div>
               <div style={{ position:"relative", zIndex:1 }}>
                 <span style={{ background:THEME.gold, color:"#fff", fontSize:"9px", letterSpacing:"3px", padding:"5px 14px", fontFamily:"'Poppins',sans-serif", fontWeight:700, borderRadius:"99px", display:"inline-block", marginBottom:"14px" }}>
                   {ethnic.length} AESTHETICS
@@ -164,11 +164,11 @@ export default function HomePage({ setPage, setSelectedProduct }) {
 
             {/* Indian Western Wear */}
             <div onClick={() => setPage("WesternWear")}
-              style={{ position:"relative", borderRadius:"20px", overflow:"hidden", cursor:"pointer", minHeight:"420px", background:`linear-gradient(135deg, #2a1a00, #6b5000)`, display:"flex", flexDirection:"column", justifyContent:"flex-end", padding:"40px", transition:"transform 0.35s" }}
+              style={{ position:"relative", borderRadius:"20px", overflow:"hidden", cursor:"pointer", minHeight:"420px", background:`linear-gradient(135deg, ${THEME.bg}, ${THEME.crimsonLight})`, display:"flex", flexDirection:"column", justifyContent:"flex-end", padding:"40px", transition:"transform 0.35s" }}
               onMouseEnter={e => e.currentTarget.style.transform="scale(1.015)"}
               onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}>
-              <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)", borderRadius:"20px" }} />
-              <div style={{ position:"absolute", top:"28px", right:"28px", opacity:0.32, filter:"brightness(1.35) saturate(1.1) drop-shadow(0 0 10px rgba(212,175,55,0.25))" }}><NouveauLogo size={120} /></div>
+              <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(255,255,255,0.65) 0%, transparent 60%)", borderRadius:"20px" }} />
+              <div style={{ position:"absolute", top:"28px", right:"28px", opacity:0.32, filter:"brightness(1.05) saturate(1.1) drop-shadow(0 0 10px rgba(151,130,78,0.25))" }}><NouveauLogo size={120} /></div>
               <div style={{ position:"relative", zIndex:1 }}>
                 <span style={{ background:THEME.crimson, color:"#fff", fontSize:"9px", letterSpacing:"3px", padding:"5px 14px", fontFamily:"'Poppins',sans-serif", fontWeight:700, borderRadius:"99px", display:"inline-block", marginBottom:"14px" }}>
                   {western.length} AESTHETICS
