@@ -22,6 +22,14 @@ export default function Hero({ setPage }) {
           pointer-events: none;
         }
 
+        .nvz-hero-bg-container::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, rgba(43,34,51,0.72) 0%, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0) 100%);
+          pointer-events: none;
+        }
+
         .nvz-hero-bg-image {
           position: absolute;
           top: 0;
@@ -95,24 +103,26 @@ export default function Hero({ setPage }) {
           line-height: 1.02;
           font-weight: 700;
           margin: 0 0 18px 0;
-          color: #f7f2ea;
+          color: #ffffff;
+          text-shadow: 0 12px 30px rgba(15, 10, 23, 0.25);
         }
 
         .nvz-highlight {
           display: block;
           font-size: clamp(34px, 5vw, 62px);
-          color: #d8b97d;
+          color: #ffd84a;
           font-style: italic;
           margin-top: 6px;
           letter-spacing: -0.5px;
+          text-shadow: 0 8px 18px rgba(15, 10, 23, 0.22);
         }
 
         .nvz-subtitle {
           font-family: 'Inter', 'Poppins', sans-serif;
           font-size: clamp(12px, 1.2vw, 15px);
-          font-weight: 500;
-          letter-spacing: 4px;
-          color: #d8b97d;
+          font-weight: 600;
+          letter-spacing: 3px;
+          color: rgba(255,255,255,0.88);
           margin: 0 0 24px 0;
           text-transform: uppercase;
           display: flex;
@@ -129,10 +139,11 @@ export default function Hero({ setPage }) {
         .nvz-description {
           font-family: 'Inter', 'Poppins', sans-serif;
           font-size: clamp(16px, 1.5vw, 19px);
-          line-height: 1.7;
-          color: rgba(247,242,234,0.9);
+          line-height: 1.72;
+          color: rgba(255,255,255,0.92);
           margin: 0 0 40px 0;
           max-width: 520px;
+          text-shadow: 0 12px 28px rgba(15, 10, 23, 0.14);
         }
 
         .nvz-desktop-only {
@@ -221,7 +232,7 @@ export default function Hero({ setPage }) {
             min-height: auto;
             position: relative;
             padding-top: 0;
-            background: #1a261f;
+            background: linear-gradient(180deg, #ffeff8, #fff8e8, #e8f7ff);
           }
           
           .nvz-desktop-only { display: none; }
@@ -261,14 +272,14 @@ export default function Hero({ setPage }) {
             padding-top: 0;
             padding-bottom: 40px;
             order: 2;
-            margin-top: -48px;
+            margin-top: -24px;
             align-items: center;
             text-align: center;
             z-index: 10;
           }
           
           .nvz-logo-top-left {
-            margin-bottom: 24px;
+            margin-bottom: 18px;
           }
           
           .nvz-hero-content {
@@ -277,30 +288,32 @@ export default function Hero({ setPage }) {
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 0 16px;
           }
           
-          .nvz-badge { margin-bottom: 14px; }
+          .nvz-badge { margin-bottom: 12px; }
           
           .nvz-main-title {
-            font-size: clamp(40px, 10vw, 52px);
-            margin-bottom: 14px;
+            font-size: clamp(34px, 10vw, 48px);
+            margin-bottom: 12px;
           }
 
           .nvz-highlight {
-            font-size: clamp(28px, 8vw, 42px);
+            font-size: clamp(24px, 10vw, 36px);
           }
           
           .nvz-subtitle {
             justify-content: center;
             letter-spacing: 2px;
-            font-size: 10px;
-            margin-bottom: 16px;
+            font-size: 11px;
+            margin-bottom: 18px;
           }
           
           .nvz-description {
             font-size: 15px;
             margin-bottom: 28px;
             max-width: 100%;
+            line-height: 1.8;
           }
           
           .nvz-hero-actions {
@@ -312,7 +325,7 @@ export default function Hero({ setPage }) {
           .nvz-btn-shop,
           .nvz-btn-secondary {
             width: 100%;
-            max-width: 340px;
+            max-width: 360px;
           }
           
           .nvz-features-row {
