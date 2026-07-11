@@ -122,18 +122,18 @@ export default function Hero({ setPage }) {
           line-height: 1.02;
           font-weight: 700;
           margin: 0 0 18px 0;
-          color: #ffffff;
-          text-shadow: 0 12px 30px rgba(15, 10, 23, 0.25);
+          color: #21331d;
+          text-shadow: 0 10px 24px rgba(255,255,255,0.55);
         }
 
         .nvz-highlight {
           display: block;
           font-size: clamp(34px, 5vw, 62px);
-          color: #9c7a45;
+          color: #6c5d33;
           font-style: italic;
           margin-top: 6px;
           letter-spacing: -0.5px;
-          text-shadow: 0 8px 18px rgba(255,255,255,0.22);
+          text-shadow: 0 8px 16px rgba(255,255,255,0.48);
         }
 
         .nvz-subtitle {
@@ -389,14 +389,6 @@ export default function Hero({ setPage }) {
             <span className="nvz-highlight">Effortless Aura</span>
           </h1>
           
-          <p className="nvz-subtitle">
-            Timeless ethnic wear crafted for rainy days, festive evenings and every beautiful moment.
-          </p>
-
-          <p className="nvz-description">
-            Soft linens, flowing silhouettes, and warm monsoon tones designed for comfort and celebration.
-          </p>
-
           <div className="nvz-hero-actions">
             <button className="nvz-btn-shop" onClick={() => setPage("Shop")}>
               Explore Collection
