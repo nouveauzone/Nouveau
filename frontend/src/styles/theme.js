@@ -1,28 +1,28 @@
 export const THEME = {
-  // Primary greens (mapped to existing keys used across the codebase)
-  crimson: "#2F4F3E",        // Primary Forest Green
-  crimsonDark: "#445C48",    // Deep Moss Green
-  crimsonLight: "#7A8F73",   // Sage Green
+  // Rainbow-inspired palette for clothing and lifestyle presentation
+  crimson: "#D63384",        // Pink Magenta
+  crimsonDark: "#5E35B1",    // Purple
+  crimsonLight: "#FFB74D",   // Warm Apricot
 
-  // Golds for accents
-  gold: "#C6A86B",           // Muted Gold
-  goldLight: "#D8B97D",      // Champagne Gold
-  goldDark: "#6A5646",       // Earth Brown (used for darker gold accents)
+  // Accent colors
+  gold: "#F06292",           // Soft Rose
+  goldLight: "#4DD0E1",      // Sky Blue
+  goldDark: "#7E57C2",       // Lavender
 
   // Backgrounds & surfaces
-  bg: "#FAF8F4",             // Ivory White
-  bgDark: "#F5F1EB",         // Soft Beige
-  accent: "#E9EFEA",         // Rain Mist
+  bg: "#FEF5FF",             // Soft Ivory
+  bgDark: "#FFF2F8",         // Light blush
+  accent: "#E3F2FD",         // Powder Blue
   bgCard: "#FFFFFF",
 
   // Typography
-  text: "#2E2E2E",           // Charcoal Text
-  textMuted: "#6B6B6B",      // Secondary Text
-  textLight: "#8d8177",
+  text: "#2B2233",           // Deep charcoal
+  textMuted: "#6B6B7F",      // Soft muted grey
+  textLight: "#8D8CA7",
 
   // Borders
-  border: "#E2DED6",         // Divider
-  borderDark: "#D3CBBF",
+  border: "#E1D7F6",         // Lavender divider
+  borderDark: "#C0B3E0",
 };
 
 // Responsive utilities

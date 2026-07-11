@@ -1,6 +1,4 @@
 import heroImg from "../assets/images/banner.png";
-import { THEME } from "../styles/theme";
-import NouveauLogo from "./Logo";
 
 export default function Hero({ setPage }) {
   return (
@@ -10,11 +8,11 @@ export default function Hero({ setPage }) {
           position: relative;
           width: 100%;
           min-height: auto;
-          background: #1e2a24;
+          background: linear-gradient(135deg, #FFB3C7 0%, #FFE0B2 20%, #E1F5FE 45%, #C8E6C9 70%, #E1BEE7 100%);
           display: flex;
           align-items: stretch;
           overflow: hidden;
-          color: #f7f2ea;
+          color: #2b2233;
         }
 
         .nvz-hero-bg-container {
@@ -161,26 +159,26 @@ export default function Hero({ setPage }) {
         }
 
         .nvz-btn-shop {
-          background: #2f4f3e;
-          color: #fff;
+          background: linear-gradient(135deg, #ff6ec4 0%, #f5d76e 55%, #6dd5ed 100%);
+          color: #2b2233;
           border: none;
-          box-shadow: 0 10px 28px rgba(47,79,62,0.24);
+          box-shadow: 0 10px 28px rgba(97, 57, 110, 0.22);
         }
 
         .nvz-btn-shop:hover {
-          background: #445c48;
+          background: linear-gradient(135deg, #ff7eb3 0%, #f7d18c 55%, #76d8f8 100%);
           transform: translateY(-2px);
-          box-shadow: 0 14px 34px rgba(47,79,62,0.28);
+          box-shadow: 0 14px 34px rgba(97, 57, 110, 0.26);
         }
 
         .nvz-btn-secondary {
-          background: transparent;
-          border: 1.5px solid rgba(216,184,125,0.95);
-          color: #f7f2ea;
+          background: rgba(255, 255, 255, 0.18);
+          border: 1.5px solid rgba(255, 255, 255, 0.85);
+          color: #2b2233;
         }
 
         .nvz-btn-secondary:hover {
-          background: rgba(216,184,125,0.12);
+          background: rgba(255, 255, 255, 0.28);
           transform: translateY(-2px);
         }
 
@@ -347,7 +345,6 @@ export default function Hero({ setPage }) {
 
       <div className="nvz-hero-main">
         <div className="nvz-logo-top-left">
-          <NouveauLogo size={28} />
           <span className="nvz-logo-text">nouveau<span className="nvz-tm">™</span></span>
         </div>
 
