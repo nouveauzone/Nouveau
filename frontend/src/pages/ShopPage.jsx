@@ -4,7 +4,7 @@ import { THEME } from "../styles/theme";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import API from "../services/apiService";
-import { SHIPPING_FREE_THRESHOLD, normalizeCategory } from "../data/constants";
+import { SHIPPING_FREE_THRESHOLD, normalizeCategory, SIZE_OPTIONS, normalizeSizeLabel } from "../data/constants";
 import { fixImageUrl } from "../utils/imageUrl";
 
 const CATS = ["All", "Indian Ethnic Wear", "Indian Western Wear"];
@@ -83,6 +83,8 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
   const [search, setSearch] = useState("");
   const [maxPrice, setMaxPrice] = useState(20000);
   const [sortBy, setSortBy] = useState("featured");
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [showSizeFilterMobile, setShowSizeFilterMobile] = useState(false);
 
   // ── Background sync: try backend, silently fallback to local ─────────────
   useEffect(() => {
@@ -142,6 +144,18 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
   }, []);
 
   // ── Filter + sort ─────────────────────────────────────────────────────────
+  const productMatchesSize = (product) => {
+    if (!selectedSizes || selectedSizes.length === 0) return true;
+    const productSizes = product.sizes || [];
+    return selectedSizes.some((selectedSize) => {
+      const normalized = normalizeSizeLabel(selectedSize);
+      return productSizes.some((ps) => {
+        const productSize = normalizeSizeLabel(ps.size || ps);
+        return productSize === normalized;
+      });
+    });
+  };
+
   let filtered = products.filter((p) => {
     const q = search.trim().toLowerCase();
     if (q) {
@@ -153,6 +167,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
     }
     if (cat !== "All" && p.category !== cat) return false;
     if ((p.price || 0) > maxPrice) return false;
+    if (!productMatchesSize(p)) return false;
     return true;
   });
 
@@ -166,8 +181,14 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
   const westernCount = products.filter(p => p.category === "Indian Western Wear").length;
   const totalCount = products.length;
 
-  const clearFilters = () => { setCat("All"); setSearch(""); setMaxPrice(20000); setSortBy("featured"); };
-  const hasFilters = cat !== "All" || search.trim() !== "" || maxPrice < 20000 || sortBy !== "featured";
+  const clearFilters = () => { setCat("All"); setSearch(""); setMaxPrice(20000); setSortBy("featured"); setSelectedSizes([]); };
+  const hasFilters = cat !== "All" || search.trim() !== "" || maxPrice < 20000 || sortBy !== "featured" || selectedSizes.length > 0;
+
+  const toggleSize = (size) => {
+    setSelectedSizes((prev) =>
+      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
+    );
+  };
 
   return (
     <div style={{ background: THEME.bg, minHeight: "100vh" }}>
@@ -287,6 +308,36 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
               </select>
             </div>
 
+            <div style={{ borderTop: `1px solid ${THEME.border}`, marginTop: "18px", paddingTop: "18px" }}>
+              <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "3px", color: THEME.crimson, textTransform: "uppercase", marginBottom: "12px", fontWeight: 700 }}>Size</p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "8px" }}>
+                {SIZE_OPTIONS.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => toggleSize(size)}
+                    style={{
+                      padding: "10px 8px",
+                      borderRadius: "8px",
+                      border: selectedSizes.includes(size) ? `2px solid ${THEME.crimson}` : `1px solid ${THEME.border}`,
+                      background: selectedSizes.includes(size) ? `${THEME.crimson}10` : THEME.bg,
+                      color: selectedSizes.includes(size) ? THEME.crimson : THEME.text,
+                      fontFamily: "'Poppins',sans-serif",
+                      fontSize: "11px",
+                      fontWeight: selectedSizes.includes(size) ? 700 : 500,
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      minHeight: "36px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {hasFilters && (
               <button onClick={clearFilters} style={{ width: "100%", marginTop: "14px", background: "none", border: `1px solid ${THEME.crimson}`, color: THEME.crimson, padding: "9px", borderRadius: "8px", cursor: "pointer", fontFamily: "'Poppins',sans-serif", fontSize: "12px", fontWeight: 600, minHeight: "40px" }}>
                 ✕ Clear Filters
@@ -301,15 +352,75 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
             <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textMuted }}>
               Showing <strong style={{ color: THEME.text }}>{filtered.length}</strong> of {totalCount} products
             </p>
-            <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)}>
-              <option value="featured">Featured</option>
-              <option value="newest">New Arrivals</option>
-              <option value="price-asc">Price: Low → High</option>
-              <option value="price-desc">Price: High → Low</option>
-              <option value="rating">Top Rated</option>
-              <option value="discount">Best Discount</option>
-            </select>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <button
+                onClick={() => setShowSizeFilterMobile(!showSizeFilterMobile)}
+                style={{
+                  background: selectedSizes.length > 0 ? THEME.crimson : "none",
+                  color: selectedSizes.length > 0 ? "#fff" : THEME.text,
+                  border: `1px solid ${THEME.border}`,
+                  padding: "9px 16px",
+                  borderRadius: "10px",
+                  fontFamily: "'Poppins',sans-serif",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  minHeight: "40px",
+                  transition: "all 0.2s",
+                }}
+              >
+                Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
+              </button>
+              <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                <option value="featured">Featured</option>
+                <option value="newest">New Arrivals</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="rating">Top Rated</option>
+                <option value="discount">Best Discount</option>
+              </select>
+            </div>
           </div>
+
+          {showSizeFilterMobile && (
+            <div style={{ background: THEME.bgCard, border: `1px solid ${THEME.border}`, borderRadius: "12px", padding: "16px", marginBottom: "18px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", letterSpacing: "2px", color: THEME.crimson, textTransform: "uppercase", fontWeight: 700 }}>Select Sizes</p>
+                <button
+                  onClick={() => setShowSizeFilterMobile(false)}
+                  style={{ background: "none", border: "none", color: THEME.textMuted, cursor: "pointer", fontSize: "16px", padding: "0" }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(70px, 1fr))", gap: "8px" }}>
+                {SIZE_OPTIONS.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => toggleSize(size)}
+                    style={{
+                      padding: "10px 8px",
+                      borderRadius: "8px",
+                      border: selectedSizes.includes(size) ? `2px solid ${THEME.crimson}` : `1px solid ${THEME.border}`,
+                      background: selectedSizes.includes(size) ? `${THEME.crimson}10` : THEME.bg,
+                      color: selectedSizes.includes(size) ? THEME.crimson : THEME.text,
+                      fontFamily: "'Poppins',sans-serif",
+                      fontSize: "11px",
+                      fontWeight: selectedSizes.includes(size) ? 700 : 500,
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      minHeight: "36px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {filtered.length === 0 ? (
             <div style={{ textAlign: "center", padding: "60px 20px", background: THEME.bgCard, borderRadius: "16px", border: `1px solid ${THEME.border}` }}>
