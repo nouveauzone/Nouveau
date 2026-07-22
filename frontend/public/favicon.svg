@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#0a0a0a" rx="12"/>
+  <!-- Lotus petals top (gold) -->
+  <ellipse cx="32" cy="20" rx="6" ry="12" fill="#C9A227" transform="rotate(0,32,20)"/>
+  <ellipse cx="22" cy="24" rx="5" ry="10" fill="#C9A227" transform="rotate(-30,22,24)"/>
+  <ellipse cx="42" cy="24" rx="5" ry="10" fill="#C9A227" transform="rotate(30,42,24)"/>
+  <ellipse cx="15" cy="30" rx="4" ry="8" fill="#C9A227" transform="rotate(-55,15,30)"/>
+  <ellipse cx="49" cy="30" rx="4" ry="8" fill="#C9A227" transform="rotate(55,49,30)"/>
+  <!-- Stem (crimson) -->
+  <rect x="30" y="30" width="4" height="20" fill="#B71C1C" rx="2"/>
+  <!-- Scroll left -->
+  <circle cx="18" cy="48" r="5" fill="none" stroke="#B71C1C" stroke-width="3"/>
+  <!-- Scroll right -->
+  <circle cx="46" cy="48" r="5" fill="none" stroke="#B71C1C" stroke-width="3"/>
+</svg>
