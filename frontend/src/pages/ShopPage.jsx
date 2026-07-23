@@ -264,7 +264,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
           Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
         </button>
   
-        <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ flex: "0 0 118px" }}>
+        <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ flex: "0 0 86px" }}>
           <option value="featured">Sort</option>
           <option value="newest"> New Arrivals </option>
           <option value="price-asc">Price: Low → High</option>
