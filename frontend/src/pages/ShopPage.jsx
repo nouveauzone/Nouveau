@@ -251,7 +251,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
         />
         <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)}>
           <option value="featured">Featured</option>
-          <option value="newest">New Arrivals</option>
+          <option value="newest"> New Arrivals </option>
           <option value="price-asc">Price: Low → High</option>
           <option value="price-desc">Price: High → Low</option>
           <option value="rating">Top Rated</option>
