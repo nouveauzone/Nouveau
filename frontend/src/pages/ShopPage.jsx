@@ -250,7 +250,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
           style={{ flex: 1, minWidth: 0, background: THEME.bg, border: `1px solid ${THEME.border}`, color: THEME.text, padding: "9px 10px", borderRadius: "10px", fontFamily: "'Poppins',sans-serif", fontSize: "12px", outline: "none" }}
         />
         <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)}>
-          <option value="featured">Featured</option>
+          <option value="featured">Sort</option>
           <option value="newest"> New Arrivals </option>
           <option value="price-asc">Price: Low → High</option>
           <option value="price-desc">Price: High → Low</option>
@@ -299,7 +299,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
             <div style={{ borderTop: `1px solid ${THEME.border}`, marginTop: "18px", paddingTop: "18px" }}>
               <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "3px", color: THEME.crimson, textTransform: "uppercase", marginBottom: "12px", fontWeight: 700 }}>Sort By</p>
               <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ width: "100%" }}>
-                <option value="featured">Featured</option>
+                <option value="featured">Sort</option>
                 <option value="newest">New Arrivals</option>
                 <option value="price-asc">Price: Low → High</option>
                 <option value="price-desc">Price: High → Low</option>
@@ -356,9 +356,9 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
               <button
                 onClick={() => setShowSizeFilterMobile(!showSizeFilterMobile)}
                 style={{
-                  background: selectedSizes.length > 0 ? THEME.crimson : "none",
+                  background: selectedSizes.length > 0 ? THEME.crimson : THEME.bgCard,
                   color: selectedSizes.length > 0 ? "#fff" : THEME.text,
-                  border: `1px solid ${THEME.border}`,
+                  border: selectedSizes.length > 0 ? `1px solid ${THEME.crimson}` : `1px solid ${THEME.border}`,
                   padding: "9px 16px",
                   borderRadius: "10px",
                   fontFamily: "'Poppins',sans-serif",
@@ -372,7 +372,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
                 Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
               </button>
               <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)}>
-                <option value="featured">Featured</option>
+                <option value="featured">Sort</option>
                 <option value="newest">New Arrivals</option>
                 <option value="price-asc">Price: Low → High</option>
                 <option value="price-desc">Price: High → Low</option>
