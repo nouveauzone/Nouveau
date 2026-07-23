@@ -249,7 +249,22 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
           placeholder="Search"
           style={{ flex: 1, minWidth: 0, background: THEME.bg, border: `1px solid ${THEME.border}`, color: THEME.text, padding: "9px 10px", borderRadius: "10px", fontFamily: "'Poppins',sans-serif", fontSize: "12px", outline: "none" }}
         />
-        <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+
+        <button
+          type="button"
+          className="sp-sel"
+          onClick={() => setShowSizeFilterMobile((prev) => !prev)}
+          style={{
+            flex: "0 0 86px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
+          Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
+        </button>
+  
+        <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ flex: "0 0 118px" }}>
           <option value="featured">Sort</option>
           <option value="newest"> New Arrivals </option>
           <option value="price-asc">Price: Low → High</option>
