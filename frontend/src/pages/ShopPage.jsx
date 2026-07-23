@@ -258,10 +258,14 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
             flex: "0 0 86px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "space-between",
+            padding: "0 10px"
           }}
         >
-          Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
+          <span style={{ flex: 1, textAlign: "left" }}>
+            Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
+          </span>
+          <span style={{ fontSize: "10px", lineHeight: 1 }}>▾</span>
         </button>
   
         <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ flex: "0 0 86px" }}>
