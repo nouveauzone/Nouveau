@@ -206,6 +206,11 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
         .sp-tab{padding:13px clamp(10px,2.5vw,22px);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-family:'Poppins',sans-serif;font-weight:600;transition:all 0.2s;white-space:nowrap;min-height:44px;color:${THEME.textMuted};}
         .sp-tab.on{border-bottom-color:${THEME.crimson};color:${THEME.crimson};}
         .sp-sel{background:${THEME.bgCard};border:1px solid ${THEME.border};color:${THEME.text};padding:9px 12px;border-radius:10px;font-family:'Poppins',sans-serif;font-size:12px;cursor:pointer;min-height:40px;outline:none;}
+        .sp-filter-arrow {position: relative;width: 8px;height: 8px;margin-left: 8px;flex: 0 0 auto;}
+        .sp-filter-arrow::before,
+        .sp-filter-arrow::after {content: "";position: absolute;top: 3px;width: 5px;height: 1.4px;background: currentColor;border-radius: 2px;}
+        .sp-filter-arrow::before {left: 0;transform: rotate(45deg);}
+        .sp-filter-arrow::after {right: 0;transform: rotate(-45deg);}
         .sp-mob-bar{display:none;background:${THEME.bgCard};border-bottom:1px solid ${THEME.border};padding:10px 16px;align-items:center;justify-content:space-between;gap:10px;}
         @media(max-width:768px){.sp-mob-bar{display:flex!important;}}
       `}</style>
@@ -265,7 +270,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
           <span style={{ flex: 1, textAlign: "left" }}>
             Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
           </span>
-          <span style={{ fontSize: "10px", lineHeight: 1 }}>▾</span>
+          <span className="sp-filter-arrow" />
         </button>
   
         <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ flex: "0 0 86px" }}>
@@ -373,12 +378,16 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
             </p>
             <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
               <button
+                type="button"
+                className="sp-sel"
                 onClick={() => setShowSizeFilterMobile(!showSizeFilterMobile)}
                 style={{
+                  flex: "0 0 86px",
+                  display: "flex",
                   background: selectedSizes.length > 0 ? THEME.crimson : THEME.bgCard,
                   color: selectedSizes.length > 0 ? "#fff" : THEME.text,
                   border: selectedSizes.length > 0 ? `1px solid ${THEME.crimson}` : `1px solid ${THEME.border}`,
-                  padding: "9px 16px",
+                  padding: "0 10px",
                   borderRadius: "10px",
                   fontFamily: "'Poppins',sans-serif",
                   fontSize: "12px",
@@ -386,9 +395,15 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
                   cursor: "pointer",
                   minHeight: "40px",
                   transition: "all 0.2s",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "8px",
                 }}
               >
-                Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
+                <span style={{ flex: 1, textAlign: "left" }}>
+                  Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
+                </span>
+                <span className="sp-filter-arrow" />
               </button>
               <select className="sp-sel" value={sortBy} onChange={e => setSortBy(e.target.value)}>
                 <option value="featured">Sort</option>
