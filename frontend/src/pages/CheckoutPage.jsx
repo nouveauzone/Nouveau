@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import NouveauzCheckout from "../components/NouveauzCheckout";
+import ShippingSelector from "../components/ShippingSelector";
 import { CartContext } from "../context/CartContext";
 import { AppDataContext } from "../context/Providers";
 import { AuthContext } from "../context/AuthContext";
@@ -29,7 +30,7 @@ export default function CheckoutPage({ setPage }) {
   const { placeOrder, refreshMyOrders } = useContext(AppDataContext);
   const toast = useContext(ToastContext);
   const { isAuthenticated, token } = useContext(AuthContext);
-  const { formatPrice } = useContext(CurrencyContext);
+  const { formatPrice, currencyCode, rates } = useContext(CurrencyContext);
   const [storedAuthToken, setStoredAuthToken] = useState("");
   const isAdminSession = (() => {
     try {
@@ -47,6 +48,12 @@ export default function CheckoutPage({ setPage }) {
   const [errors, setErrors] = useState({});
   const [discountInfo, setDiscountInfo] = useState(null);
   const [loadingDiscount, setLoadingDiscount] = useState(false);
+  const [shippingCountry, setShippingCountry] = useState(null); // "US" | "CA" | null (domestic)
+
+  // Shown only for shoppers browsing in USD or CAD — everyone else keeps the
+  // existing domestic (India) shipping flow untouched.
+  const isInternationalShipping = currencyCode === "USD" || currencyCode === "CAD";
+  const INTL_SHIPPING_FLAT_FEE = 38; // in the shopper's own currency (USD or CAD)
 
   useEffect(() => {
     const updateViewport = () => setIsMobile(window.innerWidth < 768);
@@ -90,8 +97,16 @@ export default function CheckoutPage({ setPage }) {
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const cgst = +(subtotal * 0.025).toFixed(2);
   const sgst = +(subtotal * 0.025).toFixed(2);
-  const shipping = getShippingCharge(subtotal);
-  
+  // `rates[currencyCode]` converts INR -> shopper currency (used by formatPrice),
+  // so we invert it here to store the $38 flat fee back in INR, keeping all
+  // internal totals in a single base currency.
+  const intlShippingRate = Number(rates?.[currencyCode]) || 0;
+  const intlShippingChargeINR =
+    isInternationalShipping && shippingCountry && intlShippingRate
+      ? INTL_SHIPPING_FLAT_FEE / intlShippingRate
+      : null;
+  const shipping = intlShippingChargeINR != null ? intlShippingChargeINR : getShippingCharge(subtotal);
+
   // Discount will be applied by the backend and shown here
   // For now, we'll pass discount info through the payment flow
   const total = subtotal + cgst + sgst + shipping;
@@ -105,6 +120,7 @@ export default function CheckoutPage({ setPage }) {
     if (!address.city.trim()) nextErrors.city = "Required";
     if (!address.state.trim()) nextErrors.state = "Required";
     if (!address.pincode.trim()) nextErrors.pincode = "Required";
+    if (isInternationalShipping && !shippingCountry) nextErrors.shipping = "Required";
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -250,6 +266,18 @@ export default function CheckoutPage({ setPage }) {
           <div>
             {step === 1 && (
               <div>
+                {isInternationalShipping && (
+                  <>
+                    <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "3px", color: GOLD, marginBottom: "12px", fontWeight: 700 }}>CHOOSE SHIPPING</p>
+                    <ShippingSelector selected={shippingCountry} onSelect={setShippingCountry} />
+                    {errors.shipping && (
+                      <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: CRIMSON, marginTop: "-12px", marginBottom: "20px" }}>
+                        Please select a shipping option to continue.
+                      </p>
+                    )}
+                  </>
+                )}
+
                 <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "3px", color: GOLD, marginBottom: "24px", fontWeight: 700 }}>DELIVERY ADDRESS</p>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", columnGap: "20px", rowGap: "16px" }} className="checkout-address-grid">
                   {ADDRESS_FIELDS.map(({ key, label, type, fullRow }) => (
@@ -387,7 +415,9 @@ export default function CheckoutPage({ setPage }) {
                   <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.text }}>{formatPrice(sgst)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-                  <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textMuted }}>Shipping</span>
+                  <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textMuted }}>
+                    {intlShippingChargeINR != null ? `Shipping (${shippingCountry === "US" ? "USA" : "Canada"})` : "Shipping"}
+                  </span>
                   <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: shipping === 0 ? "#2ecc71" : THEME.text }}>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", paddingTop: "12px", borderTop: `1px solid ${THEME.border}` }}>
