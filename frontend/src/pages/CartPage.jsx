@@ -13,7 +13,7 @@ const CRIMSON = "#B71C1C";
 
 export default function CartPage({ setPage }) {
   const { cart, dispatch } = useContext(CartContext);
-  const { formatPrice, currencyCode, rates } = useContext(CurrencyContext);
+  const { formatPrice, formatCurrency, currencyCode } = useContext(CurrencyContext);
   const { isAuthenticated } = useContext(AuthContext);
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -113,7 +113,7 @@ export default function CartPage({ setPage }) {
 
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px", color: THEME.textMuted }}>
                 <span>Shipping</span>
-                <span style={{ color: THEME.text }}>{formatPrice(shipping)}</span>
+                <span style={{ color: THEME.text }}>{formatCurrency(shipping)}</span>
               </div>
 
               {isAuthenticated && (

@@ -31,7 +31,7 @@ export default function CheckoutPage({ setPage }) {
   const { placeOrder, refreshMyOrders } = useContext(AppDataContext);
   const toast = useContext(ToastContext);
   const { isAuthenticated, token } = useContext(AuthContext);
-  const { formatPrice, currencyCode, rates } = useContext(CurrencyContext);
+  const { formatPrice, formatCurrency, currencyCode } = useContext(CurrencyContext);
   const [storedAuthToken, setStoredAuthToken] = useState("");
   const isAdminSession = (() => {
     try {
@@ -549,7 +549,7 @@ export default function CheckoutPage({ setPage }) {
                       color: THEME.text,
                     }}
                   >
-                    {formatPrice(shipping)}
+                    {formatCurrency(shipping)}
                   </span>
                 </div>
 
