@@ -6,7 +6,7 @@ import { THEME } from "../styles/theme";
 import { BtnOutline, BtnPrimary } from "../components/Buttons";
 import Footer from "../components/Footer";
 import { fixImageUrl } from "../utils/imageUrl";
-import { getShippingCharge, SHIPPING_FEE } from "../data/constants";
+import { getShippingCharge, SHIPPING_FREE_THRESHOLD } from "../data/constants";
 
 const GOLD = "#C9A227";
 const CRIMSON = "#B71C1C";
@@ -113,8 +113,29 @@ export default function CartPage({ setPage }) {
 
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px", color: THEME.textMuted }}>
                 <span>Shipping</span>
-                <span style={{ color: THEME.text }}>{formatPrice(shipping)}</span>
+                <span style={{ color: shipping === 0 ? "#2ecc71" : THEME.text }}>{shipping === 0 ? "FREE" : formatPrice(shipping)}</span>
               </div>
+
+              {shipping > 0 && (
+                <p style={{ fontSize: "12px", color: THEME.textMuted, marginBottom: "20px", fontStyle: "italic" }}>
+                  Add {formatPrice(Math.max(0, SHIPPING_FREE_THRESHOLD - subtotal))} more for free shipping
+                </p>
+              )}
+
+              {shipping === 0 && (
+                <div style={{ background: "#2ecc7110", color: "#2ecc71", padding: "8px 12px", borderRadius: "8px", fontSize: "12px", marginBottom: "20px", display: "flex", gap: "8px", alignItems: "center" }}>
+                  Free shipping applied!
+                </div>
+              )}
+
+              {isAuthenticated && (
+                <div style={{ background: "#10b98110", color: "#059669", padding: "12px", borderRadius: "8px", fontSize: "12px", marginBottom: "20px", display: "flex", gap: "8px", alignItems: "center", border: "1px solid #10b98140" }}>
+                  <span style={{ fontSize: "16px" }}>✨</span>
+                  <span>
+                    <strong>Returning Customer?</strong> Get 10% automatic discount at checkout!
+                  </span>
+                </div>
+              )}
 
               <div style={{ display: "flex", justifyContent: "space-between", margin: "24px 0", paddingTop: "20px", borderTop: `1px solid ${THEME.border}` }}>
                 <span style={{ fontWeight: 700, fontSize: "18px" }}>Total</span>

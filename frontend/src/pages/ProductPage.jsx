@@ -12,7 +12,7 @@ import OrnamentDivider from "../components/OrnamentDivider";
 import { BtnOutline, BtnPrimary } from "../components/Buttons";
 import API from "../services/apiService";
 import { fixImageUrl } from "../utils/imageUrl";
-import { SHIPPING_FEE, normalizeCategory } from "../data/constants";
+import { SHIPPING_FREE_THRESHOLD, normalizeCategory } from "../data/constants";
 
 const BAD_TEXT_RE = /(\/static\/media|\.(jpeg|jpg|png|webp|svg)$|\.[a-f0-9]{8,}$|^https?:\/\/|\\)/i;
 
@@ -334,7 +334,7 @@ export default function ProductPage({ product, setPage }) {
 
             {/* Trust badges */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "24px" }}>
-              {[["🚚", `Flat Shipping ${formatPrice(SHIPPING_FEE)}`], ["✅", "Authentic Fabric"], ["⚡", "Fast Dispatch"], ["🔒", "Secure Payment"]].map(([icon, t]) => (
+              {[["🚚", `Free Shipping ${formatPrice(SHIPPING_FREE_THRESHOLD)}+`], ["✅", "Authentic Fabric"], ["⚡", "Fast Dispatch"], ["🔒", "Secure Payment"]].map(([icon, t]) => (
                 <div key={t} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", background: THEME.bgDark, border: `1px solid ${THEME.border}`, borderRadius: "10px" }}>
                   <span style={{ fontSize: "14px" }}>{icon}</span>
                   <span style={{ fontSize: "11px", color: THEME.textMuted, fontFamily: "'Poppins',sans-serif" }}>{t}</span>

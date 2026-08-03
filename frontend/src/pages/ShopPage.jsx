@@ -4,7 +4,7 @@ import { THEME } from "../styles/theme";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import API from "../services/apiService";
-import { SHIPPING_FEE, normalizeCategory, SIZE_OPTIONS, normalizeSizeLabel } from "../data/constants";
+import { SHIPPING_FREE_THRESHOLD, normalizeCategory, SIZE_OPTIONS, normalizeSizeLabel } from "../data/constants";
 import { fixImageUrl } from "../utils/imageUrl";
 
 const CATS = ["All", "Indian Ethnic Wear", "Indian Western Wear"];
@@ -475,7 +475,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
           {filtered.length > 0 && (
             <div style={{ textAlign: "center", marginTop: "32px", padding: "16px", background: THEME.bgCard, borderRadius: "12px", border: `1px solid ${THEME.border}` }}>
               <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textMuted }}>
-                ✅ {filtered.length} products shown · <span style={{ color: THEME.crimson, fontWeight: 600 }}>Flat shipping ₹{SHIPPING_FEE.toLocaleString("en-IN")}</span>
+                ✅ {filtered.length} products shown · <span style={{ color: THEME.crimson, fontWeight: 600 }}>Free shipping on orders above ₹{SHIPPING_FREE_THRESHOLD.toLocaleString("en-IN")}</span>
               </p>
             </div>
           )}
