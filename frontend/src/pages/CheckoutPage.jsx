@@ -253,8 +253,8 @@ export default function CheckoutPage({ setPage }) {
   }
 
   return (
-    <div style={{ background: THEME.bg, minHeight: "100vh", color: THEME.text }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "60px clamp(16px, 4vw, 40px)" }}>
+    <div className="checkout-page-shell" style={{ background: THEME.bg, minHeight: "100vh", color: THEME.text }}>
+      <div className="resp-container checkout-page-inner" style={{ maxWidth: "1100px", margin: "0 auto", padding: "60px clamp(16px, 4vw, 40px)" }}>
         <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "42px", marginBottom: "8px", color: THEME.text }}>Checkout</h1>
         <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textMuted, marginBottom: "40px" }}>Secure checkout — powered by Nouveau™ and Razorpay</p>
 
@@ -272,7 +272,7 @@ export default function CheckoutPage({ setPage }) {
           ))}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 320px", gap: isMobile ? "24px" : "40px" }} className="cart-sidebar">
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 320px", gap: isMobile ? "24px" : "40px", minWidth: 0 }} className="cart-sidebar checkout-layout">
           <div>
             {step === 1 && (
               <div>
@@ -289,7 +289,7 @@ export default function CheckoutPage({ setPage }) {
                 )}
 
                 <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "3px", color: GOLD, marginBottom: "24px", fontWeight: 700 }}>DELIVERY ADDRESS</p>
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", columnGap: "20px", rowGap: "16px" }} className="checkout-address-grid">
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))", columnGap: "20px", rowGap: "16px", minWidth: 0 }} className="checkout-address-grid">
                   {ADDRESS_FIELDS.map(({ key, label, type, fullRow }) => (
                     <div key={key} style={{ gridColumn: fullRow ? "1 / -1" : "auto", width: "100%", minWidth: 0 }}>
                       <label style={{ fontFamily: "'Poppins',sans-serif", fontSize: "9px", letterSpacing: "2px", color: errors[key] ? CRIMSON : THEME.textMuted, display: "block", marginBottom: "6px", fontWeight: 600, textTransform: "uppercase" }}>
@@ -300,7 +300,7 @@ export default function CheckoutPage({ setPage }) {
                         value={address[key]}
                         onChange={(event) => setAddress((current) => ({ ...current, [key]: event.target.value }))}
                         className="checkout-input"
-                        style={{ width: "100%", padding: "14px", background: THEME.bgCard, border: `1px solid ${errors[key] ? CRIMSON : THEME.border}`, borderRadius: "10px", color: THEME.text, fontFamily: "'Poppins',sans-serif", fontSize: "14px", transition: "all 0.2s" }}
+                        style={{ width: "100%", minWidth: 0, padding: "14px", background: THEME.bgCard, border: `1px solid ${errors[key] ? CRIMSON : THEME.border}`, borderRadius: "10px", color: THEME.text, fontFamily: "'Poppins',sans-serif", fontSize: "14px", transition: "all 0.2s" }}
                         placeholder={label}
                       />
                     </div>
@@ -380,10 +380,10 @@ export default function CheckoutPage({ setPage }) {
           </div>
 
           <div>
-            <div style={{ background: THEME.bgCard, border: `1px solid ${THEME.border}`, borderRadius: "16px", padding: "clamp(16px, 5vw, 24px)", position: "sticky", top: "100px" }}>
+            <div className="cart-summary-mobile checkout-summary" style={{ background: THEME.bgCard, border: `1px solid ${THEME.border}`, borderRadius: "16px", padding: "clamp(16px, 5vw, 24px)", position: "sticky", top: "100px", minWidth: 0, maxWidth: "100%" }}>
               <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "3px", color: GOLD, marginBottom: "20px", fontWeight: 700 }}>ORDER SUMMARY</p>
 
-              <div style={{ maxHeight: "280px", overflowY: "auto", marginBottom: "20px", paddingRight: "4px" }}>
+              <div style={{ maxHeight: "280px", overflowY: "auto", overflowX: "hidden", marginBottom: "20px", paddingRight: "4px" }}>
                 {cart.map((item, index) => (
                   <div key={index} style={{ display: "flex", gap: "12px", marginBottom: "14px", paddingBottom: "14px", borderBottom: index < cart.length - 1 ? `1px solid ${THEME.border}` : "none" }}>
                     <div style={{ width: "54px", height: "68px", borderRadius: "8px", overflow: "hidden", flexShrink: 0, background: THEME.bgDark }}>
@@ -395,7 +395,7 @@ export default function CheckoutPage({ setPage }) {
                       />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", fontWeight: 600, color: THEME.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: "3px" }}>{item.title || item.name}</p>
+                      <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", fontWeight: 600, color: THEME.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: "3px", minWidth: 0 }}>{item.title || item.name}</p>
                       <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", color: THEME.textMuted }}>Size: {typeof item.size === 'object' ? item.size?.size : String(item.size || "—")} · Qty: {item.qty}</p>
                       <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: GOLD, fontWeight: 700, marginTop: "4px" }}>{formatPrice(item.price * item.qty)}</p>
                     </div>
