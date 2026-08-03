@@ -16,6 +16,8 @@ import { SHIPPING_FREE_THRESHOLD, normalizeCategory } from "../data/constants";
 
 const BAD_TEXT_RE = /(\/static\/media|\.(jpeg|jpg|png|webp|svg)$|\.[a-f0-9]{8,}$|^https?:\/\/|\\)/i;
 
+
+
 const cleanText = (value, fallback = "") => {
   const raw = typeof value === "string" ? value.trim() : "";
   if (!raw || BAD_TEXT_RE.test(raw) || raw.length > 140) return fallback;
@@ -101,7 +103,7 @@ export default function ProductPage({ product, setPage }) {
   const { dispatch: cartDispatch } = useContext(CartContext);
   const { wishlist, toggleWishlist } = useContext(WishlistContext);
   const { isAuthenticated, user } = useContext(AuthContext);
-  const { formatPrice } = useContext(CurrencyContext);
+  const { formatPrice, currencyCode } = useContext(CurrencyContext);
   const toast = useContext(ToastContext);
 
   const safeTitle = cleanText(product?.title, "Nouveau Signature Piece");
@@ -333,15 +335,47 @@ export default function ProductPage({ product, setPage }) {
             </BtnOutline>
 
             {/* Trust badges */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "24px" }}>
-              {[["🚚", `Free Shipping ${formatPrice(SHIPPING_FREE_THRESHOLD)}+`], ["✅", "Authentic Fabric"], ["⚡", "Fast Dispatch"], ["🔒", "Secure Payment"]].map(([icon, t]) => (
-                <div key={t} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", background: THEME.bgDark, border: `1px solid ${THEME.border}`, borderRadius: "10px" }}>
-                  <span style={{ fontSize: "14px" }}>{icon}</span>
-                  <span style={{ fontSize: "11px", color: THEME.textMuted, fontFamily: "'Poppins',sans-serif" }}>{t}</span>
-                </div>
-              ))}
-            </div>
-
+            <div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "10px",
+    marginTop: "24px",
+  }}
+>
+  {[
+    ...(currencyCode === "INR"
+      ? [["🚚", `Free Shipping ${formatPrice(SHIPPING_FREE_THRESHOLD)}+`]]
+      : []),
+    ["✅", "Authentic Fabric"],
+    ["⚡", "Fast Dispatch"],
+    ["🔒", "Secure Payment"],
+  ].map(([icon, t]) => (
+    <div
+      key={t}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        padding: "10px 12px",
+        background: THEME.bgDark,
+        border: `1px solid ${THEME.border}`,
+        borderRadius: "10px",
+      }}
+    >
+      <span style={{ fontSize: "14px" }}>{icon}</span>
+      <span
+        style={{
+          fontSize: "11px",
+          color: THEME.textMuted,
+          fontFamily: "'Poppins',sans-serif",
+        }}
+      >
+        {t}
+      </span>
+    </div>
+  ))}
+</div>  
 
             {/* ── RETURN & EXCHANGE POLICY ── */}
             <div style={{

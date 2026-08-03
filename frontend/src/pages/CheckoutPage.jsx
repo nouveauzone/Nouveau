@@ -31,7 +31,12 @@ export default function CheckoutPage({ setPage }) {
   const { placeOrder, refreshMyOrders } = useContext(AppDataContext);
   const toast = useContext(ToastContext);
   const { isAuthenticated, token } = useContext(AuthContext);
-  const { formatPrice, formatCurrency, currencyCode } = useContext(CurrencyContext);
+  const {
+  formatPrice,
+  formatCurrency,
+  currencyCode,
+  exchangeRate,
+} = useContext(CurrencyContext);
   const [storedAuthToken, setStoredAuthToken] = useState("");
   const isAdminSession = (() => {
     try {
@@ -70,12 +75,36 @@ export default function CheckoutPage({ setPage }) {
     setShippingCountry(intlShippingOption?.code || null);
   }, [currencyCode]);
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const cgst = +(subtotal * 0.025).toFixed(2);
-  const sgst = +(subtotal * 0.025).toFixed(2);
-  const shipping = getShippingChargeForCurrency(currencyCode);
+  const subtotal = cart.reduce(
+  (sum, item) => sum + item.price * item.qty,
+  0
+);
 
-  const total = subtotal + cgst + sgst + shipping;
+const shipping = getShippingChargeForCurrency(
+  currencyCode,
+  subtotal
+);
+
+const convertedSubtotal =
+  currencyCode === "INR"
+    ? subtotal
+    : subtotal * exchangeRate;
+
+const cgst =
+  currencyCode === "INR"
+    ? +(subtotal * 0.025).toFixed(2)
+    : 0;
+
+const sgst =
+  currencyCode === "INR"
+    ? +(subtotal * 0.025).toFixed(2)
+    : 0;
+
+const total =
+  convertedSubtotal +
+  cgst +
+  sgst +
+  shipping;
 
   const validate = () => {
     const nextErrors = {};
@@ -467,61 +496,65 @@ export default function CheckoutPage({ setPage }) {
                   </span>
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "'Poppins',sans-serif",
-                      fontSize: "13px",
-                      color: THEME.textMuted,
-                    }}
-                  >
-                    CGST 2.5%
-                  </span>
+                {currencyCode === "INR" && (
+  <>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginBottom: "10px",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "'Poppins',sans-serif",
+          fontSize: "13px",
+          color: THEME.textMuted,
+        }}
+      >
+        CGST 2.5%
+      </span>
 
-                  <span
-                    style={{
-                      fontFamily: "'Poppins',sans-serif",
-                      fontSize: "13px",
-                      color: THEME.text,
-                    }}
-                  >
-                    {formatPrice(cgst)}
-                  </span>
-                </div>
+      <span
+        style={{
+          fontFamily: "'Poppins',sans-serif",
+          fontSize: "13px",
+          color: THEME.text,
+        }}
+      >
+        {formatCurrency(cgst)}
+      </span>
+    </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "'Poppins',sans-serif",
-                      fontSize: "13px",
-                      color: THEME.textMuted,
-                    }}
-                  >
-                    SGST 2.5%
-                  </span>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginBottom: "10px",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "'Poppins',sans-serif",
+          fontSize: "13px",
+          color: THEME.textMuted,
+        }}
+      >
+        SGST 2.5%
+      </span>
 
-                  <span
-                    style={{
-                      fontFamily: "'Poppins',sans-serif",
-                      fontSize: "13px",
-                      color: THEME.text,
-                    }}
-                  >
-                    {formatPrice(sgst)}
-                  </span>
-                </div>
+      <span
+        style={{
+          fontFamily: "'Poppins',sans-serif",
+          fontSize: "13px",
+          color: THEME.text,
+        }}
+      >
+        {formatCurrency(sgst)}
+      </span>
+    </div>
+  </>
+)}
 
                 <div
                   style={{
@@ -580,7 +613,7 @@ export default function CheckoutPage({ setPage }) {
                       color: GOLD,
                     }}
                   >
-                    {formatPrice(total)}
+                    {formatCurrency(total)}
                   </span>
                 </div>
               </div>

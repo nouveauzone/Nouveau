@@ -23,7 +23,10 @@ export default function CartPage({ setPage }) {
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
-const shipping = getShippingChargeForCurrency(currencyCode);
+const shipping = getShippingChargeForCurrency(
+  currencyCode,
+  subtotal
+);
 
 const convertedSubtotal =
   currencyCode === "INR"

@@ -50,13 +50,18 @@ export const SHIPPING_FREE_THRESHOLD = 2999;
 /**
  * Returns the fixed shipping charge for the selected currency.
  */
-export const getShippingChargeForCurrency = (currencyCode = "INR") => {
+export const getShippingChargeForCurrency = (
+  currencyCode = "INR",
+  subtotal = 0
+) => {
   const code = String(currencyCode || "INR").toUpperCase();
 
-  return (
-    SHIPPING_FEE_BY_CURRENCY[code] ??
-    SHIPPING_FEE_BY_CURRENCY.INR
-  );
+  // Free shipping only in India
+  if (code === "INR" && subtotal >= SHIPPING_FREE_THRESHOLD) {
+    return 0;
+  }
+
+  return SHIPPING_FEE_BY_CURRENCY[code] ?? SHIPPING_FEE_BY_CURRENCY.INR;
 };
 
 /**
