@@ -16,7 +16,21 @@ export const normalizeSizeLabel = (size = "") => {
   return s;
 };
 
-export const SHIPPING_FREE_THRESHOLD = 2999;
-export const SHIPPING_FEE = 99;
+export const SHIPPING_FEE_BY_CURRENCY = {
+  INR: 99,
+  USD: 38,
+  CAD: 38,
+  AUD: 180,
+  AED: 90,
+};
 
-export const getShippingCharge = (subtotal) => (subtotal >= SHIPPING_FREE_THRESHOLD ? 0 : SHIPPING_FEE);
+export const SHIPPING_FREE_THRESHOLD = 2999;
+
+export const getShippingChargeForCurrency = (currencyCode = "INR", rates = {}) => {
+  const code = String(currencyCode || "INR").toUpperCase();
+  const amount = SHIPPING_FEE_BY_CURRENCY[code] ?? SHIPPING_FEE_BY_CURRENCY.INR;
+  const rate = Number(rates?.[code]) || 1;
+  return amount / rate;
+};
+
+export const getShippingCharge = () => SHIPPING_FEE_BY_CURRENCY.INR;

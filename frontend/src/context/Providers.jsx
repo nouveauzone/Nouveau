@@ -1,9 +1,10 @@
-import { useReducer, useState, useEffect, useCallback, createContext } from "react";
+import { useReducer, useState, useEffect, useCallback, createContext, useContext } from "react";
 import { AuthContext }     from "./AuthContext";
 import { CartContext }     from "./CartContext";
 import { WishlistContext } from "./WishlistContext";
 import { CurrencyProvider } from "./CurrencyContext";
-import { getShippingCharge } from "../data/constants";
+import { CurrencyContext } from "./CurrencyContext";
+import { getShippingChargeForCurrency } from "../data/constants";
 import { AUTH_EXPIRED_EVENT } from "../services/apiService";
 import { clearAuthSession, hydrateAuthSession, persistAuthSession } from "../utils/authSession";
 import { fixImageUrl } from "../utils/imageUrl";
@@ -187,6 +188,7 @@ export default function Providers({ children }) {
   const [authState, authDispatch] = useReducer(authReducer, hydrateAuthState());
   const [cart,      cartDispatch] = useReducer(cartReducer, asArray(ls.get("nouveau_cart", [])));
   const [wishlist,  setWishlist]  = useState(() => asArray(ls.get("nouveau_wish", [])));
+  const { currencyCode, rates } = useContext(CurrencyContext);
 
   useEffect(() => {
     try {
@@ -306,7 +308,7 @@ export default function Providers({ children }) {
     }
 
     const subtotal       = items.reduce((s,i) => s + i.price*i.qty, 0);
-    const shippingCharge = getShippingCharge(subtotal);
+    const shippingCharge = getShippingChargeForCurrency(currencyCode, rates);
     const total          = subtotal + shippingCharge;
     const now            = new Date();
     const fmt = (d) => d.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});

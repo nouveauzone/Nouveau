@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { THEME } from "../styles/theme";
+import { SHIPPING_FEE_BY_CURRENCY } from "../data/constants";
 
 const GOLD = "#C9A227";
 
@@ -8,28 +9,28 @@ export const SHIPPING_OPTIONS_BY_CURRENCY = {
     code: "US",
     flag: "🇺🇸",
     title: "Shipping to USA",
-    price: "$38 USD",
+    price: `$${SHIPPING_FEE_BY_CURRENCY.USD} USD`,
     subtext: "Delivery in 20 business days",
   },
   CAD: {
     code: "CA",
     flag: "🇨🇦",
     title: "Shipping to Canada",
-    price: "$38 CAD",
+    price: `$${SHIPPING_FEE_BY_CURRENCY.CAD} CAD`,
     subtext: "Delivery in 20 business days",
   },
   AUD: {
     code: "AU",
     flag: "🇦🇺",
     title: "Shipping to Australia",
-    price: "A$180 AUD",
+    price: `A$${SHIPPING_FEE_BY_CURRENCY.AUD} AUD`,
     subtext: "Delivery in 20 business days",
   },
   AED: {
     code: "AE",
     flag: "🇦🇪",
     title: "Shipping to UAE (Dubai)",
-    price: "AED 90",
+    price: `AED ${SHIPPING_FEE_BY_CURRENCY.AED}`,
     subtext: "Delivery in 20 business days",
   },
 };
