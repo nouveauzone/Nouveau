@@ -188,7 +188,6 @@ export default function Providers({ children }) {
   const [authState, authDispatch] = useReducer(authReducer, hydrateAuthState());
   const [cart,      cartDispatch] = useReducer(cartReducer, asArray(ls.get("nouveau_cart", [])));
   const [wishlist,  setWishlist]  = useState(() => asArray(ls.get("nouveau_wish", [])));
-  const { currencyCode, rates } = useContext(CurrencyContext);
 
   useEffect(() => {
     try {
@@ -308,7 +307,7 @@ export default function Providers({ children }) {
     }
 
     const subtotal       = items.reduce((s,i) => s + i.price*i.qty, 0);
-    const shippingCharge = getShippingChargeForCurrency(currencyCode, rates);
+    const shippingCharge = getShippingChargeForCurrency();
     const total          = subtotal + shippingCharge;
     const now            = new Date();
     const fmt = (d) => d.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
