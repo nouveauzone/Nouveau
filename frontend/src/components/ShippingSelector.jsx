@@ -3,29 +3,40 @@ import { THEME } from "../styles/theme";
 
 const GOLD = "#C9A227";
 
-const OPTIONS = [
-  {
+export const SHIPPING_OPTIONS_BY_CURRENCY = {
+  USD: {
     code: "US",
     flag: "🇺🇸",
     title: "Shipping to USA",
     price: "$38 USD",
     subtext: "Delivery in 20 business days",
   },
-  {
+  CAD: {
     code: "CA",
     flag: "🇨🇦",
     title: "Shipping to Canada",
     price: "$38 CAD",
     subtext: "Delivery in 20 business days",
   },
-];
+  AUD: {
+    code: "AU",
+    flag: "🇦🇺",
+    title: "Shipping to Australia",
+    price: "A$180 AUD",
+    subtext: "Delivery in 20 business days",
+  },
+  AED: {
+    code: "AE",
+    flag: "🇦🇪",
+    title: "Shipping to UAE (Dubai)",
+    price: "AED 90",
+    subtext: "Delivery in 20 business days",
+  },
+};
 
 export default function ShippingSelector({ currencyCode, onSelect, selected: controlledSelected }) {
-  const visibleOptions = currencyCode === "USD"
-    ? [OPTIONS[0]]
-    : currencyCode === "CAD"
-      ? [OPTIONS[1]]
-      : OPTIONS;
+  const visibleOption = SHIPPING_OPTIONS_BY_CURRENCY[currencyCode] || null;
+  const visibleOptions = visibleOption ? [visibleOption] : [];
 
   useEffect(() => {
     const defaultOption = visibleOptions[0];
@@ -35,6 +46,8 @@ export default function ShippingSelector({ currencyCode, onSelect, selected: con
   }, [controlledSelected, onSelect, visibleOptions]);
 
   const selected = controlledSelected;
+
+  if (!visibleOptions.length) return null;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full" style={{ marginBottom: "24px" }}>

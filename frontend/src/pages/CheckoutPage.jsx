@@ -12,6 +12,7 @@ import { fixImageUrl } from "../utils/imageUrl";
 import { getShippingCharge } from "../data/constants";
 import { ToastContext } from "../context/Providers";
 import apiService from "../services/apiService";
+import { SHIPPING_OPTIONS_BY_CURRENCY } from "../components/ShippingSelector";
 
 const GOLD = "#C9A227";
 const CRIMSON = "#B71C1C";
@@ -48,12 +49,18 @@ export default function CheckoutPage({ setPage }) {
   const [errors, setErrors] = useState({});
   const [discountInfo, setDiscountInfo] = useState(null);
   const [loadingDiscount, setLoadingDiscount] = useState(false);
-  const [shippingCountry, setShippingCountry] = useState(() => (currencyCode === "USD" ? "US" : currencyCode === "CAD" ? "CA" : null)); // "US" | "CA" | null (domestic)
+  const [shippingCountry, setShippingCountry] = useState(() => SHIPPING_OPTIONS_BY_CURRENCY[currencyCode]?.code || null);
 
-  // Shown only for shoppers browsing in USD or CAD — everyone else keeps the
-  // existing domestic (India) shipping flow untouched.
-  const isInternationalShipping = currencyCode === "USD" || currencyCode === "CAD";
-  const INTL_SHIPPING_FLAT_FEE = 38; // in the shopper's own currency (USD or CAD)
+  // Shown only for shoppers browsing in USD, CAD, AUD, or AED — everyone else
+  // keeps the existing domestic (India) shipping flow untouched.
+  const intlShippingOption = SHIPPING_OPTIONS_BY_CURRENCY[currencyCode] || null;
+  const isInternationalShipping = Boolean(intlShippingOption);
+  const INTL_SHIPPING_FEE = {
+    USD: 38,
+    CAD: 38,
+    AUD: 180,
+    AED: 90,
+  }[currencyCode] || 0;
 
   useEffect(() => {
     const updateViewport = () => setIsMobile(window.innerWidth < 768);
@@ -70,13 +77,7 @@ export default function CheckoutPage({ setPage }) {
   }, []);
 
   useEffect(() => {
-    if (currencyCode === "USD") {
-      setShippingCountry("US");
-    } else if (currencyCode === "CAD") {
-      setShippingCountry("CA");
-    } else {
-      setShippingCountry(null);
-    }
+    setShippingCountry(intlShippingOption?.code || null);
   }, [currencyCode]);
 
   // ── Fetch returning customer discount info ──────────────────────────────
@@ -113,7 +114,7 @@ export default function CheckoutPage({ setPage }) {
   const intlShippingRate = Number(rates?.[currencyCode]) || 0;
   const intlShippingChargeINR =
     isInternationalShipping && shippingCountry && intlShippingRate
-      ? INTL_SHIPPING_FLAT_FEE / intlShippingRate
+      ? INTL_SHIPPING_FEE / intlShippingRate
       : null;
   const shipping = intlShippingChargeINR != null ? intlShippingChargeINR : getShippingCharge(subtotal);
 
@@ -426,7 +427,7 @@ export default function CheckoutPage({ setPage }) {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                   <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textMuted }}>
-                    {intlShippingChargeINR != null ? `Shipping (${shippingCountry === "US" ? "USA" : "Canada"})` : "Shipping"}
+                    {intlShippingChargeINR != null ? `Shipping (${intlShippingOption?.title?.replace("Shipping to ", "") || "International"})` : "Shipping"}
                   </span>
                   <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: shipping === 0 ? "#2ecc71" : THEME.text }}>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
                 </div>
