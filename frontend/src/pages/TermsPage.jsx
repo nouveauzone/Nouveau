@@ -1,7 +1,7 @@
 import { THEME } from "../styles/theme";
 import Footer from "../components/Footer";
 import OrnamentDivider from "../components/OrnamentDivider";
-import { SHIPPING_FREE_THRESHOLD } from "../data/constants";
+import { SHIPPING_FEE } from "../data/constants";
 
 export default function TermsPage({ setPage }) {
   return (
@@ -67,7 +67,7 @@ export default function TermsPage({ setPage }) {
           {[
             ["Processing Time","1–2 business days"],
             ["Delivery Time","5–7 business days across India"],
-            ["Free Shipping",`On all orders above ₹${SHIPPING_FREE_THRESHOLD.toLocaleString("en-IN")}`],
+            ["Shipping",`Flat shipping fee of ₹${SHIPPING_FEE.toLocaleString("en-IN")} applies to all orders`],
             ["COD Available","Cash on Delivery across India"],
           ].map(([label, value]) => (
             <div key={label} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 0", borderBottom:`1px solid ${THEME.border}` }}>

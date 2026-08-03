@@ -10,7 +10,7 @@ import OrnamentDivider from "../components/OrnamentDivider";
 import { BtnOutline, BtnPrimary } from "../components/Buttons";
 import Footer from "../components/Footer";
 import API from "../services/apiService";
-import { SHIPPING_FREE_THRESHOLD, normalizeCategory } from "../data/constants";
+import { SHIPPING_FEE, normalizeCategory } from "../data/constants";
 import { fixImageUrl } from "../utils/imageUrl";
 
 const normalizeProduct = (product = {}) => ({
@@ -124,7 +124,7 @@ export default function HomePage({ setPage, setSelectedProduct }) {
       {/* Marquee */}
       <div style={{ overflow:"hidden", background:THEME.crimson, padding:"14px 0" }}>
         <div style={{ display:"flex", animation:"marquee 28s linear infinite", whiteSpace:"nowrap" }}>
-          {Array(4).fill(["Indian Ethnic Wear", "Premium Western Wear", "Nouveau™", "Women's Wear", `Free Shipping ₹${SHIPPING_FREE_THRESHOLD.toLocaleString("en-IN")}+`]).flat().map((t, i) => (
+          {Array(4).fill(["Indian Ethnic Wear", "Premium Western Wear", "Nouveau™", "Women's Wear", `Flat Shipping ₹${SHIPPING_FEE.toLocaleString("en-IN")}`]).flat().map((t, i) => (
             <span key={i} style={{ fontFamily:"'Poppins',sans-serif", fontSize:"11px", letterSpacing:"5px", color:"rgba(255,255,255,0.88)", textTransform:"uppercase", padding:"0 32px", flexShrink:0 }}>
               {t} <span style={{ color:THEME.gold }}>✦</span>
             </span>
