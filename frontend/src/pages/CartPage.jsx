@@ -13,12 +13,24 @@ const CRIMSON = "#B71C1C";
 
 export default function CartPage({ setPage }) {
   const { cart, dispatch } = useContext(CartContext);
-  const { formatPrice, formatCurrency, currencyCode } = useContext(CurrencyContext);
+  const {
+  formatPrice,
+  formatCurrency,
+  currencyCode,
+  exchangeRate,
+} = useContext(CurrencyContext);
   const { isAuthenticated } = useContext(AuthContext);
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const shipping = getShippingChargeForCurrency(currencyCode);
-  const total = subtotal + shipping;
+
+const shipping = getShippingChargeForCurrency(currencyCode);
+
+const convertedSubtotal =
+  currencyCode === "INR"
+    ? subtotal
+    : subtotal * exchangeRate;
+
+const total = convertedSubtotal + shipping;
 
 
   if (!cart.length) {
@@ -127,7 +139,7 @@ export default function CartPage({ setPage }) {
 
               <div style={{ display: "flex", justifyContent: "space-between", margin: "24px 0", paddingTop: "20px", borderTop: `1px solid ${THEME.border}` }}>
                 <span style={{ fontWeight: 700, fontSize: "18px" }}>Total</span>
-                <span style={{ fontWeight: 800, fontSize: "22px", color: GOLD }}>{formatPrice(total)}</span>
+                <span style={{ fontWeight: 800, fontSize: "22px", color: GOLD }}>{formatCurrency(total)}</span>
               </div>
 
               <BtnPrimary onClick={() => setPage("Checkout")} style={{ width: "100%", justifyContent: "center", borderRadius: "12px", padding: "16px" }}>
