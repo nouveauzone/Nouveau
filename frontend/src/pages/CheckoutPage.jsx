@@ -353,7 +353,7 @@ export default function CheckoutPage({ setPage }) {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                   <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textMuted }}>
-                    {intlShippingChargeINR != null ? `Shipping (${intlShippingOption?.title?.replace("Shipping to ", "") || "International"})` : "Shipping"}
+                    {isInternationalShipping ? `Shipping (${intlShippingOption?.title?.replace("Shipping to ", "") || "International"})` : "Shipping"}
                   </span>
                   <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.text }}>{formatPrice(shipping)}</span>
                 </div>
