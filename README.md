@@ -70,16 +70,6 @@ nouveau-complete-full/
 
 ---
 
-## 🔐 Admin Panel
-
-Default admin user is auto-bootstrapped on first run (from `.env`):
-- Email: `admin@nouveau.com`
-- Password: `Admin@Nouveau2024!`
-
-Change before production.
-
----
-
 ## 💳 Payments
 
 Configure Razorpay keys in `backend/.env`:
