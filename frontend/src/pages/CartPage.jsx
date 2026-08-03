@@ -17,7 +17,7 @@ export default function CartPage({ setPage }) {
   const { isAuthenticated } = useContext(AuthContext);
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const shipping = getShippingChargeForCurrency(currencyCode, rates);
+  const shipping = getShippingChargeForCurrency(currencyCode);
   const total = subtotal + shipping;
 
 

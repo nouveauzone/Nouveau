@@ -244,6 +244,10 @@ input, textarea, select {
     min-width: 0 !important;
   }
 
+  .checkout-summary * {
+    min-width: 0;
+  }
+
   .checkout-summary p,
   .checkout-summary span {
     min-width: 0;
