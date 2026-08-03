@@ -24,8 +24,6 @@ export const SHIPPING_FEE_BY_CURRENCY = {
   AED: 90,
 };
 
-export const SHIPPING_FEE = SHIPPING_FEE_BY_CURRENCY.INR;
-
 export const SHIPPING_FREE_THRESHOLD = 2999;
 
 export const getShippingChargeForCurrency = (currencyCode = "INR", rates = {}) => {
