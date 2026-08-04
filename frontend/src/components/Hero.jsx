@@ -1,574 +1,556 @@
-import { useEffect, useState } from "react";
-import bannerImage from "../assets/images/banner.png";
+import bannerImage from "../assets/images/banner.jpeg";
 
 export default function Hero({ setPage }) {
-  const [rains, setRains] = useState([]);
-  const [petals, setPetals] = useState([]);
-  const [reduceMotion, setReduceMotion] = useState(false);
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth < 768 : false
-  );
+  const features = [
+  ];
 
-  useEffect(() => {
-    const motionMq = typeof window !== "undefined" && window.matchMedia
-      ? window.matchMedia("(prefers-reduced-motion: reduce)")
-      : null;
-    const mobileMq = typeof window !== "undefined" && window.matchMedia
-      ? window.matchMedia("(max-width: 768px)")
-      : null;
-
-    const buildEffects = () => {
-      const reduced = motionMq ? motionMq.matches : false;
-      const mobile = mobileMq ? mobileMq.matches : false;
-      setReduceMotion(reduced);
-      setIsMobile(mobile);
-
-      if (reduced) {
-        setRains([]);
-        setPetals([]);
-        return;
-      }
-
-      const rainCount = mobile ? 22 : 36;
-      const petalCount = mobile ? 6 : 10;
-
-      setRains(
-        Array.from({ length: rainCount }).map(() => ({
-          height: Math.round((mobile ? 36 : 48) + Math.random() * (mobile ? 48 : 64)),
-          duration: (0.55 + Math.random() * (mobile ? 0.65 : 0.85)).toFixed(2),
-          delay: (Math.random() * 3.5).toFixed(2),
-          left: mobile
-            ? 8 + Math.random() * 92
-            : Math.random() < 0.72 ? 28 + Math.random() * 72 : Math.random() * 28,
-          skew: -8 + Math.random() * 16,
-          opacity: (mobile ? 0.22 : 0.18) + Math.random() * (mobile ? 0.18 : 0.22),
-        }))
-      );
-
-      setPetals(
-        Array.from({ length: petalCount }).map(() => ({
-          size: Math.round((mobile ? 5 : 6) + Math.random() * (mobile ? 4 : 5)),
-          duration: Math.round((mobile ? 8 : 9) + Math.random() * (mobile ? 5 : 7)),
-          delay: (Math.random() * 6).toFixed(2),
-          left: Math.round(Math.random() * 100),
-          dx: (Math.random() < 0.5 ? -1 : 1) * ((mobile ? 16 : 24) + Math.random() * (mobile ? 24 : 36)),
-          rotate: Math.round(160 + Math.random() * 120),
-        }))
-      );
-    };
-
-    buildEffects();
-
-    const onMotionChange = () => buildEffects();
-    const onMobileChange = () => buildEffects();
-    motionMq?.addEventListener("change", onMotionChange);
-    mobileMq?.addEventListener("change", onMobileChange);
-
-    return () => {
-      motionMq?.removeEventListener("change", onMotionChange);
-      mobileMq?.removeEventListener("change", onMobileChange);
-    };
-  }, []);
+  const decorativeParticles = [
+    { className: "nvz-particle nvz-particle--saffron", style: { top: "10%", left: "8%", width: "8px", height: "8px", animationDelay: "0s" } },
+    { className: "nvz-particle nvz-particle--sparkle", style: { top: "18%", right: "12%", width: "6px", height: "6px", animationDelay: "0.8s" } },
+    { className: "nvz-particle nvz-particle--leaf", style: { top: "34%", left: "16%", width: "10px", height: "6px", animationDelay: "1.4s" } },
+    { className: "nvz-particle nvz-particle--saffron", style: { bottom: "18%", right: "18%", width: "7px", height: "7px", animationDelay: "1.1s" } },
+    { className: "nvz-particle nvz-particle--sparkle", style: { bottom: "34%", left: "11%", width: "5px", height: "5px", animationDelay: "1.8s" } },
+  ];
 
   return (
-    <section className="nvz-hero-wrapper">
+    <section className="nvz-hero-banner" aria-label="Featured banner">
       <style>{`
-        .nvz-hero-wrapper {
+        .nvz-hero-banner {
           position: relative;
           width: 100%;
-          min-height: 100vh;
-          background: linear-gradient(180deg, #1c2117 0%, #23281d 46%, #2c3224 100%);
-          display: flex;
-          align-items: center;
+          height: 650px;
           overflow: hidden;
-          color: #f6f2e7;
+          background: #111111;
         }
 
-        .nvz-hero-bg-container {
+        .nvz-hero-banner::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, rgba(255,153,51,.08), rgba(255,255,255,.03), rgba(19,136,8,.08));
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        .nvz-hero-particles {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 2;
+          overflow: hidden;
+        }
+
+        .nvz-particle {
+          position: absolute;
+          border-radius: 999px;
+          opacity: 0.15;
+          animation: nvz-hero-float 7s ease-in-out infinite;
+        }
+
+        .nvz-particle--saffron {
+          background: #FF9933;
+          box-shadow: 0 0 16px rgba(255, 153, 51, 0.18);
+        }
+
+        .nvz-particle--sparkle {
+          background: #FFF8F0;
+          box-shadow: 0 0 12px rgba(255, 248, 240, 0.3);
+        }
+
+        .nvz-particle--leaf {
+          background: #138808;
+          border-radius: 999px 0 999px 0;
+          transform: rotate(-18deg);
+          box-shadow: 0 0 16px rgba(19, 136, 8, 0.16);
+        }
+
+        .nvz-hero-banner__image {
+          width: 100%;
+          height: 100%;
+          display: block;
+          object-fit: cover;
+          object-position: center;
+          background-color: #111111;
+        }
+
+        .nvz-hero-banner__imageWrap {
           position: absolute;
           inset: 0;
           z-index: 0;
-          pointer-events: none;
         }
 
-        .nvz-hero-bg-container::before {
-          content: '';
+        .nvz-hero-overlay {
           position: absolute;
           inset: 0;
-          z-index: 2;
-          background:
-            linear-gradient(90deg, rgba(7,12,10,0.9) 0%, rgba(12,20,16,0.84) 28%, rgba(14,24,20,0.42) 54%, rgba(16,28,24,0.12) 74%, rgba(16,28,24,0) 100%),
-            radial-gradient(circle at 72% 18%, rgba(201,169,97,0.12), transparent 22%),
-            radial-gradient(circle at 18% 28%, rgba(74, 108, 92, 0.28), transparent 30%);
-          pointer-events: none;
-        }
-
-        .nvz-hero-bg-container::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          z-index: 3;
-          background:
-            linear-gradient(180deg, rgba(18, 28, 24, 0.18) 0%, rgba(12, 20, 16, 0.08) 42%, rgba(8, 14, 12, 0.28) 100%),
-            radial-gradient(circle at 50% 0%, rgba(233, 239, 234, 0.08), transparent 48%);
-          pointer-events: none;
-          animation: nvz-mist-drift 24s ease-in-out infinite;
-        }
-
-        .nvz-hero-bg-image {
-          position: absolute;
-          inset: 0;
-          height: 100%;
-          width: 100%;
-          object-fit: cover;
-          object-position: 52% center;
-          filter: saturate(0.78) contrast(1.02) brightness(0.84) hue-rotate(8deg);
-          animation: nvz-monsoon-breathe 28s ease-in-out infinite;
-        }
-
-        .nvz-monsoon-rain-layer,
-        .nvz-monsoon-petal-layer,
-        .nvz-monsoon-mist {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-        }
-
-        .nvz-monsoon-rain-layer {
-          z-index: 4;
-          overflow: hidden;
-        }
-
-        .nvz-monsoon-petal-layer {
-          z-index: 5;
-          overflow: hidden;
-        }
-
-        .nvz-monsoon-mist {
-          z-index: 6;
-          background:
-            radial-gradient(circle at 20% 80%, rgba(233, 239, 234, 0.08), transparent 34%),
-            radial-gradient(circle at 82% 70%, rgba(255, 255, 255, 0.06), transparent 28%);
-          mix-blend-mode: screen;
-          animation: nvz-mist-drift 18s ease-in-out infinite reverse;
-        }
-
-        .nvz-hero-mobile-fade {
-          display: none;
-          position: absolute;
-          bottom: -2px;
-          left: 0;
-          width: 100%;
-          height: 150px;
-          background: linear-gradient(to top, rgba(28,33,23,1) 8%, rgba(28,33,23,0.72) 42%, transparent 100%);
-          z-index: 7;
-          pointer-events: none;
-        }
-
-        .nvz-rain-streak {
-          position: absolute;
-          top: -60px;
-          width: 1px;
-          border-radius: 999px;
-          background: linear-gradient(180deg, transparent, rgba(233, 239, 234, 0.55), rgba(255, 255, 255, 0.18), transparent);
-          transform: translateY(0);
-        }
-
-        .nvz-petal {
-          position: absolute;
-          top: -16px;
-          background: linear-gradient(135deg, #d4a5a5 0%, #b87a7a 100%);
-          border-radius: 100% 0 100% 0;
-          opacity: 0;
-          box-shadow: 0 0 8px rgba(184, 122, 122, 0.18);
-        }
-
-        @keyframes nvz-rain-fall {
-          0% { transform: translateY(-60px); }
-          100% { transform: translateY(calc(100vh + 80px)); }
-        }
-
-        @keyframes nvz-rain-fall-mobile {
-          0% { transform: translateY(-40px); }
-          100% { transform: translateY(calc(72vh + 80px)); }
-        }
-
-        @keyframes nvz-petal-fall {
-          0% { transform: translateX(0) translateY(-8vh) rotate(0deg); opacity: 0; }
-          8% { opacity: 0.85; }
-          100% { transform: translateX(var(--petal-dx)) translateY(110vh) rotate(var(--petal-rot)); opacity: 0; }
-        }
-
-        @keyframes nvz-petal-fall-mobile {
-          0% { transform: translateX(0) translateY(-24px) rotate(0deg); opacity: 0; }
-          8% { opacity: 0.75; }
-          100% { transform: translateX(var(--petal-dx)) translateY(calc(72vh + 40px)) rotate(var(--petal-rot)); opacity: 0; }
-        }
-
-        @keyframes nvz-monsoon-breathe {
-          0%, 100% { filter: saturate(0.78) contrast(1.02) brightness(0.84) hue-rotate(8deg); }
-          50% { filter: saturate(0.82) contrast(1.04) brightness(0.88) hue-rotate(8deg); }
-        }
-
-        @keyframes nvz-mist-drift {
-          0%, 100% { transform: translateY(0); opacity: 0.92; }
-          50% { transform: translateY(-10px); opacity: 1; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .nvz-rain-streak,
-          .nvz-petal,
-          .nvz-hero-bg-image,
-          .nvz-hero-bg-container::after,
-          .nvz-monsoon-mist {
-            animation: none !important;
-          }
-        }
-
-        .nvz-hero-main {
-          position: relative;
-          z-index: 2;
-          width: 100%;
-          max-width: 1380px;
-          margin: 0 auto;
-          padding: clamp(32px, 4vw, 72px) clamp(24px, 5vw, 80px);
           display: flex;
           align-items: center;
           justify-content: flex-start;
-          min-height: 100vh;
+          padding: 48px 56px;
           pointer-events: none;
-        }
-
-        .nvz-hero-main > * {
-          pointer-events: auto;
-        }
-
-        .nvz-logo-top-left {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-bottom: 32px;
-        }
-
-        .nvz-logo-text {
-          font-family: 'Playfair Display', serif;
-          font-size: 28px;
-          color: #343e24;
-          font-weight: 600;
-        }
-
-        .nvz-tm {
-          font-family: sans-serif;
-          font-size: 11px;
-          vertical-align: super;
-          color: #8f7a43;
-          margin-left: 2px;
-          font-weight: 700;
+          z-index: 3;
         }
 
         .nvz-hero-content {
-          margin-top: 0;
-          margin-bottom: 0;
-          max-width: 520px;
-          padding: clamp(12px, 1vw, 20px) 0;
+          max-width: 420px;
+          width: 100%;
+          padding-left: 24px;
+          pointer-events: auto;
+          opacity: 0;
+          transform: translateY(24px);
+          animation: nvz-hero-fade-up 700ms ease forwards;
         }
 
-        .nvz-badge {
-          font-family: 'Inter', 'Poppins', sans-serif;
-          font-size: 13px;
-          letter-spacing: 4px;
+        .nvz-hero-badge {
+          display: inline-block;
+          margin-bottom: 14px;
+          padding: 8px 14px;
+          border-radius: 999px;
+          background: linear-gradient(90deg, rgba(255,153,51,0.95), rgba(255,255,255,0.92), rgba(19,136,8,0.95));
+          color: #1A1A1A;
+          font-size: 11px;
+          letter-spacing: 1.6px;
           text-transform: uppercase;
-          color: #d7b56f;
-          margin-bottom: 22px;
+          font-weight: 600;
+          font-family: 'Poppins', 'Inter', sans-serif;
+          box-shadow: 0 8px 24px rgba(255, 153, 51, 0.18), 0 0 18px rgba(19, 136, 8, 0.12);
         }
 
-        .nvz-main-title {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(50px, 5.2vw, 86px);
-          line-height: 0.95;
+        .nvz-hero-title {
+          font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+          font-size: clamp(34px, 3.2vw, 54px);
+          line-height: 1.02;
+          margin: 0 0 16px;
+          color: #FFF8F0;
           font-weight: 700;
-          margin: 0 0 16px 0;
-          color: #f4f1e8;
-          letter-spacing: -0.04em;
         }
 
-        .nvz-highlight {
-          display: block;
-          font-size: clamp(36px, 5.1vw, 66px);
-          color: #d4b264;
-          font-style: italic;
-          margin-top: 12px;
-          letter-spacing: -0.02em;
-          line-height: 1.05;
+        .nvz-hero-title .nvz-hero-celebrate {
+          color: #7A1E1E;
+          display: inline;
         }
 
-        .nvz-highlight-line {
-          display: block;
+        .nvz-hero-title .nvz-hero-every-moment {
+          color: #FF9933;
+          display: inline;
         }
 
-        .nvz-description {
-          font-family: 'Inter', 'Poppins', sans-serif;
-          font-size: clamp(16px, 1.2vw, 18px);
-          line-height: 1.8;
-          color: rgba(255, 255, 255, 0.84);
-          margin: 0 0 38px 0;
-          max-width: 520px;
+        .nvz-hero-title .nvz-hero-in {
+          color: #FFF8F0;
+          display: inline;
+        }
+
+        .nvz-hero-title .nvz-hero-highlight {
+          color: #138808;
+          display: inline-block;
+        }
+
+        .nvz-hero-subtitle {
+          font-family: 'Poppins', 'Inter', sans-serif;
+          font-size: 15px;
+          line-height: 1.75;
+          color: #4B3B2B;
+          margin: 0 0 18px;
+        }
+
+        .nvz-hero-features {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin: 0 0 24px;
+          padding: 0;
+          list-style: none;
+        }
+
+        .nvz-hero-features li {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-family: 'Poppins', 'Inter', sans-serif;
+          font-size: 14px;
+          color: #3B2A1F;
+          font-weight: 600;
+          transition: color 220ms ease;
+        }
+
+        .nvz-hero-features li span {
+          color: #FF9933;
+          font-size: 14px;
+          transition: color 220ms ease;
+        }
+
+        .nvz-hero-features li:hover {
+          color: #138808;
+        }
+
+        .nvz-hero-features li:hover span {
+          color: #138808;
         }
 
         .nvz-hero-actions {
           display: flex;
-          gap: 16px;
-          margin-bottom: 0;
+          gap: 12px;
           flex-wrap: wrap;
         }
 
-        .nvz-btn-shop,
-        .nvz-btn-secondary {
-          padding: 0 40px;
-          height: 56px;
-          font-family: 'Inter', 'Poppins', sans-serif;
-          font-size: 15px;
+        .nvz-hero-mobile-panel {
+          display: none;
+        }
+
+        .nvz-hero-btn {
+          border-radius: 9999px;
+          padding: 12px 20px;
+          font-family: 'Poppins', 'Inter', sans-serif;
+          font-size: 13px;
           font-weight: 700;
-          border-radius: 999px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          min-width: 200px;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
-          letter-spacing: 1px;
+          transition: transform 300ms ease, background 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+          cursor: pointer;
         }
 
-        .nvz-btn-shop {
-          background: rgba(93, 112, 70, 0.78);
-          color: #f6f2e7;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+        .nvz-hero-btn--primary {
+          background: linear-gradient(90deg, #FF9933, #FFFFFF, #138808);
+          color: #1A1A1A;
+          border: 1px solid rgba(255,255,255,0.35);
         }
 
-        .nvz-btn-shop:hover {
-          background: rgba(82, 99, 61, 0.92);
-          transform: translateY(-2px);
-          box-shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
-        }
-
-        .nvz-btn-secondary {
+        .nvz-hero-btn--secondary {
           background: transparent;
-          border: 1.5px solid rgba(255, 255, 255, 0.22);
-          color: rgba(255, 255, 255, 0.88);
+          color: #138808;
+          border: 2px solid #138808;
         }
 
-        .nvz-btn-secondary:hover {
-          background: rgba(255, 255, 255, 0.08);
-          transform: translateY(-2px);
+        .nvz-hero-btn:hover {
+          transform: translateY(-2px) scale(1.03);
         }
 
-        .nvz-desktop-only {
-          display: inline;
+        .nvz-hero-btn--primary:hover {
+          box-shadow: 0 12px 28px rgba(255, 153, 51, 0.22), 0 10px 24px rgba(19, 136, 8, 0.18);
         }
 
-        /* --- MOBILE SPECIFIC FIXES --- */
-        @media (max-width: 768px) {
-          .nvz-hero-wrapper {
-            flex-direction: column;
-            min-height: auto;
-            position: relative;
-            padding-top: 0;
-            overflow: hidden;
-            background: linear-gradient(180deg, #1c2117 0%, #23281d 46%, #2c3224 100%);
+        .nvz-hero-btn--secondary:hover {
+          background: #138808;
+          color: #fff;
+        }
+
+        @keyframes nvz-hero-fade-up {
+          from {
+            opacity: 0;
+            transform: translateY(24px);
           }
-          
-          .nvz-desktop-only { display: none; }
-          
-          .nvz-hero-bg-container {
-            position: relative;
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes nvz-hero-float {
+          0% {
+            transform: translateY(0) translateX(0);
+          }
+          50% {
+            transform: translateY(-8px) translateX(3px);
+          }
+          100% {
+            transform: translateY(0) translateX(0);
+          }
+        }
+
+        @media (min-width: 768px) and (max-width: 1199px) {
+          .nvz-hero-banner {
+            height: auto;
+            min-height: 600px;
+          }
+
+          .nvz-hero-overlay {
+            padding: 32px 32px 40px;
+            align-items: center;
+          }
+
+          .nvz-hero-content {
+            max-width: 60%;
+            padding-left: 8px;
+          }
+
+          .nvz-hero-title {
+            font-size: 48px;
+            line-height: 1.05;
+          }
+
+          .nvz-hero-subtitle {
+            font-size: 18px;
+            line-height: 1.65;
+          }
+
+          .nvz-hero-actions {
+            flex-wrap: nowrap;
+            gap: 12px;
+          }
+        }
+
+        @media (max-width: 767px) {
+          .nvz-hero-banner {
+            height: auto;
+            min-height: 540px;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background: #111111;
+          }
+
+          .nvz-hero-banner__image {
             width: 100%;
-            height: clamp(420px, 72vh, 620px);
-            min-height: 420px;
-            order: 1;
+            height: 230px;
+            object-fit: cover;
+            object-position: right center;
+            border-radius: 0;
+            z-index: 0;
+            filter: brightness(0.9) contrast(0.98) saturate(0.96);
+          }
+
+          .nvz-hero-banner__imageWrap {
+            position: relative;
+            inset: auto;
+            width: 100%;
+            height: 230px;
             z-index: 0;
           }
 
-          .nvz-hero-bg-container::before {
-            background:
-              linear-gradient(180deg, rgba(8,12,10,0.18) 0%, rgba(10,16,13,0.08) 34%, rgba(12,18,15,0.42) 72%, rgba(14,20,17,0.72) 100%),
-              linear-gradient(90deg, rgba(7,12,10,0.42) 0%, rgba(12,20,16,0.18) 42%, rgba(16,28,24,0.04) 100%),
-              radial-gradient(circle at 50% 18%, rgba(201,169,97,0.14), transparent 28%);
+          .nvz-hero-overlay {
+            display: none;
           }
 
-          .nvz-hero-bg-container::after {
-            background:
-              linear-gradient(180deg, rgba(18, 28, 24, 0.12) 0%, rgba(12, 20, 16, 0.06) 38%, rgba(8, 14, 12, 0.22) 100%),
-              radial-gradient(circle at 50% 0%, rgba(233, 239, 234, 0.1), transparent 42%);
-            animation: nvz-mist-drift 20s ease-in-out infinite;
-          }
-
-          .nvz-hero-mobile-fade {
+          .nvz-hero-mobile-panel {
             display: block;
-          }
-
-          .nvz-monsoon-mist {
-            background:
-              radial-gradient(circle at 18% 78%, rgba(233, 239, 234, 0.1), transparent 36%),
-              radial-gradient(circle at 84% 68%, rgba(255, 255, 255, 0.08), transparent 30%);
-            opacity: 0.85;
-          }
-
-          .nvz-rain-streak {
-            width: 1.5px;
-          }
-          
-          .nvz-hero-bg-image {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
-            object-position: 66% center !important;
-            left: 0 !important;
-            filter: saturate(0.74) contrast(1.04) brightness(0.8) hue-rotate(8deg) !important;
-          }
-          
-          .nvz-hero-main {
+            position: relative;
             width: 100%;
-            min-height: auto;
-            padding: 0 14px 30px;
-            order: 2;
-            margin-top: -68px;
-            align-items: center;
-            text-align: center;
-            z-index: 10;
-          }
-          
-          .nvz-logo-top-left {
-            margin-bottom: 18px;
-          }
-          
-          .nvz-hero-content {
             margin-top: 0;
-            margin-bottom: 0;
+            padding: 22px 18px 38px;
+            background: linear-gradient(180deg, rgba(255,248,240,0.94) 0%, rgba(255,248,240,0.98) 100%);
+            backdrop-filter: blur(14px) saturate(120%);
+            -webkit-backdrop-filter: blur(14px) saturate(120%);
+            border-radius: 28px 28px 0 0;
+            z-index: 2;
+            margin-top: -20px;
+            box-shadow: 0 -14px 32px rgba(26, 60, 139, 0.08);
+            border-top: 1px solid rgba(26, 60, 139, 0.12);
+          }
+
+          .nvz-hero-mobile-panel__inner {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: min(100%, 420px);
-            padding: 20px 16px 22px;
-            border-radius: 20px;
-            background: rgba(11, 15, 11, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-          }
-          
-          .nvz-badge {
-            margin-bottom: 10px;
-            font-size: 10px;
-            letter-spacing: 3px;
-          }
-          
-          .nvz-main-title {
-            font-size: clamp(26px, 9vw, 40px);
-            line-height: 0.96;
-            margin-bottom: 10px;
-          }
-
-          .nvz-highlight {
-            font-size: clamp(20px, 7.5vw, 30px);
-            margin-top: 10px;
-            line-height: 1.08;
-          }
-          
-          .nvz-description {
-            font-size: 13px;
-            margin-bottom: 20px;
-            max-width: 100%;
-            line-height: 1.7;
-          }
-          
-          .nvz-hero-actions {
-            flex-direction: column;
-            width: 100%;
-            align-items: center;
-            margin-bottom: 0;
-            gap: 12px;
-          }
-          
-          .nvz-btn-shop,
-          .nvz-btn-secondary {
-            width: 100%;
+            text-align: center;
+            gap: 8px;
             max-width: 360px;
-            height: 48px;
-            min-width: 0;
-            font-size: 13px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(18px);
+            animation: nvz-hero-fade-up 700ms ease forwards;
           }
 
+          .nvz-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            margin-bottom: 2px;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, rgba(255,153,51,0.95), rgba(255,255,255,0.96), rgba(19,136,8,0.95));
+            color: #1A1A1A;
+          }
+
+          .nvz-hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 23px;
+            line-height: 1.15;
+            text-align: center;
+            max-width: 100%;
+            margin: 0;
+            color: #3B2A1F;
+            white-space: normal;
+          }
+
+          .nvz-hero-title .nvz-hero-celebrate {
+            color: #7A1E1E;
+            display: inline;
+          }
+
+          .nvz-hero-title .nvz-hero-every-moment {
+            color: #FF9933;
+            display: inline;
+          }
+
+          .nvz-hero-title .nvz-hero-in {
+            color: #1A3C8B;
+            display: inline;
+          }
+
+          .nvz-hero-title .nvz-hero-highlight {
+            display: inline;
+            color: #138808;
+            font-style: italic;
+          }
+
+          .nvz-hero-subtitle {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #4B3B2B;
+            width: 100%;
+            margin: 0;
+            max-width: 28ch;
+          }
+
+          .nvz-hero-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 0 0 10px;
+            padding: 0;
+            list-style: none;
+            width: 100%;
+          }
+
+          .nvz-hero-features li {
+            justify-content: center;
+            font-size: 13px;
+            color: #3B2A1F;
+            width: 100%;
+            line-height: 1.4;
+          }
+
+          .nvz-hero-features li span {
+            color: #FF9933;
+          }
+
+          .nvz-hero-features li:hover span {
+            color: #138808;
+          }
+
+          .nvz-hero-actions {
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            gap: 9px;
+            margin-top: 4px;
+          }
+
+          .nvz-hero-btn {
+            width: 100%;
+            max-width: none;
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            font-size: 12px;
+            letter-spacing: 0.18em;
+          }
+
+          .nvz-hero-btn--primary {
+            background: linear-gradient(90deg, #FF9933, #FFFFFF, #138808);
+            border-color: rgba(255,255,255,0.55);
+            box-shadow: 0 12px 24px rgba(255, 153, 51, 0.18), 0 12px 24px rgba(19, 136, 8, 0.12);
+            color: #1A1A1A;
+          }
+
+          .nvz-hero-btn--secondary {
+            color: #138808;
+            border-color: #138808;
+            box-shadow: inset 0 0 0 1px rgba(19, 136, 8, 0.08);
+          }
+
+          .nvz-hero-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+          }
+
+          .nvz-hero-btn--secondary:hover {
+            background: #138808;
+            color: #fff;
+          }
+
+          .nvz-hero-btn--primary:hover {
+            box-shadow: 0 14px 28px rgba(255, 153, 51, 0.2), 0 14px 28px rgba(19, 136, 8, 0.16);
+          }
+
+          .nvz-hero-mobile-panel {
+            padding-bottom: 32px;
+          }
+
+          .nvz-hero-mobile-panel .nvz-hero-actions .nvz-hero-btn--secondary {
+            margin-top: 0;
+          }
         }
       `}</style>
 
-      <div className="nvz-hero-bg-container" aria-hidden="true">
-        <img className="nvz-hero-bg-image" src={bannerImage} alt="Hero background" />
-
-        {!reduceMotion && (
-          <>
-            <div className="nvz-monsoon-rain-layer">
-              {rains.map((rain, index) => (
-                <span
-                  key={`rain-${index}`}
-                  className="nvz-rain-streak"
-                  style={{
-                    left: `${rain.left}%`,
-                    height: `${rain.height}px`,
-                    opacity: rain.opacity,
-                    transform: `skewX(${rain.skew}deg)`,
-                    animation: `${isMobile ? "nvz-rain-fall-mobile" : "nvz-rain-fall"} ${rain.duration}s linear ${rain.delay}s infinite`,
-                  }}
-                />
-              ))}
-            </div>
-
-            <div className="nvz-monsoon-petal-layer">
-              {petals.map((petal, index) => (
-                <span
-                  key={`petal-${index}`}
-                  className="nvz-petal"
-                  style={{
-                    left: `${petal.left}%`,
-                    width: `${petal.size}px`,
-                    height: `${Math.round(petal.size * 1.35)}px`,
-                    "--petal-dx": `${petal.dx}px`,
-                    "--petal-rot": `${petal.rotate}deg`,
-                    animation: `${isMobile ? "nvz-petal-fall-mobile" : "nvz-petal-fall"} ${petal.duration}s linear ${petal.delay}s infinite`,
-                  }}
-                />
-              ))}
-            </div>
-
-            <div className="nvz-monsoon-mist" />
-          </>
-        )}
-
-        <div className="nvz-hero-mobile-fade" aria-hidden="true" />
+      <div className="nvz-hero-banner__imageWrap">
+        <img
+          className="nvz-hero-banner__image"
+          src={bannerImage}
+          alt="Raksha Bandhan and Independence Day special collection"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
 
-      <div className="nvz-hero-main">
+      <div className="nvz-hero-particles" aria-hidden="true">
+        {decorativeParticles.map((particle, index) => (
+          <span key={index} className={particle.className} style={particle.style} />
+        ))}
+      </div>
+
+      <div className="nvz-hero-overlay">
         <div className="nvz-hero-content">
-          <p className="nvz-badge">NEW COLLECTION</p>
-
-          <h1 className="nvz-main-title">
-            Wear your aura
-            <span className="nvz-highlight">
-              <span className="nvz-highlight-line">Monsoon Mood</span>
-              <span className="nvz-highlight-line">Effortless Aura</span>
-            </span>
+          <div className="nvz-hero-badge">🇮🇳 FESTIVE COLLECTION 2026</div>
+          <h1 className="nvz-hero-title">
+            <span className="nvz-hero-celebrate">Celebrate</span>{" "}
+            <span className="nvz-hero-every-moment">Every Moment</span>
+            <br />
+            <span className="nvz-hero-in">In</span>{" "}
+            <span className="nvz-hero-highlight">Timeless Style</span>
           </h1>
-
-          <p className="nvz-description">
-            Timeless ethnic wear crafted for rainy days and festive evenings.
+          <p className="nvz-hero-subtitle">
+            Discover handcrafted ethnic wear for Raksha Bandhan, Independence Day, and every special celebration.
           </p>
-
+          <ul className="nvz-hero-features">
+            {features.map((feature, index) => (
+              <li key={feature}>
+                <span>{index === 0 ? "✓" : index === 1 ? "✓" : "✓"}</span>
+                {feature}
+              </li>
+            ))}
+          </ul>
           <div className="nvz-hero-actions">
-            <button className="nvz-btn-shop" onClick={() => setPage("Shop") }>
-              Explore Collection
-            </button>
-            <button className="nvz-btn-secondary" onClick={() => setPage("Shop") }>
-              Shop New Arrivals
-            </button>
+            <button className="nvz-hero-btn nvz-hero-btn--primary" onClick={() => setPage("Shop")}>SHOP NOW</button>
+            <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>Explore Collection</button>
+          </div>
+        </div>
+      </div>
+
+      <div className="nvz-hero-mobile-panel" aria-hidden="false">
+        <div className="nvz-hero-mobile-panel__inner">
+          <div className="nvz-hero-badge">🇮🇳 FESTIVE COLLECTION 2026</div>
+          <h1 className="nvz-hero-title">
+            <span className="nvz-hero-celebrate">Celebrate</span>{" "}
+            <span className="nvz-hero-every-moment">Every Moment</span>
+            <br />
+            <span className="nvz-hero-in">In</span>{" "}
+            <span className="nvz-hero-highlight">Timeless Style</span>
+          </h1>
+          <p className="nvz-hero-subtitle">
+            Discover handcrafted ethnic wear for Raksha Bandhan, Independence Day, and every special celebration.
+          </p>
+          <ul className="nvz-hero-features">
+            {features.map((feature) => (
+              <li key={feature}>
+                <span>✓</span>
+                {feature}
+              </li>
+            ))}
+          </ul>
+          <div className="nvz-hero-actions">
+            <button className="nvz-hero-btn nvz-hero-btn--primary" onClick={() => setPage("Shop")}>SHOP NOW</button>
+            <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>EXPLORE COLLECTION</button>
           </div>
         </div>
       </div>

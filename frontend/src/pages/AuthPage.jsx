@@ -6,8 +6,8 @@ import Footer from "../components/Footer";
 import { fixImageUrl } from "../utils/imageUrl";
 import { persistAuthSession } from "../utils/authSession";
 
-const GOLD    = "#C9A227";
-const CRIMSON = "#B71C1C";
+const GOLD    = "#D4AF37";
+const CRIMSON = "#FF9933";
 
 const ROUTE_TO_PAGE = {
   "/": "Home",

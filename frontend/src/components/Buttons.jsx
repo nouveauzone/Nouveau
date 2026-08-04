@@ -1,29 +1,30 @@
 import { THEME } from "../styles/theme";
 
-const CRIMSON = "#B71C1C";
-const GOLD    = "#C9A227";
+const SAFFRON = THEME.crimson;
+const GREEN = THEME.crimsonDark;
+const GOLD = THEME.gold;
 
 export function BtnPrimary({ onClick, children, style={}, disabled=false }) {
   return (
     <button onClick={onClick} disabled={disabled} style={{
       display:"inline-flex",alignItems:"center",gap:"8px",
       padding:"13px 28px",
-      background:disabled?THEME.border:`linear-gradient(135deg,${CRIMSON},#8B0000)`,
-      color:"#fff",border:"none",borderRadius:"99px",
+      background:disabled?THEME.border:`linear-gradient(90deg,${SAFFRON},${THEME.accent},${GREEN})`,
+      color:"#1A1A1A",border:"none",borderRadius:"99px",
       fontFamily:"'Poppins',sans-serif",fontSize:"11px",letterSpacing:"2px",fontWeight:700,
       cursor:disabled?"not-allowed":"pointer",transition:"all 0.3s ease",
-      boxShadow:disabled?"none":`0 6px 20px ${CRIMSON}35`,
+      boxShadow:disabled?"none":`0 6px 20px ${SAFFRON}35`,
       whiteSpace:"nowrap",...style,
     }}
-      onMouseEnter={e=>{if(!disabled){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 10px 28px ${CRIMSON}50`;}}}
-      onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=disabled?"none":`0 6px 20px ${CRIMSON}35`;}}>
+      onMouseEnter={e=>{if(!disabled){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 10px 28px ${SAFFRON}40, 0 10px 28px ${GREEN}25`;}}}
+      onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=disabled?"none":`0 6px 20px ${SAFFRON}35`;}}>
       {children}
     </button>
   );
 }
 
 export function BtnOutline({ onClick, children, color, style={} }) {
-  const c = color || CRIMSON;
+  const c = color || GREEN;
   return (
     <button onClick={onClick} style={{
       display:"inline-flex",alignItems:"center",gap:"8px",

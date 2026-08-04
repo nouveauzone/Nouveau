@@ -14,8 +14,8 @@ import { ToastContext } from "../context/Providers";
 import apiService from "../services/apiService";
 import { SHIPPING_OPTIONS_BY_CURRENCY } from "../components/ShippingSelector";
 
-const GOLD = "#C9A227";
-const CRIMSON = "#B71C1C";
+const GOLD = "#D4AF37";
+const CRIMSON = "#FF9933";
 const ADDRESS_FIELDS = [
   { key: "name", label: "Full Name", type: "text" },
   { key: "phone", label: "Phone Number (WhatsApp updates)", type: "tel" },

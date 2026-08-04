@@ -539,7 +539,7 @@
   top: 14px;
   left: 14px;
   background: rgba(255, 255, 255, 0.95);
-  color: #B71C1C;
+  color: #FF9933;
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 11px;
@@ -661,9 +661,9 @@
 }
 
 .sf-btn-primary {
-  background: linear-gradient(135deg, #b71c1c, #8b0000);
+  background: linear-gradient(135deg, #FF9933, #138808);
   color: #fff;
-  border-color: #8b0000;
+  border-color: #138808;
   box-shadow: 0 4px 14px rgba(139, 0, 0, 0.2);
 }
 
