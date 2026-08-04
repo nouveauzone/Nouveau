@@ -46,8 +46,8 @@ export default function TermsPage({ setPage }) {
             <li>All international purchases are final. No returns, exchanges, or refunds are accepted.</li>
             <li>Please carefully verify your size and shipping details before placing your order.</li>
             <li>Customs duties, import taxes, and any local government charges (if applicable) are the sole responsibility of the customer and are not included in the product price or shipping charges.</li>
-            <li>Import / export duties must be borne by the customer.</li>
-            <li>No return and no exchange for international buyers.</li>
+            {/* <li>Import / export duties must be borne by the customer.</li>
+            <li>No return and no exchange for international buyers.</li> */}
           </ul>
           <div style={{ background: `${THEME.gold}15`, border: `1px solid ${THEME.gold}40`, borderRadius: "10px", padding: "14px 18px" }}>
             <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "14px", color: THEME.text, fontWeight: 600, margin: 0 }}>

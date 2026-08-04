@@ -390,8 +390,8 @@ export default function ProductPage({ product, setPage }) {
             }}>
               <div style={{ fontSize: "22px", flexShrink: 0, lineHeight: 1 }}>⚠️</div>
               <div>
-                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: "#C9506A", fontWeight: 700, marginBottom: "6px", textTransform: "uppercase" }}>
-                  Return & Exchange Policy
+               <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: "#C9506A", fontWeight: 700, marginBottom: "6px", textTransform: "uppercase" }}>
+                  India Return and Exchange Policy
                 </p>
                 <ul style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textMuted, lineHeight: 1.7, paddingLeft: "18px", margin: 0 }}>
                   <li>Return: In case of returning the product, 30% restocking fees will be deducted from the product price paid by the customer.</li>
@@ -400,6 +400,15 @@ export default function ProductPage({ product, setPage }) {
                   <li>Refunds will be processed after quality inspection of the returned product.</li>
                   <li>All sales are final</li>
                   <li>Refund will be initiated between 5-7 business days</li>
+                </ul>
+
+                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: "#C9506A", fontWeight: 700, marginTop: "14px", marginBottom: "6px", textTransform: "uppercase" }}>
+                  International return and exchange policy
+                </p>
+                <ul style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textMuted, lineHeight: 1.7, paddingLeft: "18px", margin: 0 }}>
+                  <li>All international purchases are final. No returns, exchanges, or refunds are accepted.</li>
+                  <li>Please carefully verify your size and shipping details before placing your order.</li>
+                  <li>Customs duties, import taxes, and any local government charges (if applicable) are the sole responsibility of the customer and are not included in the product price or shipping charges.</li>
                 </ul>
                 <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "8px", marginBottom: "6px" }}>
                   🌍 International Buyer - For buying our product in your country, Please communicate with us on WhatsApp.
