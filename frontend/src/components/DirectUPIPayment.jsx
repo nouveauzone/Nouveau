@@ -112,7 +112,7 @@ const DirectUPIPayment = ({
 
   const styles = {
     wrapper: { fontFamily: "'Poppins', sans-serif", maxWidth: '400px', margin: '0 auto' },
-    heading: { fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#C9A227', marginBottom: 24, textAlign: 'center' },
+    heading: { fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4AF37', marginBottom: 24, textAlign: 'center' },
     appsGrid: { display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: 32 },
     appIcon: (app, active) => ({
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer',
@@ -120,7 +120,7 @@ const DirectUPIPayment = ({
     }),
     qrCard: {
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: '30px 24px', borderRadius: 20,
-      border: '1px solid #C9A22725', background: '#fff', boxShadow: '0 10px 40px rgba(201,162,39,0.05)', marginBottom: 28,
+      border: '1px solid #D4AF3725', background: '#fff', boxShadow: '0 10px 40px rgba(212,175,55,0.05)', marginBottom: 28,
     },
     qrTitle: { fontSize: 14, fontWeight: 600, color: '#1a1a1a', margin: 0, letterSpacing: '-0.01em' },
     qrWrapper: { padding: '15px', background: '#fff', borderRadius: '12px', border: '1.2px solid #f0f0f0' },
@@ -130,7 +130,7 @@ const DirectUPIPayment = ({
     amountBox: { textAlign: 'center', padding: '20px 0', borderTop: '1px solid #f0f0f0', marginTop: 8 },
     confirmOverlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 1000 },
     confirmSheet: { width: '100%', maxWidth: '500px', background: '#fff', padding: '30px 24px', borderRadius: '24px 24px 0 0', textAlign: 'center' },
-    confirmBtn: { width: '100%', background: '#C9A227', color: '#fff', border: 'none', borderRadius: 12, padding: '16px', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 12 },
+    confirmBtn: { width: '100%', background: '#D4AF37', color: '#fff', border: 'none', borderRadius: 12, padding: '16px', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 12 },
     cancelBtn: { width: '100%', background: 'none', color: '#888', border: 'none', padding: '12px', fontSize: 14, cursor: 'pointer' },
   };
 

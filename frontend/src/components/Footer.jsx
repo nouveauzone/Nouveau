@@ -66,14 +66,14 @@ export default function Footer({ setPage }) {
 	};
 
 	return (
-		<footer style={{ background: THEME.crimson, padding: "42px 32px 24px", borderTop: `1px solid ${THEME.gold}55` }}>
+		<footer style={{ background: `linear-gradient(135deg, ${THEME.crimsonDark}, #1A3C8B)`, padding: "42px 32px 24px", borderTop: `1px solid ${THEME.crimson}55` }}>
 			<div style={{ maxWidth: "1400px", margin: "0 auto" }}>
 				<div style={{ textAlign: "center", marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
 					<div style={{ display: "flex", justifyContent: "center" }}>
 						<NouveauLogo size={40} />
 					</div>
 					<div style={{ fontFamily: "'Playfair Display',serif", fontSize: "22px", color: "#fff", letterSpacing: "3px", margin: "12px 0 4px" }}>
-						nouveau<span style={{ color: "#C9A227" }}>™</span>
+						nouveau<span style={{ color: THEME.gold }}>™</span>
 					</div>
 					<p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "8px", letterSpacing: "5px", color: THEME.gold }}>Wear Your Aura</p>
 				</div>

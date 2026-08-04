@@ -8,8 +8,8 @@ import Footer from "../components/Footer";
 import { fixImageUrl } from "../utils/imageUrl";
 import { getShippingChargeForCurrency } from "../data/constants";
 
-const GOLD = "#C9A227";
-const CRIMSON = "#B71C1C";
+const GOLD = "#D4AF37";
+const CRIMSON = "#FF9933";
 
 export default function CartPage({ setPage }) {
   const { cart, dispatch } = useContext(CartContext);

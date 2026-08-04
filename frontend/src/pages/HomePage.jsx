@@ -42,7 +42,7 @@ const dedupeProducts = (items = []) => {
 };
 
 export default function HomePage({ setPage, setSelectedProduct }) {
-  const { isAuthenticated, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [PRODUCTS, setPRODUCTS] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -50,6 +50,7 @@ export default function HomePage({ setPage, setSelectedProduct }) {
   
   useEffect(() => {
     setIsLoading(true);
+    setIsError(false);
     // First try localStorage (Admin panel changes)
     try {
       const saved = localStorage.getItem('nouveau_local_products');
@@ -70,9 +71,13 @@ export default function HomePage({ setPage, setSelectedProduct }) {
           ? data
           : [];
 
-      if (list.length > 0) setPRODUCTS(dedupeProducts(list));
-      else setPRODUCTS(dedupeProducts(INITIAL_PRODUCTS));
+      if (list.length > 0) {
+        setPRODUCTS(dedupeProducts(list));
+      } else {
+        setPRODUCTS(dedupeProducts(INITIAL_PRODUCTS));
+      }
     }).catch(() => {
+      setIsError(true);
       setPRODUCTS(dedupeProducts(INITIAL_PRODUCTS));
     }).finally(() => {
       setIsLoading(false);
@@ -103,16 +108,194 @@ export default function HomePage({ setPage, setSelectedProduct }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const ethnic = PRODUCTS.filter((p) => normalizeCategory(p.category) === "Indian Ethnic Wear");
-  const western = PRODUCTS.filter((p) => normalizeCategory(p.category) === "Indian Western Wear");
   const newArrivals = PRODUCTS.filter((p) => p.isNew && normalizeCategory(p.category) === "Indian Ethnic Wear").slice(0, 4);
 
   const trendingBase = PRODUCTS.filter((p) => normalizeCategory(p.category) === "Indian Western Wear");
   const trendingFallback = PRODUCTS.filter((p) => !trendingBase.some((w) => w._id === p._id));
   const trending = [...trendingBase, ...trendingFallback].slice(0, 4);
 
+  const featuredCollections = [
+    {
+      badge: "NEW ARRIVAL",
+      title: "Women's Festive Collection",
+      description: "Elegant handcrafted ethnic wear for every celebration.",
+      button: "SHOP WOMEN →",
+      image: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=80",
+      page: "EthnicWear",
+    },
+    {
+      badge: "LIMITED EDITION",
+      title: "Indo-Western Collection",
+      description: "Modern silhouettes with timeless Indian elegance.",
+      button: "EXPLORE COLLECTION →",
+      image: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1200&q=80",
+      page: "WesternWear",
+    },
+  ];
+
   return (
     <div style={{ background:THEME.bg, minHeight:"100vh", color:THEME.text }}>
+      <style>{`
+        .featured-collections-shell {
+          padding: 80px clamp(16px, 5vw, 40px);
+          background: linear-gradient(180deg, ${THEME.bgCard} 0%, ${THEME.bg} 100%);
+        }
+
+        .featured-collections-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 32px;
+        }
+
+        .featured-campaign-card {
+          position: relative;
+          border-radius: 24px;
+          overflow: hidden;
+          min-height: 520px;
+          background: #111111;
+          cursor: pointer;
+          box-shadow: 0 20px 54px rgba(28, 17, 11, 0.14);
+          transition: transform 300ms ease, box-shadow 300ms ease;
+          isolation: isolate;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .featured-campaign-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 30px 66px rgba(28, 17, 11, 0.2);
+        }
+
+        .featured-campaign-card__image {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 350ms ease;
+        }
+
+        .featured-campaign-card:hover .featured-campaign-card__image {
+          transform: scale(1.05);
+        }
+
+        .featured-campaign-card__overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(10, 10, 10, 0.12) 0%, rgba(12, 16, 12, 0.38) 45%, rgba(8, 12, 8, 0.92) 100%);
+          z-index: 1;
+        }
+
+        .featured-campaign-card__content {
+          position: absolute;
+          inset: auto 0 0 0;
+          z-index: 2;
+          padding: 28px 28px 30px;
+          color: #fff;
+        }
+
+        .featured-campaign-card__badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 16px;
+          padding: 8px 14px;
+          border-radius: 999px;
+          background: rgba(255, 248, 240, 0.18);
+          border: 1px solid rgba(255, 248, 240, 0.28);
+          color: #fff8f0;
+          font-family: 'Poppins', sans-serif;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          backdrop-filter: blur(8px);
+        }
+
+        .featured-campaign-card__title {
+          font-family: 'Playfair Display', serif;
+          font-size: 42px;
+          line-height: 1.02;
+          margin: 0 0 12px;
+          color: #fff8f0;
+          max-width: 12ch;
+          text-shadow: 0 3px 24px rgba(0,0,0,0.28);
+        }
+
+        .featured-campaign-card__description {
+          font-family: 'Poppins', sans-serif;
+          font-size: 16px;
+          line-height: 1.7;
+          color: rgba(255, 248, 240, 0.82);
+          margin: 0 0 22px;
+          max-width: 28ch;
+        }
+
+        .featured-campaign-card__cta {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 13px 22px;
+          border-radius: 999px;
+          background: #138808;
+          color: #fff8f0;
+          font-family: 'Poppins', sans-serif;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          border: 1px solid rgba(255,255,255,0.16);
+          transition: transform 300ms ease, background 300ms ease, box-shadow 300ms ease;
+          box-shadow: 0 10px 24px rgba(19, 136, 8, 0.22);
+        }
+
+        .featured-campaign-card:hover .featured-campaign-card__cta {
+          transform: translateX(6px);
+          background: #D4AF37;
+          box-shadow: 0 14px 28px rgba(212, 175, 55, 0.22);
+        }
+
+        @media (max-width: 1024px) {
+          .featured-collections-grid {
+            gap: 24px;
+          }
+
+          .featured-campaign-card {
+            min-height: 460px;
+          }
+
+          .featured-campaign-card__title {
+            font-size: 36px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .featured-collections-shell {
+            padding: 64px 16px;
+          }
+
+          .featured-collections-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
+
+          .featured-campaign-card {
+            min-height: 420px;
+          }
+
+          .featured-campaign-card__content {
+            padding: 24px 22px 26px;
+          }
+
+          .featured-campaign-card__title {
+            font-size: 34px;
+          }
+
+          .featured-campaign-card__description {
+            font-size: 15px;
+          }
+        }
+      `}</style>
+
       <Hero setPage={setPage} />
 
       {user && (
@@ -133,54 +316,42 @@ export default function HomePage({ setPage, setSelectedProduct }) {
       </div>
 
       {/* ── TWO CATEGORY SHOWCASE ── */}
-      <div style={{ padding:"clamp(40px, 10vw, 80px) clamp(16px, 5vw, 40px)", background:THEME.bgCard }}>
+      <div className="featured-collections-shell">
         <div style={{ maxWidth:"1400px", margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:"48px" }}>
-            <p style={{ fontFamily:"'Poppins',sans-serif", fontSize:"10px", letterSpacing:"6px", color:THEME.crimson, textTransform:"uppercase", marginBottom:"12px" }}>Our Collections</p>
+            <p style={{ fontFamily:"'Poppins',sans-serif", fontSize:"10px", letterSpacing:"6px", color:THEME.crimson, textTransform:"uppercase", marginBottom:"12px" }}>Featured Collections</p>
             <h2 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(28px,4vw,44px)", fontWeight:700 }}>Grace in every Thread</h2>
             <OrnamentDivider />
           </div>
 
-          <div style={{ display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap:"24px" }} className="grid-2col">
-            {/* Indian Ethnic Wear */}
-            <div onClick={() => setPage("EthnicWear")}
-              style={{ position:"relative", borderRadius:"20px", overflow:"hidden", cursor:"pointer", minHeight:"420px", background:`linear-gradient(135deg, ${THEME.crimsonLight}, ${THEME.bg})`, display:"flex", flexDirection:"column", justifyContent:"flex-end", padding:"40px", transition:"transform 0.35s" }}
-              onMouseEnter={e => e.currentTarget.style.transform="scale(1.015)"}
-              onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}>
-              <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(255,255,255,0.65) 0%, transparent 60%)", borderRadius:"20px" }} />
-              <div style={{ position:"absolute", top:"28px", right:"28px", opacity:0.32, filter:"brightness(1.05) saturate(1.1) drop-shadow(0 0 10px rgba(151,130,78,0.25))" }}><NouveauLogo size={120} /></div>
-              <div style={{ position:"relative", zIndex:1 }}>
-                <span style={{ background:THEME.crimson, color:"#fff", fontSize:"9px", letterSpacing:"3px", padding:"5px 14px", fontFamily:"'Poppins',sans-serif", fontWeight:700, borderRadius:"99px", display:"inline-block", marginBottom:"14px" }}>
-                  {ethnic.length} AESTHETICS
-                </span>
-                <h3 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(24px,3vw,38px)", fontWeight:700, color:"#fff", lineHeight:1.2, marginBottom:"10px" }}>
-                  Indian Ethnic<br />Wear
-                </h3>
-                <div style={{ display:"inline-flex", alignItems:"center", gap:"8px", color:THEME.gold, fontFamily:"'Poppins',sans-serif", fontSize:"12px", fontWeight:700, letterSpacing:"2px" }}>
-                  EXPLORE <Icons.Arrow />
+          <div className="featured-collections-grid">
+            {featuredCollections.map((card) => (
+              <div
+                key={card.title}
+                className="featured-campaign-card"
+                role="button"
+                tabIndex={0}
+                onClick={() => setPage(card.page)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") setPage(card.page);
+                }}
+              >
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  className="featured-campaign-card__image"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div className="featured-campaign-card__overlay" />
+                <div className="featured-campaign-card__content">
+                  <span className="featured-campaign-card__badge">{card.badge}</span>
+                  <h3 className="featured-campaign-card__title">{card.title}</h3>
+                  <p className="featured-campaign-card__description">{card.description}</p>
+                  <span className="featured-campaign-card__cta">{card.button}</span>
                 </div>
               </div>
-            </div>
-
-            {/* Indian Western Wear */}
-            <div onClick={() => setPage("WesternWear")}
-              style={{ position:"relative", borderRadius:"20px", overflow:"hidden", cursor:"pointer", minHeight:"420px", background:`linear-gradient(135deg, ${THEME.bg}, ${THEME.crimsonLight})`, display:"flex", flexDirection:"column", justifyContent:"flex-end", padding:"40px", transition:"transform 0.35s" }}
-              onMouseEnter={e => e.currentTarget.style.transform="scale(1.015)"}
-              onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}>
-              <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(255,255,255,0.65) 0%, transparent 60%)", borderRadius:"20px" }} />
-              <div style={{ position:"absolute", top:"28px", right:"28px", opacity:0.32, filter:"brightness(1.05) saturate(1.1) drop-shadow(0 0 10px rgba(151,130,78,0.25))" }}><NouveauLogo size={120} /></div>
-              <div style={{ position:"relative", zIndex:1 }}>
-                <span style={{ background:THEME.crimson, color:"#fff", fontSize:"9px", letterSpacing:"3px", padding:"5px 14px", fontFamily:"'Poppins',sans-serif", fontWeight:700, borderRadius:"99px", display:"inline-block", marginBottom:"14px" }}>
-                  {western.length} AESTHETICS
-                </span>
-                <h3 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(24px,3vw,38px)", fontWeight:700, color:"#fff", lineHeight:1.2, marginBottom:"10px" }}>
-                  Indian<br />Western Wear
-                </h3>
-                <div style={{ display:"inline-flex", alignItems:"center", gap:"8px", color:THEME.goldLight, fontFamily:"'Poppins',sans-serif", fontSize:"12px", fontWeight:700, letterSpacing:"2px" }}>
-                  EXPLORE <Icons.Arrow />
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

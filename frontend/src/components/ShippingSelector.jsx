@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { THEME } from "../styles/theme";
 import { SHIPPING_FEE_BY_CURRENCY } from "../data/constants";
 
-const GOLD = "#C9A227";
+const GOLD = "#D4AF37";
 
 export const SHIPPING_OPTIONS_BY_CURRENCY = {
   USD: {

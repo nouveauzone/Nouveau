@@ -1,28 +1,28 @@
 export const THEME = {
-  // Monsoon apparel palette
-  crimson: "#556739",        // Deep Olive
-  crimsonDark: "#3f572b",    // Forest Green
-  crimsonLight: "#b7c991",   // Sage Green
+  // Tiranga-inspired luxury palette
+  crimson: "#FF9933",        // Saffron
+  crimsonDark: "#138808",    // Green
+  crimsonLight: "#FFF1E2",   // Warm saffron tint
 
   // Accent colors
-  gold: "#b88e55",           // Warm Bronze
-  goldLight: "#d6b675",      // Champagne Gold
-  goldDark: "#7d6542",       // Earth Brown
+  gold: "#D4AF37",           // Gold Accent
+  goldLight: "#E8CD77",      // Soft Gold
+  goldDark: "#A8821E",       // Deep Gold
 
   // Backgrounds & surfaces
-  bg: "#e6ebc8",             // Pale Sage
-  bgDark: "#dee4ae",         // Soft Moss
-  accent: "#f4f1dc",         // Cream Mist
-  bgCard: "#f7f5e6",
+  bg: "#FFF8F0",             // Warm White
+  bgDark: "#F7E8D8",         // Soft Cream
+  accent: "#FFF0DF",         // Cream Mist
+  bgCard: "#FFFCF7",
 
   // Typography
-  text: "#28331f",           // Dark Moss
-  textMuted: "#6b6a53",      // Muted Olive
-  textLight: "#8e8a6f",
+  text: "#3B2A1F",           // Dark Brown
+  textMuted: "#6C5A49",      // Muted Brown
+  textLight: "#A58A76",
 
   // Borders
-  border: "#d3d0b1",         // Soft Khaki
-  borderDark: "#a89f7f",
+  border: "#E7D6C3",         // Soft Sand
+  borderDark: "#C9B39A",
 };
 
 // Responsive utilities
