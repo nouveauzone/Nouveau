@@ -114,23 +114,25 @@ export default function HomePage({ setPage, setSelectedProduct }) {
   const trendingFallback = PRODUCTS.filter((p) => !trendingBase.some((w) => w._id === p._id));
   const trending = [...trendingBase, ...trendingFallback].slice(0, 4);
 
+  const ethnic = PRODUCTS.filter(
+    (p) => normalizeCategory(p.category) === "Indian Ethnic Wear"
+  );
+
+  const western = PRODUCTS.filter(
+    (p) => normalizeCategory(p.category) === "Indian Western Wear"
+  );
+
   const featuredCollections = [
-    {
-      badge: "NEW ARRIVAL",
-      title: "Women's Festive Collection",
-      description: "Elegant handcrafted ethnic wear for every celebration.",
-      button: "SHOP WOMEN →",
-      image: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=80",
-      page: "EthnicWear",
-    },
-    {
-      badge: "LIMITED EDITION",
-      title: "Indo-Western Collection",
-      description: "Modern silhouettes with timeless Indian elegance.",
-      button: "EXPLORE COLLECTION →",
-      image: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1200&q=80",
-      page: "WesternWear",
-    },
+      {
+        count: ethnic.length,
+        title: <>Indian Ethnic<br />Wear</>,
+        page: "EthnicWear",
+      },
+      {
+       count: western.length,
+       title: <>Indian<br />Western Wear</>,
+       page: "WesternWear",
+      },
   ];
 
   return (
@@ -149,109 +151,46 @@ export default function HomePage({ setPage, setSelectedProduct }) {
 
         .featured-campaign-card {
           position: relative;
-          border-radius: 24px;
+          min-height: 420px;
+          border-radius: 20px;
           overflow: hidden;
-          min-height: 520px;
-          background: #111111;
           cursor: pointer;
-          box-shadow: 0 20px 54px rgba(28, 17, 11, 0.14);
-          transition: transform 300ms ease, box-shadow 300ms ease;
-          isolation: isolate;
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 40px;
+          background: linear-gradient(135deg, #C65D00 0%, #FFF8F0 45%, #0B6B2A 100%);
+          transition: transform .35s;
         }
 
         .featured-campaign-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 30px 66px rgba(28, 17, 11, 0.2);
+          transform: scale(1.015);
         }
 
-        .featured-campaign-card__image {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 350ms ease;
-        }
-
-        .featured-campaign-card:hover .featured-campaign-card__image {
-          transform: scale(1.05);
-        }
-
-        .featured-campaign-card__overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(180deg, rgba(10, 10, 10, 0.12) 0%, rgba(12, 16, 12, 0.38) 45%, rgba(8, 12, 8, 0.92) 100%);
-          z-index: 1;
+        .featured-campaign-card__logo {
+          position:absolute;
+          top:28px;
+          right:28px;
+          opacity:.32;
         }
 
         .featured-campaign-card__content {
-          position: absolute;
-          inset: auto 0 0 0;
-          z-index: 2;
-          padding: 28px 28px 30px;
-          color: #fff;
+          position:absolute;
+          bottom:40px;
+          left:40px;
         }
 
         .featured-campaign-card__badge {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 16px;
-          padding: 8px 14px;
-          border-radius: 999px;
-          background: rgba(255, 248, 240, 0.18);
-          border: 1px solid rgba(255, 248, 240, 0.28);
-          color: #fff8f0;
-          font-family: 'Poppins', sans-serif;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 3px;
-          text-transform: uppercase;
-          backdrop-filter: blur(8px);
+         background:${THEME.crimson};
+         color:white;
+         padding:5px 14px;
+         border-radius:99px;
+         font-size:9px;
+         letter-spacing:3px;
         }
 
         .featured-campaign-card__title {
-          font-family: 'Playfair Display', serif;
-          font-size: 42px;
-          line-height: 1.02;
-          margin: 0 0 12px;
-          color: #fff8f0;
-          max-width: 12ch;
-          text-shadow: 0 3px 24px rgba(0,0,0,0.28);
-        }
-
-        .featured-campaign-card__description {
-          font-family: 'Poppins', sans-serif;
-          font-size: 16px;
-          line-height: 1.7;
-          color: rgba(255, 248, 240, 0.82);
-          margin: 0 0 22px;
-          max-width: 28ch;
-        }
-
-        .featured-campaign-card__cta {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 13px 22px;
-          border-radius: 999px;
-          background: #138808;
-          color: #fff8f0;
-          font-family: 'Poppins', sans-serif;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 2px;
-          text-transform: uppercase;
-          border: 1px solid rgba(255,255,255,0.16);
-          transition: transform 300ms ease, background 300ms ease, box-shadow 300ms ease;
-          box-shadow: 0 10px 24px rgba(19, 136, 8, 0.22);
-        }
-
-        .featured-campaign-card:hover .featured-campaign-card__cta {
-          transform: translateX(6px);
-          background: #D4AF37;
-          box-shadow: 0 14px 28px rgba(212, 175, 55, 0.22);
+          font-family:'Playfair Display',serif;
+          font-size:38px;
+          color: #3B2A1F;
+          margin-top:14px;
         }
 
         @media (max-width: 1024px) {
@@ -327,29 +266,60 @@ export default function HomePage({ setPage, setSelectedProduct }) {
           <div className="featured-collections-grid">
             {featuredCollections.map((card) => (
               <div
-                key={card.title}
-                className="featured-campaign-card"
-                role="button"
-                tabIndex={0}
-                onClick={() => setPage(card.page)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") setPage(card.page);
+                  key={card.page}
+                  className="featured-campaign-card"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setPage(card.page)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") setPage(card.page);
+                  }}
+                >
+
+              {/* Logo Top Right */}
+              <div
+                 style={{
+                position:"absolute",
+                top:"28px",
+                right:"28px",
+                opacity:0.32,
+                filter:"brightness(1.05) saturate(1.1)"
                 }}
               >
-                <img
-                  src={card.image}
-                  alt={card.title}
-                  className="featured-campaign-card__image"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div className="featured-campaign-card__overlay" />
-                <div className="featured-campaign-card__content">
-                  <span className="featured-campaign-card__badge">{card.badge}</span>
-                  <h3 className="featured-campaign-card__title">{card.title}</h3>
-                  <p className="featured-campaign-card__description">{card.description}</p>
-                  <span className="featured-campaign-card__cta">{card.button}</span>
+              <NouveauLogo size={120} />
+            </div>
+
+
+            {/* Bottom Content */}
+            <div className="featured-campaign-card__content">
+
+            <span className="featured-campaign-card__badge">
+              {card.count} AESTHETICS
+            </span>
+
+
+                <h3 className="featured-campaign-card__title">
+                  {card.title}
+                </h3>
+
+
+                  <div
+                    style={{
+                      display:"inline-flex",
+                      alignItems:"center",
+                      gap:"8px",
+                      color:"#D4AF37",
+                      fontFamily:"'Poppins',sans-serif",
+                      fontSize:"12px",
+                      fontWeight:700,
+                      letterSpacing:"2px"
+                    }}
+                    >
+                    EXPLORE <Icons.Arrow />
+                  </div>
+
                 </div>
+
               </div>
             ))}
           </div>

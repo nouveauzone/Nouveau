@@ -230,6 +230,10 @@ input, textarea, select {
     gap: 24px !important;
   }
 
+  .checkout-layout > * {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
   .checkout-summary {
     position: static !important;
     top: auto !important;
@@ -295,7 +299,7 @@ input, textarea, select {
     text-align: center !important;
   }
 
-  .marquee-track {
+.marquee-track {
     animation-duration: 18s !important;
   }
 
@@ -308,4 +312,76 @@ input, textarea, select {
     }
   }
 
+}footer {
+  background-image: linear-gradient(130deg, #FFD6A5 0%, #FFFFFF 45%, #5DAE45 100%) !important;
+  background-color: transparent !important;
+  border-top: 1px solid rgba(76, 56, 31, 0.15) !important;
+}
+
+footer > div > div {
+  border-bottom: 1px solid rgba(76, 56, 31, 0.12) !important;
+}
+
+footer > div > div > div:nth-child(2) {
+  color: #8B1E3F !important;
+}
+
+footer > div > div > p {
+  color: #C89B3C !important;
+}
+
+footer .footer-intro {
+  color: #5E524B !important;
+}
+
+footer .footer-grid > div:not(:first-child) > p {
+  color: #C89B3C !important;
+  letter-spacing: 1px !important;
+}
+
+footer .footer-grid span,
+footer .footer-grid a {
+  color: #4A403A !important;
+  display: block !important;
+  margin-bottom: 10px;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+
+footer .footer-grid span:hover,
+footer .footer-grid a:hover {
+  color: #C89B3C !important;
+  transform: translateX(4px) !important;
+}
+
+footer .footer-social a {
+  color: #4A403A !important;
+  transition: all 0.3s ease !important;
+}
+
+footer .footer-social a:hover {
+  color: #C89B3C !important;
+  transform: translateX(4px) !important;
+}
+
+footer .footer-bottom-row > p:first-child {
+  color: #6B6B6B !important;
+}
+
+footer .footer-bottom-row .footer-made {
+  color: #6B6B6B !important;
+}
+
+footer .footer-bottom-row > div span,
+footer .footer-bottom-row > div > span {
+  color: #4A403A !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+}
+
+footer .footer-bottom-row > div span:hover,
+footer .footer-bottom-row > div > span:hover {
+  color: #C89B3C !important;
+  transform: translateX(4px) !important;
 }

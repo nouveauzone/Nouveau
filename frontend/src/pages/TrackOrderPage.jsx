@@ -304,12 +304,12 @@ export default function TrackOrderPage({ setPage }) {
   return (
     <div style={{ background:THEME.bg, minHeight:"100vh" }}>
       {/* Hero */}
-      <div style={{ background:`linear-gradient(135deg,${THEME.crimsonDark} 0%,#7b2d3e 50%,#9f5b65 100%)`, padding:"60px 40px 0", position:"relative", overflow:"hidden" }}>
+      <div style={{ background:`linear-gradient(130deg, #FFD6A5 0%, #FFFFFF 45%, #5DAE45 100%)`, border:"1px solid rgba(255,255,255,0.2)", padding:"60px 40px 0", position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", inset:0, backgroundImage:`radial-gradient(circle at 20% 50%,rgba(212,175,55,0.08) 0%,transparent 60%)` }} />
         <div style={{ maxWidth:"960px", margin:"0 auto", position:"relative", zIndex:1 }}>
           <p style={{ fontFamily:"'Poppins',sans-serif", fontSize:"10px", letterSpacing:"6px", color:"#D4AF37", marginBottom:"10px" }}>REAL-TIME STATUS</p>
-          <h1 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(28px,5vw,48px)", fontWeight:700, color:"#fff", marginBottom:"8px" }}>Track Your Order</h1>
-          <p style={{ color:"rgba(255,255,255,0.6)", fontSize:"14px", fontFamily:"'Poppins',sans-serif", marginBottom:"32px" }}>Enter your Tracking ID — format: ORD followed by numbers</p>
+          <h1 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(28px,5vw,48px)", fontWeight:700, color:"#7A1E1E", marginBottom:"8px" }}>Track Your Order</h1>
+          <p style={{ color:"#4B3B2B", fontSize:"14px", fontFamily:"'Poppins',sans-serif", marginBottom:"32px" }}>Enter your Tracking ID — format: ORD followed by numbers</p>
 
           {/* Search */}
           <div style={{ background:"rgba(255,255,255,0.10)", backdropFilter:"blur(12px)", border:"1px solid rgba(255,255,255,0.2)", borderRadius:"16px 16px 0 0", padding:"24px 28px" }}>
@@ -339,7 +339,7 @@ export default function TrackOrderPage({ setPage }) {
           <div style={{ display:"flex", gap:"4px", marginTop:"2px" }}>
             {[{id:"track",label:"📦 Track Order"},{id:"myorders",label:`🛍️ My Orders${myOrders.length>0?` (${myOrders.length})`:""}`}].map(tab=>(
               <button key={tab.id} onClick={()=>setActiveTab(tab.id)}
-                style={{ padding:"12px 24px", background:activeTab===tab.id?THEME.bgCard:"rgba(255,255,255,0.08)", border:"none", cursor:"pointer", fontFamily:"'Poppins',sans-serif", fontSize:"12px", fontWeight:activeTab===tab.id?700:400, color:activeTab===tab.id?THEME.crimson:"rgba(255,255,255,0.7)", borderRadius:"10px 10px 0 0", transition:"all 0.2s" }}>
+                style={{ padding:"12px 24px", background:activeTab===tab.id?THEME.bgCard:"rgba(255,255,255,0.08)", border:"none", cursor:"pointer", fontFamily:"'Poppins',sans-serif", fontSize:"12px", fontWeight:activeTab===tab.id?700:400, color:activeTab===tab.id?THEME.crimson:"#7A1E1E", borderRadius:"10px 10px 0 0", transition:"all 0.2s" }}>
                 {tab.label}
               </button>
             ))}

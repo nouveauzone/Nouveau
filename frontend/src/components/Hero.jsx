@@ -1,5 +1,5 @@
 import bannerImage from "../assets/images/banner.jpeg";
-
+import { fixImageUrl } from "../utils/imageUrl";
 export default function Hero({ setPage }) {
   const features = [
   ];
@@ -90,6 +90,52 @@ export default function Hero({ setPage }) {
           z-index: 3;
         }
 
+        .nvz-hero-brand {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          margin-bottom: 25px;
+        }
+
+        .nvz-hero-logo {
+          width: 110px;
+          height: 110px;
+          object-fit: contain;
+          filter: drop-shadow(0 8px 18px rgba(45, 36, 29, 0.08));
+          transform: translateY(-33px);
+        }
+
+        .nvz-hero-brand-text {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          transform: translateY(-25px);
+        }
+
+        .nvz-hero-brand-name {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(55px, 5vw, 80px);
+          font-weight: 700;
+          color: #7A1E1E;
+          letter-spacing: 3px;
+          line-height: 0.85;
+        }
+
+        .nvz-hero-brand-name span {
+          color: #D4AF37;
+        }
+
+        .nvz-hero-brand-tagline {
+          font-family: 'Poppins', sans-serif;
+          font-size: 19px;
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          color: #E8CD77;
+          font-weight: 700;
+          margin-top: 6px;
+          margin-left: 12px;        
+        }
+
         .nvz-hero-content {
           max-width: 420px;
           width: 100%;
@@ -131,11 +177,6 @@ export default function Hero({ setPage }) {
 
         .nvz-hero-title .nvz-hero-every-moment {
           color: #FF9933;
-          display: inline;
-        }
-
-        .nvz-hero-title .nvz-hero-in {
-          color: #FFF8F0;
           display: inline;
         }
 
@@ -381,11 +422,6 @@ export default function Hero({ setPage }) {
             display: inline;
           }
 
-          .nvz-hero-title .nvz-hero-in {
-            color: #1A3C8B;
-            display: inline;
-          }
-
           .nvz-hero-title .nvz-hero-highlight {
             display: inline;
             color: #138808;
@@ -501,13 +537,30 @@ export default function Hero({ setPage }) {
 
       <div className="nvz-hero-overlay">
         <div className="nvz-hero-content">
-          <div className="nvz-hero-badge">🇮🇳 FESTIVE COLLECTION 2026</div>
+          
+              <div className="nvz-hero-brand">
+                <img
+                   src={fixImageUrl("/nouveau-logo.png")}
+                     alt="Nouveau Logo"
+                 className="nvz-hero-logo"
+                />
+
+                <div className="nvz-hero-brand-text">
+                 <div className="nvz-hero-brand-name">
+                    nouveau<span>™</span>
+                  </div>
+
+                 <div className="nvz-hero-brand-tagline">
+                          Wear Your Aura
+                       </div>
+                </div>
+              </div>
+          
           <h1 className="nvz-hero-title">
             <span className="nvz-hero-celebrate">Celebrate</span>{" "}
-            <span className="nvz-hero-every-moment">Every Moment</span>
+            <span className="nvz-hero-every-moment">Freedom.</span>
             <br />
-            <span className="nvz-hero-in">In</span>{" "}
-            <span className="nvz-hero-highlight">Timeless Style</span>
+            <span className="nvz-hero-highlight">Cherish Family.</span>
           </h1>
           <p className="nvz-hero-subtitle">
             Discover handcrafted ethnic wear for Raksha Bandhan, Independence Day, and every special celebration.
@@ -532,13 +585,12 @@ export default function Hero({ setPage }) {
           <div className="nvz-hero-badge">🇮🇳 FESTIVE COLLECTION 2026</div>
           <h1 className="nvz-hero-title">
             <span className="nvz-hero-celebrate">Celebrate</span>{" "}
-            <span className="nvz-hero-every-moment">Every Moment</span>
+            <span className="nvz-hero-every-moment">Freedom.</span>
             <br />
-            <span className="nvz-hero-in">In</span>{" "}
-            <span className="nvz-hero-highlight">Timeless Style</span>
+            <span className="nvz-hero-highlight">Cherish Family.</span>
           </h1>
           <p className="nvz-hero-subtitle">
-            Discover handcrafted ethnic wear for Raksha Bandhan, Independence Day, and every special celebration.
+            Discover handcrafted ethnic wear for Raksha Bandhan and Independence Dayspecial celebration.
           </p>
           <ul className="nvz-hero-features">
             {features.map((feature) => (
