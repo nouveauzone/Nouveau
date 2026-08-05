@@ -411,7 +411,7 @@ export default function ProductPage({ product, setPage }) {
                   <li>Customs duties, import taxes, and any local government charges (if applicable) are the sole responsibility of the customer and are not included in the product price or shipping charges.</li>
                 </ul>
                 <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "8px", marginBottom: "6px" }}>
-                  🌍 International Buyer - For buying our product in your country, Please communicate with us on WhatsApp.
+                  🌍 International Buyer - For international buyers — please contact us on WhatsApp before ordering so we can confirm sizing, shipping, and any additional requirements.
                 </p>
                 <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "2px" }}>
                   For queries: WhatsApp <strong style={{ color: "#D4AF37" }}>+91 7733881577</strong>
