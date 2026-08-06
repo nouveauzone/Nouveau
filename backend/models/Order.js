@@ -57,7 +57,14 @@ const orderSchema = new mongoose.Schema(
     // ── Totals ────────────────────────────────────────────────────────────
     subtotal:       { type: Number, default: 0 },
     discount:       { type: Number, default: 0 },
+<<<<<<< HEAD
     shippingCharge: { type: Number, default: 0 },
+=======
+    shippingCountry:{ type: String, default: "" },
+    shippingCurrency:{ type: String, default: "" },
+    shippingCharge: { type: Number, default: 0 },
+    grandTotal:     { type: Number, default: 0 },
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
     totalAmount:    { type: Number, default: 0 },
     couponCode:     { type: String, default: "" },
     discountType:   { type: String, enum: ["coupon", "returning_customer", "none"], default: "none" },

@@ -42,6 +42,10 @@ export async function POST(request) {
       paymentReference = razorpay_payment_id,
       subtotal = 0,
       shippingCharge = 0,
+<<<<<<< HEAD
+=======
+      shippingCurrency = "INR",
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
       total = 0,
     } = body || {};
 
@@ -77,8 +81,15 @@ export async function POST(request) {
         paymentId: paymentReference || razorpay_payment_id,
         orderStatus: "Placed",
         subtotal: Number(subtotal) || 0,
+<<<<<<< HEAD
         shippingCharge: Number(shippingCharge) || 0,
         totalAmount: Number(total) || 0,
+=======
+        shippingCurrency: String(shippingCurrency || "INR").toUpperCase(),
+        shippingCharge: Number(shippingCharge) || 0,
+        totalAmount: Number(total) || 0,
+        grandTotal: Number(total) || 0,
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
       });
     }
 

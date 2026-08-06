@@ -6,7 +6,11 @@ import { THEME } from "../styles/theme";
 import { BtnOutline, BtnPrimary } from "../components/Buttons";
 import Footer from "../components/Footer";
 import { fixImageUrl } from "../utils/imageUrl";
+<<<<<<< HEAD
 import { getShippingChargeForCurrency } from "../data/constants";
+=======
+import { getShippingProfileForCountry, SHIPPING_COUNTRY_BY_CURRENCY } from "../data/constants";
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
 
 const GOLD = "#D4AF37";
 const CRIMSON = "#FF9933";
@@ -23,10 +27,17 @@ export default function CartPage({ setPage }) {
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
+<<<<<<< HEAD
 const shipping = getShippingChargeForCurrency(
   currencyCode,
   subtotal
 );
+=======
+const defaultShippingCountry = currencyCode === "GBP" ? "United Kingdom" : currencyCode === "EUR" ? "Germany" : "";
+const shippingProfile = getShippingProfileForCountry(defaultShippingCountry, currencyCode);
+const shipping = shippingProfile.shippingCharge;
+const shippingCountryName = shippingProfile.shippingCountry || SHIPPING_COUNTRY_BY_CURRENCY[currencyCode] || "India";
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
 
 const convertedSubtotal =
   currencyCode === "INR"
@@ -122,6 +133,19 @@ const total = convertedSubtotal + shipping;
               <h2 style={{ fontFamily: "'Poppins', sans-serif", fontSize: "18px", fontWeight: 700, marginBottom: "24px" }}>Order Summary</h2>
               
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px", color: THEME.textMuted }}>
+<<<<<<< HEAD
+=======
+                <span>Selected Currency</span>
+                <span>{currencyCode}</span>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px", color: THEME.textMuted }}>
+                <span>Shipping Country</span>
+                <span>{SHIPPING_COUNTRY_BY_CURRENCY[currencyCode] || "India"}</span>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px", color: THEME.textMuted }}>
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
                 <span>Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>

@@ -1,4 +1,8 @@
 const COUPONS = { NOUVEAU10: 10, AURA20: 20, LOTUS15: 15 };
+<<<<<<< HEAD
+=======
+const { resolveShippingProfile } = require("../config/shippingConfig");
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
 
 const normalizeCoupon = (couponCode = "") => couponCode.trim().toUpperCase();
 
@@ -10,7 +14,11 @@ const normalizeCoupon = (couponCode = "") => couponCode.trim().toUpperCase();
  * @param {boolean} isReturningCustomer - Whether customer is returning (has 1+ paid orders)
  * @returns {object} - Totals breakdown
  */
+<<<<<<< HEAD
 const calculateOrderTotals = (items = [], couponCode = "", isReturningCustomer = false) => {
+=======
+const calculateOrderTotals = (items = [], couponCode = "", isReturningCustomer = false, shippingCurrency = "", shippingCountry = "") => {
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
   const subtotal = items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
   const normalizedCoupon = normalizeCoupon(couponCode);
   
@@ -31,7 +39,13 @@ const calculateOrderTotals = (items = [], couponCode = "", isReturningCustomer =
     discountType = "returning_customer";
   }
   
+<<<<<<< HEAD
   const shippingCharge = subtotal >= 2999 ? 0 : 99;
+=======
+  const shippingProfile = resolveShippingProfile(shippingCountry, shippingCurrency);
+  const normalizedShippingCurrency = String(shippingProfile.shippingCurrency || shippingCurrency || "").trim().toUpperCase();
+  const shippingCharge = Number(shippingProfile.shippingCharge || 0);
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
   // GST Calculation
   const cgst = +(subtotal * 0.025).toFixed(2);
   const sgst = +(subtotal * 0.025).toFixed(2);
@@ -46,7 +60,14 @@ const calculateOrderTotals = (items = [], couponCode = "", isReturningCustomer =
     isReturningCustomer,
     cgst,
     sgst,
+<<<<<<< HEAD
     shippingCharge,
+=======
+    shippingCountry: shippingProfile.shippingCountry || "",
+    shippingCharge,
+    shippingCurrency: normalizedShippingCurrency,
+    grandTotal: total,
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
     total,
   };
 };

@@ -3,7 +3,11 @@ import { AuthContext } from "../context/AuthContext";
 import { AppDataContext, ToastContext } from "../context/Providers";
 import { THEME } from "../styles/theme";
 import { PRODUCTS as INITIAL_PRODUCTS } from "../data/products";
+<<<<<<< HEAD
 import { normalizeCategory } from "../data/constants";
+=======
+import { normalizeCategory, getCurrencySymbol } from "../data/constants";
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
 import NouveauLogo from "../components/Logo";
 import { BtnPrimary } from "../components/Buttons";
 import API from "../services/apiService";
@@ -1103,6 +1107,12 @@ export default function AdminPage({ setPage }) {
                       { label: "Amount", value: "₹" + getOrderAmount(selectedOrder) },
                       { label: "Payment", value: selectedOrder.paymentMethod || "—" },
                       { label: "Pay ID / UTR", value: selectedOrder.paymentId || "—" },
+<<<<<<< HEAD
+=======
+                      { label: "Shipping Country", value: selectedOrder.shippingCountry || "—" },
+                      { label: "Shipping Currency", value: selectedOrder.shippingCurrency || "INR" },
+                      { label: "Shipping Charge", value: `${getCurrencySymbol(selectedOrder.shippingCurrency || "INR")}${Number(selectedOrder.shippingCharge || 0).toLocaleString("en-IN")}` },
+>>>>>>> 8edd4d6 (Implement country-based shipping flow)
                       { label: "Items", value: selectedOrder.items?.length || selectedOrder.qty || "—" },
                       { label: "City", value: getOrderCity(selectedOrder) },
                       { label: "Status", value: getOrderStatus(selectedOrder) },
