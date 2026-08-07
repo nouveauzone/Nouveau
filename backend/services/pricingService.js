@@ -1,5 +1,5 @@
 const COUPONS = { NOUVEAU10: 10, AURA20: 20, LOTUS15: 15 };
-const { getShippingCharge } = require("../config/shippingconfig");
+const { getShippingCharge } = require("../config/shippingConfig");
 
 const normalizeCoupon = (couponCode = "") => couponCode.trim().toUpperCase();
 
