@@ -377,7 +377,7 @@ export default function ProductPage({ product, setPage }) {
   ))}
 </div>  
 
-            {/* ── RETURN & EXCHANGE POLICY ── */}
+{/* ── RETURN & EXCHANGE POLICY ── */}
             <div style={{
               marginTop: "24px",
               background: THEME.bgCard,
@@ -388,12 +388,13 @@ export default function ProductPage({ product, setPage }) {
               gap: "14px",
               alignItems: "flex-start",
             }}>
-              <div style={{ fontSize: "22px", flexShrink: 0, lineHeight: 1 }}>⚠️</div>
+<div style={{ fontSize: "22px", flexShrink: 0, lineHeight: 1 }}>🔄</div>
               <div>
-               <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: "#C9506A", fontWeight: 700, marginBottom: "6px", textTransform: "uppercase" }}>
+<p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: "#C9506A", fontWeight: 700, marginBottom: "6px", textTransform: "uppercase" }}>
                   India Return and Exchange Policy
                 </p>
                 <ul style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textMuted, lineHeight: 1.7, paddingLeft: "18px", margin: 0 }}>
+                  <li>Hassle-Free 10-Day Return &amp; Exchange</li>
                   <li>Return: In case of returning the product, 30% restocking fees will be deducted from the product price paid by the customer.</li>
                   <li>Exchange: In case of exchange, one-side courier charges will be borne by the customer.</li>
                   <li>Products must be returned unused and in original packaging.</li>
@@ -414,7 +415,7 @@ export default function ProductPage({ product, setPage }) {
                   🌍 International Buyer - For international buyers — please contact us on WhatsApp before ordering so we can confirm sizing, shipping, and any additional requirements.
                 </p>
                 <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "2px" }}>
-                  For queries: WhatsApp <strong style={{ color: "#D4AF37" }}>+91 7733881577</strong>
+                  For queries: WhatsApp +91 7733881577
                 </p>
               </div>
             </div>

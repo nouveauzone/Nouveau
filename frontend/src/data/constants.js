@@ -1,4 +1,4 @@
-import { SHIPPING_RATES, getShippingCharge as getConfiguredShippingCharge } from "../config/shippingConfig";
+import { SHIPPING_RATES, getShippingCharge as getConfiguredShippingCharge } from "../config/shippingconfig";
 
 export const CATEGORIES = ["All", "Indian Ethnic Wear", "Indian Western Wear"];
 
