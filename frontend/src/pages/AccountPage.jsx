@@ -8,10 +8,11 @@ import { THEME } from "../styles/theme";
 import { BtnPrimary, BtnOutline } from "../components/Buttons";
 import API from "../services/apiService";
 import { fixImageUrl } from "../utils/imageUrl";
-<<<<<<< HEAD
-=======
-import { getCurrencySymbol } from "../data/constants";
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+
+const formatOrderMoney = (amount, currency = "INR") => {
+  try { return new Intl.NumberFormat(currency === "EUR" ? "de-DE" : "en-US", { style: "currency", currency }).format(Number(amount) || 0); }
+  catch { return `${currency} ${Number(amount || 0).toFixed(2)}`; }
+};
 
 // Maps every backend orderStatus value to a badge style
 const STATUS_STYLE = {
@@ -211,12 +212,15 @@ export default function AccountPage({ setPage }) {
                     <div style={{ display:"flex", alignItems:"center", gap:"12px" }}>
                       <StatusBadge status={o.orderStatus || "Placed"} />
                       <span style={{ fontFamily:"'Poppins',sans-serif", fontWeight:700, fontSize:"17px", color:THEME.text }}>
-                        ₹{orderTotal.toLocaleString("en-IN")}
+                        {formatOrderMoney(orderTotal, o.shippingCurrency || "INR")}
                       </span>
                     </div>
                   </div>
 
                   {/* Items preview */}
+                  <p style={{ fontFamily:"'Poppins',sans-serif", fontSize:"12px", color:THEME.textMuted, marginBottom:"12px" }}>
+                    Shipping ({o.shippingCurrency || "INR"}): {formatOrderMoney(o.shippingCharge, o.shippingCurrency || "INR")}
+                  </p>
                   {itemCount > 0 && (
                     <div style={{ display:"flex", gap:"10px", flexWrap:"wrap", marginBottom:"14px" }}>
                       {orderItems.slice(0,3).map((item,i) => (
@@ -239,7 +243,6 @@ export default function AccountPage({ setPage }) {
                     </div>
                   )}
 
-<<<<<<< HEAD
                   {/* Track button — pre-fills the tracking ID so TrackOrderPage auto-searches */}
                   <button
                     onClick={() => {
@@ -250,24 +253,6 @@ export default function AccountPage({ setPage }) {
                     style={{ background:"none", border:`1px solid ${THEME.crimson}`, color:THEME.crimson, padding:"8px 20px", borderRadius:"99px", cursor:"pointer", fontFamily:"'Poppins',sans-serif", fontSize:"11px", fontWeight:700, letterSpacing:"1px" }}>
                     🚚 Track Order
                   </button>
-=======
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:"10px", marginTop:"14px", alignItems:"center" }}>
-                    <div style={{ background:THEME.bgDark, borderRadius:"10px", padding:"10px 12px", fontFamily:"'Poppins',sans-serif", fontSize:"11px", color:THEME.textMuted }}>
-                      <div><strong style={{ color:THEME.text }}>Shipping:</strong> {o.shippingCountry || "—"}</div>
-                      <div><strong style={{ color:THEME.text }}>Currency:</strong> {String(o.shippingCurrency || "INR").toUpperCase()}</div>
-                      <div><strong style={{ color:THEME.text }}>Charge:</strong> {getCurrencySymbol(String(o.shippingCurrency || "INR").toUpperCase())}{Number(o.shippingCharge || 0).toLocaleString("en-IN")}</div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        const tid = o.trackingId || o._id;
-                        if (tid) localStorage.setItem("lastTrackingId", tid);
-                        setPage("TrackOrder");
-                      }}
-                      style={{ background:"none", border:`1px solid ${THEME.crimson}`, color:THEME.crimson, padding:"8px 20px", borderRadius:"99px", cursor:"pointer", fontFamily:"'Poppins',sans-serif", fontSize:"11px", fontWeight:700, letterSpacing:"1px" }}>
-                      🚚 Track Order
-                    </button>
-                  </div>
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
                 </div>
               );
             })}

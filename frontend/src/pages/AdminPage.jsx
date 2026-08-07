@@ -3,16 +3,16 @@ import { AuthContext } from "../context/AuthContext";
 import { AppDataContext, ToastContext } from "../context/Providers";
 import { THEME } from "../styles/theme";
 import { PRODUCTS as INITIAL_PRODUCTS } from "../data/products";
-<<<<<<< HEAD
 import { normalizeCategory } from "../data/constants";
-=======
-import { normalizeCategory, getCurrencySymbol } from "../data/constants";
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
 import NouveauLogo from "../components/Logo";
 import { BtnPrimary } from "../components/Buttons";
 import API from "../services/apiService";
 import { fixImageUrl } from "../utils/imageUrl";
 const ORDER_STATUSES = ["Awaiting Payment Verification", "Placed", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled"];
+const formatOrderMoney = (amount, currency = "INR") => {
+  try { return new Intl.NumberFormat(currency === "EUR" ? "de-DE" : "en-US", { style: "currency", currency }).format(Number(amount) || 0); }
+  catch { return `${currency} ${Number(amount || 0).toFixed(2)}`; }
+};
 const STATUS_COLORS = {
   pending: { bg: "#fff7e6", text: "#d97706" },
   shipped: { bg: "#d4edda", text: "#155724" },
@@ -1104,15 +1104,11 @@ export default function AdminPage({ setPage }) {
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "10px", marginBottom: "20px" }}>
                     {[
                       { label: "Customer", value: getOrderCustomer(selectedOrder) },
-                      { label: "Amount", value: "₹" + getOrderAmount(selectedOrder) },
+                      { label: "Grand Total", value: formatOrderMoney(selectedOrder.grandTotal ?? getOrderAmount(selectedOrder), selectedOrder.shippingCurrency || "INR") },
+                      { label: "Shipping", value: formatOrderMoney(selectedOrder.shippingCharge, selectedOrder.shippingCurrency || "INR") },
+                      { label: "Currency", value: selectedOrder.shippingCurrency || "INR" },
                       { label: "Payment", value: selectedOrder.paymentMethod || "—" },
                       { label: "Pay ID / UTR", value: selectedOrder.paymentId || "—" },
-<<<<<<< HEAD
-=======
-                      { label: "Shipping Country", value: selectedOrder.shippingCountry || "—" },
-                      { label: "Shipping Currency", value: selectedOrder.shippingCurrency || "INR" },
-                      { label: "Shipping Charge", value: `${getCurrencySymbol(selectedOrder.shippingCurrency || "INR")}${Number(selectedOrder.shippingCharge || 0).toLocaleString("en-IN")}` },
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
                       { label: "Items", value: selectedOrder.items?.length || selectedOrder.qty || "—" },
                       { label: "City", value: getOrderCity(selectedOrder) },
                       { label: "Status", value: getOrderStatus(selectedOrder) },

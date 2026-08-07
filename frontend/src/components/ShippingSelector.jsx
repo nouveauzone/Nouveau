@@ -2,42 +2,6 @@ import { useEffect } from "react";
 import { THEME } from "../styles/theme";
 import { SHIPPING_FEE_BY_CURRENCY } from "../data/constants";
 
-<<<<<<< HEAD
-=======
-const COUNTRY_SELECTIONS = {
-  GBP: [{ code: "United Kingdom", label: "United Kingdom", flag: "🇬🇧", price: "£35", subtext: "United Kingdom shipping" }],
-  EUR: [
-    { code: "Germany", label: "Germany", flag: "🇩🇪", price: "€80", subtext: "Germany shipping" },
-    { code: "France", label: "France", flag: "🇫🇷", price: "€80", subtext: "France shipping" },
-    { code: "Italy", label: "Italy", flag: "🇮🇹", price: "€80", subtext: "Italy shipping" },
-    { code: "Spain", label: "Spain", flag: "🇪🇸", price: "€80", subtext: "Spain shipping" },
-    { code: "Netherlands", label: "Netherlands", flag: "🇳🇱", price: "€80", subtext: "Netherlands shipping" },
-    { code: "Belgium", label: "Belgium", flag: "🇧🇪", price: "€80", subtext: "Belgium shipping" },
-    { code: "Austria", label: "Austria", flag: "🇦🇹", price: "€80", subtext: "Austria shipping" },
-    { code: "Portugal", label: "Portugal", flag: "🇵🇹", price: "€80", subtext: "Portugal shipping" },
-    { code: "Ireland", label: "Ireland", flag: "🇮🇪", price: "€80", subtext: "Ireland shipping" },
-    { code: "Luxembourg", label: "Luxembourg", flag: "🇱🇺", price: "€80", subtext: "Luxembourg shipping" },
-    { code: "Finland", label: "Finland", flag: "🇫🇮", price: "€80", subtext: "Finland shipping" },
-    { code: "Greece", label: "Greece", flag: "🇬🇷", price: "€80", subtext: "Greece shipping" },
-    { code: "Sweden", label: "Sweden", flag: "🇸🇪", price: "€80", subtext: "Sweden shipping" },
-    { code: "Denmark", label: "Denmark", flag: "🇩🇰", price: "€80", subtext: "Denmark shipping" },
-    { code: "Poland", label: "Poland", flag: "🇵🇱", price: "€80", subtext: "Poland shipping" },
-    { code: "Czech Republic", label: "Czech Republic", flag: "🇨🇿", price: "€80", subtext: "Czech Republic shipping" },
-    { code: "Hungary", label: "Hungary", flag: "🇭🇺", price: "€80", subtext: "Hungary shipping" },
-    { code: "Romania", label: "Romania", flag: "🇷🇴", price: "€80", subtext: "Romania shipping" },
-    { code: "Slovakia", label: "Slovakia", flag: "🇸🇰", price: "€80", subtext: "Slovakia shipping" },
-    { code: "Slovenia", label: "Slovenia", flag: "🇸🇮", price: "€80", subtext: "Slovenia shipping" },
-    { code: "Croatia", label: "Croatia", flag: "🇭🇷", price: "€80", subtext: "Croatia shipping" },
-    { code: "Estonia", label: "Estonia", flag: "🇪🇪", price: "€80", subtext: "Estonia shipping" },
-    { code: "Latvia", label: "Latvia", flag: "🇱🇻", price: "€80", subtext: "Latvia shipping" },
-    { code: "Lithuania", label: "Lithuania", flag: "🇱🇹", price: "€80", subtext: "Lithuania shipping" },
-    { code: "Malta", label: "Malta", flag: "🇲🇹", price: "€80", subtext: "Malta shipping" },
-    { code: "Cyprus", label: "Cyprus", flag: "🇨🇾", price: "€80", subtext: "Cyprus shipping" },
-    { code: "Bulgaria", label: "Bulgaria", flag: "🇧🇬", price: "€80", subtext: "Bulgaria shipping" },
-  ],
-};
-
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
 const GOLD = "#D4AF37";
 
 export const SHIPPING_OPTIONS_BY_CURRENCY = {
@@ -45,55 +9,55 @@ export const SHIPPING_OPTIONS_BY_CURRENCY = {
     code: "US",
     flag: "🇺🇸",
     title: "Shipping to USA",
-<<<<<<< HEAD
     price: `$${SHIPPING_FEE_BY_CURRENCY.USD} USD`,
-=======
-    price: `$${SHIPPING_FEE_BY_CURRENCY.USD ?? 0} USD`,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
     subtext: "Delivery in 20 business days",
+    coverageLabel: "United States coverage",
   },
   CAD: {
     code: "CA",
     flag: "🇨🇦",
     title: "Shipping to Canada",
-<<<<<<< HEAD
     price: `$${SHIPPING_FEE_BY_CURRENCY.CAD} CAD`,
-=======
-    price: `$${SHIPPING_FEE_BY_CURRENCY.CAD ?? 0} CAD`,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
     subtext: "Delivery in 20 business days",
+    coverageLabel: "Canada coverage",
   },
   AUD: {
     code: "AU",
     flag: "🇦🇺",
     title: "Shipping to Australia",
-<<<<<<< HEAD
     price: `A$${SHIPPING_FEE_BY_CURRENCY.AUD} AUD`,
-=======
-    price: `A$${SHIPPING_FEE_BY_CURRENCY.AUD ?? 0} AUD`,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
     subtext: "Delivery in 20 business days",
+    coverageLabel: "Australia coverage",
   },
   AED: {
     code: "AE",
     flag: "🇦🇪",
     title: "Shipping to UAE (Dubai)",
-<<<<<<< HEAD
     price: `AED ${SHIPPING_FEE_BY_CURRENCY.AED}`,
-=======
-    price: `AED ${SHIPPING_FEE_BY_CURRENCY.AED ?? 0}`,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
     subtext: "Delivery in 20 business days",
+    coverageLabel: "UAE coverage",
+  },
+  GBP: {
+    code: "England, Northern Ireland, Scotland and Wales",
+    title: "Shipping to England, Northern Ireland, Scotland and Wales",
+    price: `£${SHIPPING_FEE_BY_CURRENCY.GBP} GBP`,
+    subtext: "One standard UK rate · Delivery in 20 business days",
+    coverageLabel: "UK coverage",
+  },
+  EUR: {
+    code: "Europe",
+    title: "Shipping to Europe",
+    price: `€${SHIPPING_FEE_BY_CURRENCY.EUR} EUR`,
+    subtext: "One standard Europe-wide rate · Delivery in 20 business days",
+    coverageLabel: "Europe-wide coverage",
   },
 };
 
 export default function ShippingSelector({ currencyCode, onSelect, selected: controlledSelected }) {
-<<<<<<< HEAD
-  const visibleOption = SHIPPING_OPTIONS_BY_CURRENCY[currencyCode] || null;
-  const visibleOptions = visibleOption ? [visibleOption] : [];
-=======
-  const visibleOptions = COUNTRY_SELECTIONS[currencyCode] || [];
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+  const configuredOptions = SHIPPING_OPTIONS_BY_CURRENCY[currencyCode];
+  const visibleOptions = Array.isArray(configuredOptions)
+    ? configuredOptions
+    : configuredOptions ? [configuredOptions] : [];
 
   useEffect(() => {
     const defaultOption = visibleOptions[0];
@@ -117,12 +81,13 @@ export default function ShippingSelector({ currencyCode, onSelect, selected: con
             style={{
               position: "relative",
               cursor: visibleOptions.length === 1 ? "default" : "pointer",
-              borderRadius: "16px",
-              padding: "20px",
-              background: THEME.bgCard,
+              borderRadius: "18px",
+              padding: "22px",
+              background: isSelected ? "linear-gradient(135deg, #fffdf7 0%, #fffbef 100%)" : THEME.bgCard,
               border: `2px solid ${isSelected ? GOLD : THEME.border}`,
-              boxShadow: isSelected ? `0 0 0 1px ${GOLD}` : "none",
+              boxShadow: isSelected ? `0 10px 28px ${GOLD}20, 0 0 0 1px ${GOLD}` : "0 3px 12px rgba(55, 35, 20, 0.04)",
               transition: "all 0.2s",
+              overflow: "hidden",
             }}
           >
             {isSelected && (
@@ -144,13 +109,11 @@ export default function ShippingSelector({ currencyCode, onSelect, selected: con
                 SELECTED
               </span>
             )}
-            <div style={{ fontSize: "26px", marginBottom: "8px" }}>{option.flag}</div>
+            <div style={{ marginBottom: "14px", color: GOLD, fontFamily: "'Poppins',sans-serif", fontSize: "10px", fontWeight: 700, letterSpacing: "1.2px", textTransform: "uppercase" }}>
+              {option.coverageLabel}
+            </div>
             <p style={{ fontFamily: "'Playfair Display',serif", fontSize: "16px", fontWeight: 700, color: THEME.text, marginBottom: "4px" }}>
-<<<<<<< HEAD
               {option.title}
-=======
-              {option.label}
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
             </p>
             <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "15px", fontWeight: 700, color: GOLD, marginBottom: "2px" }}>
               {option.price}
@@ -158,6 +121,7 @@ export default function ShippingSelector({ currencyCode, onSelect, selected: con
             <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textMuted }}>
               {option.subtext}
             </p>
+            <div style={{ height: "3px", width: "100%", borderRadius: "999px", background: isSelected ? `linear-gradient(90deg, ${GOLD}, #f0d87b)` : "#f2ede5", marginTop: "16px" }} />
           </div>
         );
       })}

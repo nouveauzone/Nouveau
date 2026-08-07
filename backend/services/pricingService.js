@@ -1,8 +1,5 @@
 const COUPONS = { NOUVEAU10: 10, AURA20: 20, LOTUS15: 15 };
-<<<<<<< HEAD
-=======
-const { resolveShippingProfile } = require("../config/shippingConfig");
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+const { getShippingCharge } = require("../config/shippingconfig");
 
 const normalizeCoupon = (couponCode = "") => couponCode.trim().toUpperCase();
 
@@ -14,11 +11,7 @@ const normalizeCoupon = (couponCode = "") => couponCode.trim().toUpperCase();
  * @param {boolean} isReturningCustomer - Whether customer is returning (has 1+ paid orders)
  * @returns {object} - Totals breakdown
  */
-<<<<<<< HEAD
-const calculateOrderTotals = (items = [], couponCode = "", isReturningCustomer = false) => {
-=======
-const calculateOrderTotals = (items = [], couponCode = "", isReturningCustomer = false, shippingCurrency = "", shippingCountry = "") => {
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+const calculateOrderTotals = (items = [], couponCode = "", isReturningCustomer = false, currency = "INR", exchangeRate = 1) => {
   const subtotal = items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
   const normalizedCoupon = normalizeCoupon(couponCode);
   
@@ -39,35 +32,30 @@ const calculateOrderTotals = (items = [], couponCode = "", isReturningCustomer =
     discountType = "returning_customer";
   }
   
-<<<<<<< HEAD
-  const shippingCharge = subtotal >= 2999 ? 0 : 99;
-=======
-  const shippingProfile = resolveShippingProfile(shippingCountry, shippingCurrency);
-  const normalizedShippingCurrency = String(shippingProfile.shippingCurrency || shippingCurrency || "").trim().toUpperCase();
-  const shippingCharge = Number(shippingProfile.shippingCharge || 0);
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+  const shippingCurrency = String(currency || "INR").toUpperCase();
+  const conversionRate = shippingCurrency === "INR" ? 1 : Math.max(0, Number(exchangeRate) || 1);
+  const shippingCharge = getShippingCharge(shippingCurrency, subtotal);
   // GST Calculation
   const cgst = +(subtotal * 0.025).toFixed(2);
   const sgst = +(subtotal * 0.025).toFixed(2);
-  const total = subtotal - discount + cgst + sgst + shippingCharge;
+  const convertedSubtotal = +(subtotal * conversionRate).toFixed(2);
+  const convertedDiscount = +(discount * conversionRate).toFixed(2);
+  const convertedCgst = shippingCurrency === "INR" ? cgst : 0;
+  const convertedSgst = shippingCurrency === "INR" ? sgst : 0;
+  const total = +(convertedSubtotal - convertedDiscount + convertedCgst + convertedSgst + shippingCharge).toFixed(2);
 
   return {
     couponCode: normalizedCoupon,
-    subtotal,
-    discount,
+    subtotal: convertedSubtotal,
+    discount: convertedDiscount,
     discountPct,
     discountType,
     isReturningCustomer,
-    cgst,
-    sgst,
-<<<<<<< HEAD
+    cgst: convertedCgst,
+    sgst: convertedSgst,
     shippingCharge,
-=======
-    shippingCountry: shippingProfile.shippingCountry || "",
-    shippingCharge,
-    shippingCurrency: normalizedShippingCurrency,
+    shippingCurrency,
     grandTotal: total,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
     total,
   };
 };

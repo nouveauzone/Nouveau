@@ -5,17 +5,13 @@ import { BtnOutline, BtnPrimary } from "../components/Buttons";
 import Footer from "../components/Footer";
 import { fixImageUrl } from "../utils/imageUrl";
 import { useCurrency } from "../context/CurrencyContext";
-<<<<<<< HEAD
-=======
-import { getCurrencySymbol, SHIPPING_COUNTRY_BY_CURRENCY, getShippingProfileForCountry } from "../data/constants";
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
 
 const GOLD    = "#D4AF37";
 const CRIMSON = "#FF9933";
 
 export default function OrderSuccessPage({ setPage }) {
   const { myOrders } = useContext(AppDataContext) || {};
-  const { formatPrice } = useCurrency();
+  const { formatCurrency } = useCurrency();
   const safeOrders = Array.isArray(myOrders) ? myOrders : [];
   const [orderId, setOrderId] = useState("");
   const [showEmailNotice, setShowEmailNotice] = useState(false);
@@ -26,13 +22,6 @@ export default function OrderSuccessPage({ setPage }) {
   },[]);
 
   const order = safeOrders.find((o) => o?._id === orderId);
-<<<<<<< HEAD
-=======
-  const orderCurrency = String(order?.shippingCurrency || order?.currency || "INR").toUpperCase();
-  const shippingProfile = getShippingProfileForCountry(order?.shippingCountry || "", orderCurrency);
-  const orderShippingSymbol = getCurrencySymbol(shippingProfile.shippingCurrency || orderCurrency);
-  const orderShippingCountry = shippingProfile.shippingCountry || SHIPPING_COUNTRY_BY_CURRENCY[orderCurrency] || "India";
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
   const trackingId = order?.trackingId || localStorage.getItem("lastTrackingId") || "";
   const isAwaitingPayment =
     order?.orderStatus === "Awaiting Payment Verification" &&
@@ -89,42 +78,13 @@ export default function OrderSuccessPage({ setPage }) {
                   <button onClick={()=>navigator.clipboard?.writeText(trackingId)} style={{background:"none",border:"1px solid #D4AF3760",color:"#b8962e",padding:"4px 12px",borderRadius:"6px",cursor:"pointer",fontFamily:"'Poppins',sans-serif",fontSize:"11px",marginTop:"8px",fontWeight:600}}>📋 Copy Tracking ID</button>
                 </div>
               )}
-<<<<<<< HEAD
-=======
-              {order && (
-                <div style={{ background: THEME.bgCard, border: `1px solid ${THEME.border}`, borderRadius: "12px", padding: "16px 18px", marginBottom: "18px" }}>
-                  <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "2px", color: THEME.textLight, marginBottom: "10px", fontWeight: 700 }}>ORDER SUMMARY</p>
-                  <div style={{ display: "grid", gap: "10px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", color: THEME.textMuted }}>
-                      <span>Shipping Country</span>
-                      <span>{orderShippingCountry}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", color: THEME.textMuted }}>
-                      <span>Selected Currency</span>
-                      <span>{orderCurrency}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", color: THEME.textMuted }}>
-                      <span>Shipping</span>
-                      <span>{orderShippingSymbol}{Number(order.shippingCharge || 0).toLocaleString("en-IN")}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", color: THEME.textMuted }}>
-                      <span>Subtotal</span>
-                      <span>{orderShippingSymbol}{Number(order.subtotal || 0).toLocaleString("en-IN")}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700, color: THEME.text }}>
-                      <span>Grand Total</span>
-                      <span>{orderShippingSymbol}{Number(order.grandTotal || order.total || 0).toLocaleString("en-IN")}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
               <p style={{fontFamily:"'Poppins',sans-serif",fontSize:"9px",letterSpacing:"3px",color:THEME.textMuted,marginBottom:"6px",textTransform:"uppercase"}}>Order ID</p>
               <p style={{fontFamily:"'Poppins',sans-serif",fontSize:"14px",fontWeight:700,color:GOLD,letterSpacing:"1px"}}>{orderId}</p>
               {order && (
-                <p style={{fontFamily:"'Poppins',sans-serif",fontSize:"12px",color:THEME.textMuted,marginTop:"8px"}}>
-                  {order.product || ""} · {formatPrice(order.price||order.total||0)}
-                </p>
+                <div style={{fontFamily:"'Poppins',sans-serif",fontSize:"12px",color:THEME.textMuted,marginTop:"8px",lineHeight:1.8}}>
+                  <div>{order.product || ""} · {formatCurrency(order.grandTotal ?? order.total ?? 0)}</div>
+                  <div>Shipping ({order.shippingCurrency || "INR"}): {formatCurrency(order.shippingCharge ?? 0)}</div>
+                </div>
               )}
             </div>
           )}

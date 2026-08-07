@@ -22,11 +22,7 @@ const Spinner = () => (
   </span>
 );
 
-<<<<<<< HEAD
-export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, onSuccess, onFailure, onDiscountApplied }) {
-=======
-export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, shippingCurrency = "INR", shippingCharge = 0, shippingCountry = "", onSuccess, onFailure, onDiscountApplied }) {
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+export default function NouveauzCheckout({ amount, cartItems = [], customerInfo = {}, currencyCode = "INR", exchangeRate = 1, shippingCharge = 0, shippingCountry = "", onSuccess, onFailure, onDiscountApplied }) {
   const [loading, setLoading] = useState(false);
   const totalPrice = Number(amount) || 0;
   const { formatPrice } = useCurrency();
@@ -67,14 +63,10 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
       const gatewayOrder = await apiService.createRazorpayOrder({ 
         amount: totalPrice,
         subtotal: subtotal,
-<<<<<<< HEAD
-        items: cartItems 
-=======
         items: cartItems,
-        shippingCurrency,
+        currencyCode,
+        exchangeRate,
         shippingCharge,
-        shippingCountry,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
       }, token);
       
       const orderId = gatewayOrder?.order?.id || gatewayOrder?.orderId || gatewayOrder?.id || gatewayOrder?.order?.orderId;
@@ -148,14 +140,12 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
               shippingAddress: customerInfo,
               paymentMethod: "RAZORPAY",
               paymentReference: response.razorpay_payment_id,
-<<<<<<< HEAD
-=======
-              subtotal: subtotal,
-              shippingCurrency,
+              total: Number(amount),
+              currencyCode,
+              shippingCurrency: currencyCode,
+              exchangeRate,
               shippingCharge,
               shippingCountry,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
-              total: Number(amount),
             }, token);
           } catch (error) {
             verificationError = error;

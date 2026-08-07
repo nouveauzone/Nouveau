@@ -1,7 +1,7 @@
 import { useCurrency } from "../context/CurrencyContext";
 
 export default function CurrencySelector({ className = "" }) {
-  const { currencyCode, setCurrencyCode, currencyOptions, loading } = useCurrency();
+  const { currencyCode, setCurrencyCode, currencyOptions } = useCurrency();
 
   return (
     <label className={className} style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
@@ -11,7 +11,6 @@ export default function CurrencySelector({ className = "" }) {
       <select
         value={currencyCode}
         onChange={(event) => setCurrencyCode(event.target.value)}
-        disabled={loading}
         aria-label="Select currency"
         style={{
           minWidth: "130px",
@@ -24,12 +23,12 @@ export default function CurrencySelector({ className = "" }) {
           fontSize: "12px",
           fontWeight: 600,
           outline: "none",
-          cursor: loading ? "wait" : "pointer",
+          cursor: "pointer",
         }}
       >
         {currencyOptions.map((currency) => (
           <option key={currency.code} value={currency.code}>
-            {currency.symbol} {currency.code}
+            {currency.symbol} {currency.code === "EUR" ? "EURO" : currency.code}
           </option>
         ))}
       </select>

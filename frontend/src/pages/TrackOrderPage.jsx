@@ -4,10 +4,6 @@ import { THEME } from "../styles/theme";
 import Footer from "../components/Footer";
 import API from "../config/api";
 import { fixImageUrl } from "../utils/imageUrl";
-<<<<<<< HEAD
-=======
-import { getCurrencySymbol, SHIPPING_COUNTRY_BY_CURRENCY, getShippingProfileForCountry } from "../data/constants";
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
 
 // Use same API base as rest of app - no axios needed
 const API_BASE = API;
@@ -132,26 +128,10 @@ function StatusTimeline({ history }) {
   );
 }
 
-<<<<<<< HEAD
 // ── Order Info ────────────────────────────────────────────────────────────────
 function OrderCard({ order }) {
   const cfg     = STATUS_CONFIG[order.orderStatus] || STATUS_CONFIG.Placed;
   const isAwaitingPayment = order.orderStatus === "Awaiting Payment Verification";
-=======
-const formatAmountInCurrency = (amount = 0, currencyCode = "INR") => {
-  const symbol = getCurrencySymbol(String(currencyCode || "INR").toUpperCase());
-  return `${symbol}${Number(amount || 0).toLocaleString("en-IN")}`;
-};
-
-// ── Order Info ──────────────────────────────────────────────────────────────
-function OrderCard({ order }) {
-  const cfg     = STATUS_CONFIG[order.orderStatus] || STATUS_CONFIG.Placed;
-  const isAwaitingPayment = order.orderStatus === "Awaiting Payment Verification";
-  const orderCurrency = String(order.shippingCurrency || order.currency || "INR").toUpperCase();
-  const shippingProfile = getShippingProfileForCountry(order.shippingCountry || "", orderCurrency);
-  const orderShippingSymbol = getCurrencySymbol(shippingProfile.shippingCurrency || orderCurrency);
-  const orderShippingCountry = shippingProfile.shippingCountry || SHIPPING_COUNTRY_BY_CURRENCY[orderCurrency] || "India";
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
   const estDate = order.estimatedDelivery
     ? new Date(order.estimatedDelivery).toLocaleDateString("en-IN", { day:"numeric", month:"long", year:"numeric" })
     : "5–7 business days";
@@ -179,14 +159,7 @@ function OrderCard({ order }) {
           ["👤 Customer",   order.shippingAddress?.name || order.user?.name || "—"],
           ["💰 Total",      `₹${(order.total||0).toLocaleString("en-IN")}`],
           ["💳 Payment",    order.paymentMethod || "COD"],
-<<<<<<< HEAD
           ["📅 Ordered",    new Date(order.createdAt).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})],
-=======
-          ["� Currency",   orderCurrency],
-          ["🚚 Shipping",   formatAmountInCurrency(order.shippingCharge || 0, orderCurrency)],
-          ["🌍 Ship To",    orderShippingCountry],
-          ["�📅 Ordered",    new Date(order.createdAt).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})],
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
           ["🚚 Est. Delivery", isAwaitingPayment ? "After payment verification" : order.orderStatus==="Delivered"?"✅ Delivered":estDate],
           ["📦 Items",      `${order.items?.length||0} item(s)`],
         ].map(([label, value]) => (

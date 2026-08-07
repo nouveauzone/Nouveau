@@ -9,11 +9,7 @@ import { CurrencyContext } from "../context/CurrencyContext";
 import { THEME } from "../styles/theme";
 import { BtnOutline, BtnPrimary } from "../components/Buttons";
 import { fixImageUrl } from "../utils/imageUrl";
-<<<<<<< HEAD
 import { getShippingChargeForCurrency } from "../data/constants";
-=======
-import { getShippingChargeForCurrency, getCurrencySymbol, SHIPPING_COUNTRY_BY_CURRENCY, getShippingProfileForCountry } from "../data/constants";
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
 import { ToastContext } from "../context/Providers";
 import apiService from "../services/apiService";
 import { SHIPPING_OPTIONS_BY_CURRENCY } from "../components/ShippingSelector";
@@ -56,19 +52,15 @@ export default function CheckoutPage({ setPage }) {
   const [address, setAddress] = useState({ name: "", phone: "", email: "", street: "", city: "", state: "", pincode: "" });
   const [processing, setProcessing] = useState(false);
   const [errors, setErrors] = useState({});
-<<<<<<< HEAD
-  const [shippingCountry, setShippingCountry] = useState(() => SHIPPING_OPTIONS_BY_CURRENCY[currencyCode]?.code || null);
+  const [shippingCountry, setShippingCountry] = useState(() => {
+    const options = SHIPPING_OPTIONS_BY_CURRENCY[currencyCode];
+    return (Array.isArray(options) ? options[0] : options)?.code || null;
+  });
 
-  const intlShippingOption = SHIPPING_OPTIONS_BY_CURRENCY[currencyCode] || null;
-  const isInternationalShipping = Boolean(intlShippingOption);
-=======
-  const [shippingCountry, setShippingCountry] = useState(() => null);
-
-  const isInternationalShipping = currencyCode === "GBP" || currencyCode === "EUR";
-  const intlShippingOption = isInternationalShipping
-    ? { title: currencyCode === "GBP" ? "United Kingdom" : "Europe", code: currencyCode }
-    : null;
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+  const intlShippingOptions = SHIPPING_OPTIONS_BY_CURRENCY[currencyCode];
+  const isInternationalShipping = Boolean(intlShippingOptions);
+  const intlShippingOption = (Array.isArray(intlShippingOptions) ? intlShippingOptions : [intlShippingOptions])
+    .find((option) => option?.code === shippingCountry) || null;
 
   useEffect(() => {
     const updateViewport = () => setIsMobile(window.innerWidth < 768);
@@ -85,17 +77,8 @@ export default function CheckoutPage({ setPage }) {
   }, []);
 
   useEffect(() => {
-<<<<<<< HEAD
-    setShippingCountry(intlShippingOption?.code || null);
-=======
-    if (currencyCode === "GBP") {
-      setShippingCountry("United Kingdom");
-    } else if (currencyCode === "EUR") {
-      setShippingCountry("Germany");
-    } else {
-      setShippingCountry(null);
-    }
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+    const options = SHIPPING_OPTIONS_BY_CURRENCY[currencyCode];
+    setShippingCountry((Array.isArray(options) ? options[0] : options)?.code || null);
   }, [currencyCode]);
 
   const subtotal = cart.reduce(
@@ -103,17 +86,10 @@ export default function CheckoutPage({ setPage }) {
   0
 );
 
-<<<<<<< HEAD
 const shipping = getShippingChargeForCurrency(
   currencyCode,
   subtotal
 );
-=======
-const shippingProfile = getShippingProfileForCountry(shippingCountry, currencyCode);
-const shipping = shippingProfile.shippingCharge;
-const selectedCurrencySymbol = getCurrencySymbol(shippingProfile.shippingCurrency || currencyCode);
-const shippingCountryName = shippingProfile.shippingCountry || SHIPPING_COUNTRY_BY_CURRENCY[currencyCode] || "India";
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
 
 const convertedSubtotal =
   currencyCode === "INR"
@@ -206,8 +182,12 @@ const total =
           throw new Error("Missing Razorpay payment reference. Please contact support.");
         }
 
-<<<<<<< HEAD
-        orderId = await placeOrder(address, cart, "RAZORPAY", reference);
+        orderId = await placeOrder(address, cart, "RAZORPAY", reference, {
+          currencyCode,
+          exchangeRate,
+          shippingCharge: shipping,
+          shippingCountry,
+        });
       } else {
         cartDispatch({ type: "CLEAR" });
       }
@@ -226,13 +206,6 @@ const total =
         await refreshMyOrders?.();
       } catch {
         // Ignore refresh failures; order id is still persisted locally.
-=======
-        try {
-          orderId = await placeOrder(address, cart, "RAZORPAY", reference, shippingProfile.shippingCurrency || currencyCode, shippingCountry);
-        } catch {
-          // Ignore refresh failures; order id is still persisted locally.
-        }
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
       }
 
       if (typeof window !== "undefined") {
@@ -296,23 +269,6 @@ const total =
                   <>
                     <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "3px", color: GOLD, marginBottom: "12px", fontWeight: 700 }}>CHOOSE SHIPPING</p>
                     <ShippingSelector currencyCode={currencyCode} selected={shippingCountry} onSelect={setShippingCountry} />
-<<<<<<< HEAD
-=======
-                    <div style={{ background: THEME.bgCard, border: `1px solid ${THEME.border}`, borderRadius: "12px", padding: "14px 16px", marginBottom: "20px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", color: THEME.textMuted }}>
-                        <span>Shipping Country</span>
-                        <span style={{ color: THEME.text }}>{shippingCountryName}</span>
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", color: THEME.textMuted }}>
-                        <span>Currency</span>
-                        <span style={{ color: THEME.text }}>{shippingProfile.shippingCurrency || currencyCode}</span>
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", color: THEME.textMuted }}>
-                        <span>Shipping Charge</span>
-                        <span style={{ color: THEME.text }}>{selectedCurrencySymbol}{shipping.toLocaleString("en-IN")}</span>
-                      </div>
-                    </div>
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
                     {errors.shipping && (
                       <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: CRIMSON, marginTop: "-12px", marginBottom: "20px" }}>
                         Please select a shipping option to continue.
@@ -369,12 +325,10 @@ const total =
                     amount={total}
                     cartItems={cart}
                     customerInfo={address}
-<<<<<<< HEAD
-=======
-                    shippingCurrency={shippingProfile.shippingCurrency || currencyCode}
+                    currencyCode={currencyCode}
+                    exchangeRate={exchangeRate}
                     shippingCharge={shipping}
                     shippingCountry={shippingCountry}
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
                     onSuccess={handleRazorpaySuccess}
                     onFailure={(error) => {
                       if (error?.reason === "auth" || error?.reason === "auth_required") {
@@ -429,6 +383,11 @@ const total =
               >
                 ORDER SUMMARY
               </p>
+              <div style={{ background: `${GOLD}12`, border: `1px solid ${GOLD}35`, borderRadius: "10px", padding: "10px 12px", marginBottom: "16px", fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textMuted, lineHeight: 1.8 }}>
+                <div><strong style={{ color: THEME.text }}>Shipping Country:</strong> {shippingCountry || "Not selected"}</div>
+                <div><strong style={{ color: THEME.text }}>Selected Currency:</strong> {currencyCode}</div>
+                <div><strong style={{ color: THEME.text }}>Shipping Charge:</strong> {formatCurrency(shipping)}</div>
+              </div>
 
               <div
                 style={{
@@ -553,7 +512,7 @@ const total =
                       color: THEME.text,
                     }}
                   >
-                    {formatPrice(subtotal)}
+                    {formatCurrency(convertedSubtotal)}
                   </span>
                 </div>
 
@@ -617,65 +576,6 @@ const total =
   </>
 )}
 
-<<<<<<< HEAD
-=======
-                        <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "'Poppins',sans-serif",
-                      fontSize: "13px",
-                      color: THEME.textMuted,
-                    }}
-                  >
-                    Selected Currency
-                  </span>
-
-                  <span
-                    style={{
-                      fontFamily: "'Poppins',sans-serif",
-                      fontSize: "13px",
-                      color: THEME.text,
-                    }}
-                  >
-                    {selectedCurrencySymbol} {currencyCode}
-                  </span>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "'Poppins',sans-serif",
-                      fontSize: "13px",
-                      color: THEME.textMuted,
-                    }}
-                  >
-                    Shipping Destination
-                  </span>
-
-                  <span
-                    style={{
-                      fontFamily: "'Poppins',sans-serif",
-                      fontSize: "13px",
-                      color: THEME.text,
-                    }}
-                  >
-                    {shippingCountryName}
-                  </span>
-                </div>
-
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
                 <div
                   style={{
                     display: "flex",
@@ -722,7 +622,7 @@ const total =
                       color: THEME.text,
                     }}
                   >
-                    Total
+                    Grand Total
                   </span>
 
                   <span

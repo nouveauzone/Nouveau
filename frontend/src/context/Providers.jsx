@@ -105,14 +105,9 @@ const normalizeOrder = (order, fallback = {}) => {
     status: typeof order?.status === 'object' ? order.status?.status || "Placed" : (order?.status || order?.orderStatus || fallback.status || "Placed"),
     orderStatus: typeof order?.orderStatus === 'object' ? order.orderStatus?.status || "Placed" : (order?.orderStatus || order?.status || fallback.orderStatus || "Placed"),
     subtotal: order?.subtotal ?? fallback.subtotal ?? 0,
-<<<<<<< HEAD
     shippingCharge: order?.shippingCharge ?? fallback.shippingCharge ?? 0,
-=======
-    shippingCountry: order?.shippingCountry ?? fallback.shippingCountry ?? "",
-    shippingCurrency: order?.shippingCurrency ?? fallback.shippingCurrency ?? "",
-    shippingCharge: order?.shippingCharge ?? fallback.shippingCharge ?? 0,
-    grandTotal: order?.grandTotal ?? fallback.grandTotal ?? total,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+    shippingCurrency: order?.shippingCurrency || order?.currencyCode || fallback.shippingCurrency || "INR",
+    grandTotal: order?.grandTotal ?? total,
     total,
     totalAmount: total,
     trackingId: order?.trackingId || fallback.trackingId || "",
@@ -308,29 +303,13 @@ export default function Providers({ children }) {
     setWishlist(prev => prev.find(p => p._id===product._id) ? prev.filter(p => p._id!==product._id) : [...prev, product]);
 
   // ── placeOrder — saves to backend AND local state ─────────────────────────
-<<<<<<< HEAD
-  const placeOrder = async (address, items, paymentMethod, paymentReference = "") => {
-=======
-  const placeOrder = async (address, items, paymentMethod, paymentReference = "", shippingCurrency = "", shippingCountry = "") => {
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+  const placeOrder = async (address, items, paymentMethod, paymentReference = "", shippingDetails = {}) => {
     if (!authState.isAuthenticated || !authState.token) {
       throw new Error("Authentication required to place order.");
     }
 
     const subtotal       = items.reduce((s,i) => s + i.price*i.qty, 0);
-<<<<<<< HEAD
-    const shippingCharge = getShippingChargeForCurrency();
-=======
-    const normalizedShippingCurrency = String(shippingCurrency || "").toUpperCase();
-    const resolvedShippingCountry = String(shippingCountry || address?.country || "").trim();
-    const shippingChargeValue = getShippingChargeForCurrency(normalizedShippingCurrency, resolvedShippingCountry);
-    const shippingProfile = {
-      shippingCountry: resolvedShippingCountry,
-      shippingCurrency: normalizedShippingCurrency || "INR",
-      shippingCharge: shippingChargeValue,
-    };
-    const shippingCharge = shippingProfile.shippingCharge;
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+    const shippingCharge = Number(shippingDetails.shippingCharge ?? getShippingChargeForCurrency()) || 0;
     const total          = subtotal + shippingCharge;
     const now            = new Date();
     const fmt = (d) => d.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
@@ -361,11 +340,11 @@ export default function Providers({ children }) {
         userEmail: authState.user?.email,
         paymentMethod: paymentMethod || "COD",
         paymentReference,
-<<<<<<< HEAD
+        currencyCode: shippingDetails.currencyCode || "INR",
+        shippingCurrency: shippingDetails.currencyCode || "INR",
+        exchangeRate: shippingDetails.exchangeRate || 1,
+        shippingCountry: shippingDetails.shippingCountry || "",
         subtotal, shippingCharge, total,
-=======
-        subtotal, shippingCountry: shippingProfile.shippingCountry, shippingCurrency: shippingProfile.shippingCurrency, shippingCharge, grandTotal: total, total,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
       };
       const backendOrder = await API.placeOrder(orderData);
       orderId = backendOrder._id;
@@ -397,14 +376,7 @@ export default function Providers({ children }) {
         steps,
         items:       orderData.items,
         subtotal,
-<<<<<<< HEAD
         shippingCharge,
-=======
-        shippingCountry: shippingProfile.shippingCountry,
-        shippingCurrency: shippingProfile.shippingCurrency,
-        shippingCharge,
-        grandTotal: total,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
         total,
       });
       setAllOrders(prev => [enriched, ...prev]);

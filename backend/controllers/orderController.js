@@ -28,25 +28,15 @@ const normalizeSizeLabel = (value) => {
 // POST /api/orders/create  — place order (alias for POST /api/orders)
 // ─────────────────────────────────────────────────────────────────────────────
 exports.createOrder = asyncHandler(async (req, res) => {
-<<<<<<< HEAD
-  const { items, products, shippingAddress, paymentMethod, paymentReference, couponCode } = req.body;
-=======
-  const { items, products, shippingAddress, paymentMethod, paymentReference, couponCode, shippingCurrency = "INR", shippingCountry = "" } = req.body;
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+  const { items, products, shippingAddress, paymentMethod, paymentReference, couponCode, shippingCurrency, currencyCode, exchangeRate } = req.body;
   const orderArray = products || items;
   if (!orderArray?.length) return res.status(400).json({ message: "No items in order" });
 
   // ── Check if customer is returning (has 1+ paid orders) ──────────────────
   const isReturning = await isReturningCustomer(req.user._id);
-<<<<<<< HEAD
   
-  const totals = calculateOrderTotals(orderArray, couponCode, isReturning);
-=======
-  const selectedShippingCountry = String(shippingCountry || shippingAddress?.country || "").trim();
-  const normalizedShippingCurrency = String(shippingCurrency || "INR").trim().toUpperCase();
-  
-  const totals = calculateOrderTotals(orderArray, couponCode, isReturning, normalizedShippingCurrency, selectedShippingCountry);
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+  const selectedCurrency = String(shippingCurrency || currencyCode || "INR").toUpperCase();
+  const totals = calculateOrderTotals(orderArray, couponCode, isReturning, selectedCurrency, exchangeRate);
   
   const normalizedPaymentMethod = String(paymentMethod || "COD").toUpperCase();
   const isUpiOrder = normalizedPaymentMethod === "UPI";
@@ -144,7 +134,10 @@ exports.createOrder = asyncHandler(async (req, res) => {
         userEmail: req.user.email,
         userPhone: shippingAddress?.phone || req.user?.phone || "",
         products: enrichedOrderArray,
-        shippingAddress,
+        shippingAddress: {
+          ...shippingAddress,
+          country: String(req.body.shippingCountry || shippingAddress?.country || "").trim(),
+        },
         paymentMethod: normalizedPaymentMethod,
         paymentStatus: isUpiOrder ? "pending" : "paid",
         paymentId: (isUpiOrder || isRazorpayOrder) ? normalizedPaymentReference : "",
@@ -153,14 +146,9 @@ exports.createOrder = asyncHandler(async (req, res) => {
         subtotal:      totals.subtotal,
         discount:      totals.discount,
         discountType:  totals.discountType,
-<<<<<<< HEAD
         shippingCharge:totals.shippingCharge,
-=======
-        shippingCountry: totals.shippingCountry,
         shippingCurrency: totals.shippingCurrency,
-        shippingCharge:totals.shippingCharge,
-        grandTotal:     totals.grandTotal,
->>>>>>> 8edd4d6 (Implement country-based shipping flow)
+        grandTotal: totals.grandTotal,
         totalAmount:   totals.total,
       });
 

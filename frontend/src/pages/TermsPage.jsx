@@ -24,11 +24,12 @@ export default function TermsPage({ setPage }) {
           <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "22px", fontWeight: 700, color: THEME.crimson, marginBottom: "12px" }}>🔁 Return & Exchange Policy</h2>
           <div style={{ height: "1px", background: `linear-gradient(to right, ${THEME.crimson}40, transparent)`, marginBottom: "16px" }} />
           <ul style={{ fontFamily: "'Poppins',sans-serif", fontSize: "15px", color: THEME.textMuted, lineHeight: 1.85, marginBottom: "12px", paddingLeft: "18px" }}>
+            <li><strong style={{ color: THEME.text }}>Hassle-Free 10-Day Return & Exchange:</strong> Eligible domestic orders may be returned or exchanged within 10 days of delivery.</li>
             <li>Return: In case of returning the product, 30% restocking fees will be deducted from the product price paid by the customer.</li>
             <li>Exchange: In case of exchange, one-side courier charges will be borne by the customer.</li>
             <li>Products must be returned unused and in original packaging.</li>
             <li>Refunds will be processed after quality inspection of the returned product.</li>
-            <li>All sales are final</li>
+            <li>International orders are final; please see the International Orders policy below.</li>
             <li>Refund will be initiated between 5-7 business days</li>
           </ul>
           <div style={{ background: `${THEME.gold}15`, border: `1px solid ${THEME.gold}40`, borderRadius: "10px", padding: "14px 18px" }}>

@@ -1,96 +1,22 @@
-// Keep this server-side copy authoritative: orders never accept a client supplied charge.
-const SHIPPING_CONFIG = Object.freeze({
-  GBP: {
-    countries: ["United Kingdom"],
-    charge: 35,
-  },
-  EUR: {
-    countries: [
-      "Germany",
-      "France",
-      "Italy",
-      "Spain",
-      "Netherlands",
-      "Belgium",
-      "Austria",
-      "Portugal",
-      "Ireland",
-      "Luxembourg",
-      "Finland",
-      "Greece",
-      "Sweden",
-      "Denmark",
-      "Poland",
-      "Czech Republic",
-      "Hungary",
-      "Romania",
-      "Slovakia",
-      "Slovenia",
-      "Croatia",
-      "Estonia",
-      "Latvia",
-      "Lithuania",
-      "Malta",
-      "Cyprus",
-      "Bulgaria",
-    ],
-    charge: 80,
-  },
-});
-
-const SHIPPING_RATES = Object.freeze({
-  GBP: 35,
-  EUR: 80,
-});
-
-const normalizeCountryName = (value = "") => String(value || "").trim().replace(/\s+/g, " ");
-
-const resolveShippingProfile = (shippingCountry = "", preferredCurrency = "") => {
-  const countryName = normalizeCountryName(shippingCountry);
-  const preferredCode = String(preferredCurrency || "").trim().toUpperCase();
-
-  if (countryName) {
-    const normalizedCountry = countryName.toLowerCase();
-    const match = Object.entries(SHIPPING_CONFIG).find(([, config]) =>
-      config.countries.some((name) => String(name).trim().toLowerCase() === normalizedCountry)
-    );
-
-    if (match) {
-      const [currencyCode, config] = match;
-      return {
-        shippingCountry: countryName,
-        shippingCurrency: currencyCode,
-        shippingCharge: Number(config.charge || 0),
-      };
-    }
-  }
-
-  if (preferredCode === "GBP") {
-    return {
-      shippingCountry: countryName || "United Kingdom",
-      shippingCurrency: "GBP",
-      shippingCharge: SHIPPING_RATES.GBP,
-    };
-  }
-
-  if (preferredCode === "EUR") {
-    return {
-      shippingCountry: countryName || "Europe",
-      shippingCurrency: "EUR",
-      shippingCharge: SHIPPING_RATES.EUR,
-    };
-  }
-
-  return {
-    shippingCountry: countryName,
-    shippingCurrency: "",
-    shippingCharge: 0,
-  };
+const SHIPPING_RATES = {
+    // Existing international fixed rates
+    USD: 38,
+    CAD: 38,
+    AUD: 180,
+    AED: 90,
+    // United Kingdom (England, Scotland, Wales and Northern Ireland)
+    GBP: 35,
+    // One standard rate for all European destinations
+    EUR: 80,
 };
 
-const getShippingCharge = (currencyCode = "", shippingCountry = "") => {
-  const profile = resolveShippingProfile(shippingCountry, currencyCode);
-  return profile.shippingCharge;
+const getShippingCharge = (currency, subtotal = 0) => {
+    const code = String(currency || "INR").toUpperCase();
+    if (code === "INR") return Number(subtotal) >= 2999 ? 0 : 99;
+    return SHIPPING_RATES[code] ?? 0;
 };
 
-module.exports = { SHIPPING_CONFIG, SHIPPING_RATES, getShippingCharge, normalizeCountryName, resolveShippingProfile };
+module.exports = {
+    SHIPPING_RATES,
+    getShippingCharge
+};
