@@ -1,6 +1,145 @@
+import { useState, useEffect, useRef } from "react";
+import bannerClozzet from "../assets/images/banner-clozzet.jpeg";
+import bannerClozzetMobile from "../assets/images/banner-clozzet-mobile.jpeg";
 import bannerImage from "../assets/images/banner.jpeg";
+import bannerImageMobile from "../assets/images/banner-mobile.jpeg";
 import { fixImageUrl } from "../utils/imageUrl";
+
+// Add / remove images here to control what shows in the rotating banner.
+// Order matters: this is the order they'll cycle through.
+// showTextOverlay: false for images (like the Clozzet banner) that already
+// have their own text/branding baked in — set true only for plain photo
+// banners that need the "Celebrate Freedom..." text drawn on top on DESKTOP.
+// mobileSrc: optional — a separate image shown only on small screens
+// (<=767px). On mobile every slide is cropped to the same fixed height so
+// the two slide types look consistent, and mobilePanel (below) supplies
+// the on-mobile badge/title/subtitle/buttons for that slide.
+// mobilePanel: content shown in the rounded card under the image on mobile.
+// Every slide should define this so mobile always looks consistent.
+const BANNER_SLIDES = [
+  {
+    src: bannerClozzet,
+    mobileSrc: bannerClozzetMobile,
+    showTextOverlay: false,
+    alt: "Nouveau x Clozzet - your style delivered in 60 minutes",
+    // Full, uncropped photo on mobile. No overlay panel/buttons here —
+    // the photo already has its own "Download Clozzet App" CTA baked
+    // in, so a second button set just clashed with it.
+    mobileImageFit: "natural",
+  },
+  {
+    src: bannerImage,
+    mobileSrc: bannerImageMobile,
+    showTextOverlay: true,
+    alt: "Raksha Bandhan and Independence Day special collection",
+    // Full uncropped photo on mobile. The photo itself already fades to
+    // blank cream near the bottom, so the solid card floats over that
+    // fade instead of sitting after it (avoids double blank space).
+    mobileImageFit: "natural",
+    mobilePanelVariant: "overlay-solid",
+    mobilePanel: {
+      badge: "🇮🇳 FESTIVE COLLECTION 2026",
+      title: (
+        <>
+          <span className="nvz-hero-celebrate">Celebrate</span>{" "}
+          <span className="nvz-hero-every-moment">Freedom.</span>
+          <br />
+          <span className="nvz-hero-highlight">Cherish Family.</span>
+        </>
+      ),
+      subtitle:
+        "Discover handcrafted ethnic wear for Raksha Bandhan and Independence Day special celebration.",
+      primaryLabel: "SHOP NOW",
+      secondaryLabel: "EXPLORE COLLECTION",
+    },
+  },
+];
+const BANNER_INTERVAL_MS = 5000;
+const SLIDE_TRANSITION_MS = 550;
+
 export default function Hero({ setPage }) {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth <= 767
+  );
+  const [mobileHeight, setMobileHeight] = useState(null);
+  const slideRefs = useRef([]);
+  const imageRefs = useRef([]);
+  const panelRefs = useRef([]);
+  const timerRef = useRef(null);
+  const currentSlide = BANNER_SLIDES[activeSlide];
+  const hasMultipleSlides = BANNER_SLIDES.length > 1;
+
+  // Track viewport so we know whether to use each slide's mobileSrc.
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    const handleChange = (e) => setIsMobile(e.matches);
+    setIsMobile(mq.matches);
+    if (mq.addEventListener) mq.addEventListener("change", handleChange);
+    else mq.addListener(handleChange);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", handleChange);
+      else mq.removeListener(handleChange);
+    };
+  }, []);
+
+  // Auto-rotate. Restarted (not just left running) whenever the user
+  // navigates manually, so a click doesn't get immediately undone by the
+  // timer firing a moment later.
+  const startTimer = () => {
+    clearInterval(timerRef.current);
+    if (!hasMultipleSlides) return;
+    timerRef.current = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % BANNER_SLIDES.length);
+    }, BANNER_INTERVAL_MS);
+  };
+
+  useEffect(() => {
+    startTimer();
+    return () => clearInterval(timerRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const goToSlide = (index) => {
+    setActiveSlide(index);
+    startTimer();
+  };
+  const goPrev = () => goToSlide((activeSlide - 1 + BANNER_SLIDES.length) % BANNER_SLIDES.length);
+  const goNext = () => goToSlide((activeSlide + 1) % BANNER_SLIDES.length);
+
+  // On mobile, each slide can have a very different height. For overlay
+  // slides, the panel is position:absolute (floats over the image) so it
+  // does NOT add to normal document flow — if we only measured the
+  // container, a panel taller than its image would get clipped and end
+  // up covering the whole image. So we measure the image and the panel
+  // separately and use whichever is taller (for overlay slides), or
+  // their sum (for normal-flow "solid panel below image" slides).
+  useEffect(() => {
+    if (!isMobile) {
+      setMobileHeight(null);
+      return undefined;
+    }
+    const slide = BANNER_SLIDES[activeSlide];
+    const imgEl = imageRefs.current[activeSlide];
+    const panelEl = panelRefs.current[activeSlide];
+    const isOverlay = slide.mobilePanelVariant === "overlay" || slide.mobilePanelVariant === "overlay-solid";
+
+    const measure = () => {
+      const imgHeight = imgEl ? imgEl.getBoundingClientRect().height : 0;
+      const panelHeight = panelEl ? panelEl.scrollHeight : 0;
+      const total = isOverlay ? Math.max(imgHeight, panelHeight) : imgHeight + panelHeight;
+      if (total > 0) setMobileHeight(total);
+    };
+    measure();
+
+    if (typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(measure);
+    if (imgEl) ro.observe(imgEl);
+    if (panelEl) ro.observe(panelEl);
+    return () => ro.disconnect();
+  }, [activeSlide, isMobile]);
+
   const features = [
   ];
 
@@ -13,7 +152,19 @@ export default function Hero({ setPage }) {
   ];
 
   return (
-    <section className="nvz-hero-banner" aria-label="Featured banner">
+    <section
+      className="nvz-hero-banner"
+      aria-label="Featured banner"
+      style={
+        isMobile
+          ? {
+              height: mobileHeight ? `${mobileHeight}px` : undefined,
+              transition: `height ${SLIDE_TRANSITION_MS}ms cubic-bezier(0.4,0,0.2,1)`,
+              overflow: "hidden",
+            }
+          : undefined
+      }
+    >
       <style>{`
         .nvz-hero-banner {
           position: relative;
@@ -64,7 +215,23 @@ export default function Hero({ setPage }) {
           box-shadow: 0 0 16px rgba(19, 136, 8, 0.16);
         }
 
+        .nvz-hero-track {
+          display: flex;
+          width: 100%;
+          height: 100%;
+          transition: transform ${SLIDE_TRANSITION_MS}ms cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .nvz-hero-slide {
+          position: relative;
+          flex: 0 0 100%;
+          width: 100%;
+          height: 100%;
+        }
+
         .nvz-hero-banner__image {
+          position: absolute;
+          inset: 0;
           width: 100%;
           height: 100%;
           display: block;
@@ -73,10 +240,71 @@ export default function Hero({ setPage }) {
           background-color: #111111;
         }
 
-        .nvz-hero-banner__imageWrap {
+        .nvz-hero-dots {
           position: absolute;
-          inset: 0;
-          z-index: 0;
+          bottom: 18px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 8px;
+          z-index: 5;
+        }
+
+        .nvz-hero-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 999px;
+          background: rgba(255,255,255,0.45);
+          cursor: pointer;
+          padding: 0;
+          border: none;
+          transition: background 220ms ease, transform 220ms ease;
+        }
+
+        .nvz-hero-dot.is-active {
+          background: #FFFFFF;
+          transform: scale(1.2);
+        }
+
+        .nvz-hero-arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 5;
+          width: 40px;
+          height: 40px;
+          border-radius: 999px;
+          border: none;
+          background: rgba(17, 17, 17, 0.35);
+          color: #FFFFFF;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+          transition: background 220ms ease, transform 220ms ease;
+        }
+
+        .nvz-hero-arrow:hover {
+          background: rgba(17, 17, 17, 0.6);
+        }
+
+        .nvz-hero-arrow:active {
+          transform: translateY(-50%) scale(0.92);
+        }
+
+        .nvz-hero-arrow svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        .nvz-hero-arrow--prev {
+          left: 16px;
+        }
+
+        .nvz-hero-arrow--next {
+          right: 16px;
         }
 
         .nvz-hero-overlay {
@@ -332,29 +560,49 @@ export default function Hero({ setPage }) {
         @media (max-width: 767px) {
           .nvz-hero-banner {
             height: auto;
-            min-height: 540px;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
             background: #111111;
           }
 
+          .nvz-hero-track {
+            height: auto;
+            align-items: flex-start;
+          }
+
+          .nvz-hero-slide {
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+          }
+
           .nvz-hero-banner__image {
+            position: static;
             width: 100%;
             height: 230px;
             object-fit: cover;
             object-position: right center;
             border-radius: 0;
-            z-index: 0;
             filter: brightness(0.9) contrast(0.98) saturate(0.96);
           }
 
-          .nvz-hero-banner__imageWrap {
-            position: relative;
-            inset: auto;
-            width: 100%;
-            height: 230px;
-            z-index: 0;
+          .nvz-hero-banner__image--natural {
+            height: auto;
+            filter: none;
+            object-fit: contain;
+            object-position: top center;
+            padding-top: 16px;
+            background: #FFF8F0;
+            box-sizing: border-box;
+          }
+
+          .nvz-hero-arrow {
+            width: 34px;
+            height: 34px;
+          }
+
+          .nvz-hero-arrow svg {
+            width: 16px;
+            height: 16px;
           }
 
           .nvz-hero-overlay {
@@ -368,13 +616,55 @@ export default function Hero({ setPage }) {
             margin-top: 0;
             padding: 22px 18px 38px;
             background: linear-gradient(180deg, rgba(255,248,240,0.94) 0%, rgba(255,248,240,0.98) 100%);
-            backdrop-filter: blur(14px) saturate(120%);
-            -webkit-backdrop-filter: blur(14px) saturate(120%);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
             border-radius: 28px 28px 0 0;
             z-index: 2;
             margin-top: -20px;
             box-shadow: 0 -14px 32px rgba(26, 60, 139, 0.08);
             border-top: 1px solid rgba(26, 60, 139, 0.12);
+          }
+
+          /* Floats over the bottom of a --natural image instead of
+             pushing it down, so the full photo stays visible behind it. */
+          .nvz-hero-mobile-panel--overlay {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin-top: 0;
+            padding: 40px 18px 22px;
+            background: linear-gradient(180deg, rgba(35,22,14,0) 0%, rgba(35,22,14,0.55) 40%, rgba(35,22,14,0.8) 75%, rgba(35,22,14,0.85) 100%);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border-radius: 0;
+            box-shadow: none;
+            border-top: none;
+          }
+
+          .nvz-hero-mobile-panel--overlay .nvz-hero-title,
+          .nvz-hero-mobile-panel--overlay .nvz-hero-subtitle {
+            color: #FFF8F0;
+          }
+
+          .nvz-hero-mobile-panel--overlay .nvz-hero-title .nvz-hero-celebrate {
+            color: #FFB27A;
+          }
+
+          /* Floats over the bottom of a --natural image (which already
+             fades to blank cream) with the same solid rounded-card look
+             as the normal-flow panel, so there's no double blank gap. */
+          .nvz-hero-mobile-panel--overlay-solid {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin-top: 0;
+            padding: 22px 18px 38px;
+            background: linear-gradient(180deg, rgba(255,248,240,0) 0%, rgba(255,248,240,0.85) 18%, rgba(255,248,240,0.98) 45%, rgba(255,248,240,0.99) 100%);
+            border-radius: 0;
+            box-shadow: none;
+            border-top: none;
           }
 
           .nvz-hero-mobile-panel__inner {
@@ -519,93 +809,155 @@ export default function Hero({ setPage }) {
         }
       `}</style>
 
-      <div className="nvz-hero-banner__imageWrap">
-        <img
-          className="nvz-hero-banner__image"
-          src={bannerImage}
-          alt="Raksha Bandhan and Independence Day special collection"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
+      <div
+        className="nvz-hero-track"
+        style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+      >
+        {BANNER_SLIDES.map((slide, index) => {
+          // On mobile every slide uses its mobileSrc (if provided) but is
+          // always cropped to the same fixed-height treatment, so slides
+          // look consistent regardless of the source image's own aspect
+          // ratio. The distinguishing content lives in mobilePanel below.
+          const effectiveSrc = isMobile && slide.mobileSrc ? slide.mobileSrc : slide.src;
+          const isNaturalMobileImage = isMobile && slide.mobileImageFit === "natural";
+          const isOverlayPanel = slide.mobilePanelVariant === "overlay";
+          const isOverlaySolidPanel = slide.mobilePanelVariant === "overlay-solid";
+          return (
+            <div
+              key={index}
+              ref={(el) => (slideRefs.current[index] = el)}
+              className="nvz-hero-slide"
+            >
+              <img
+                ref={(el) => (imageRefs.current[index] = el)}
+                className={`nvz-hero-banner__image${isNaturalMobileImage ? " nvz-hero-banner__image--natural" : ""}`}
+                src={effectiveSrc}
+                alt={slide.alt}
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
 
-      <div className="nvz-hero-particles" aria-hidden="true">
-        {decorativeParticles.map((particle, index) => (
-          <span key={index} className={particle.className} style={particle.style} />
-        ))}
-      </div>
-
-      <div className="nvz-hero-overlay">
-        <div className="nvz-hero-content">
-          
-              <div className="nvz-hero-brand">
-                <img
-                   src={fixImageUrl("/nouveau-logo.png")}
-                     alt="Nouveau Logo"
-                 className="nvz-hero-logo"
-                />
-
-                <div className="nvz-hero-brand-text">
-                 <div className="nvz-hero-brand-name">
-                    nouveau<span>™</span>
-                  </div>
-
-                 <div className="nvz-hero-brand-tagline">
-                          Wear Your Aura
-                       </div>
-                </div>
+              <div className="nvz-hero-particles" aria-hidden="true">
+                {decorativeParticles.map((particle, pIndex) => (
+                  <span key={pIndex} className={particle.className} style={particle.style} />
+                ))}
               </div>
-          
-          <h1 className="nvz-hero-title">
-            <span className="nvz-hero-celebrate">Celebrate</span>{" "}
-            <span className="nvz-hero-every-moment">Freedom.</span>
-            <br />
-            <span className="nvz-hero-highlight">Cherish Family.</span>
-          </h1>
-          <p className="nvz-hero-subtitle">
-            Discover handcrafted ethnic wear for Raksha Bandhan, Independence Day, and every special celebration.
-          </p>
-          <ul className="nvz-hero-features">
-            {features.map((feature, index) => (
-              <li key={feature}>
-                <span>{index === 0 ? "✓" : index === 1 ? "✓" : "✓"}</span>
-                {feature}
-              </li>
-            ))}
-          </ul>
-          <div className="nvz-hero-actions">
-            <button className="nvz-hero-btn nvz-hero-btn--primary" onClick={() => setPage("Shop")}>SHOP NOW</button>
-            <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>Explore Collection</button>
-          </div>
-        </div>
+
+              {slide.showTextOverlay && (
+                <div className="nvz-hero-overlay">
+                  <div className="nvz-hero-content">
+                    <div className="nvz-hero-brand">
+                      <img
+                        src={fixImageUrl("/nouveau-logo.png")}
+                        alt="Nouveau Logo"
+                        className="nvz-hero-logo"
+                      />
+                      <div className="nvz-hero-brand-text">
+                        <div className="nvz-hero-brand-name">
+                          nouveau<span>™</span>
+                        </div>
+                        <div className="nvz-hero-brand-tagline">Wear Your Aura</div>
+                      </div>
+                    </div>
+
+                    <h1 className="nvz-hero-title">
+                      <span className="nvz-hero-celebrate">Celebrate</span>{" "}
+                      <span className="nvz-hero-every-moment">Freedom.</span>
+                      <br />
+                      <span className="nvz-hero-highlight">Cherish Family.</span>
+                    </h1>
+                    <p className="nvz-hero-subtitle">
+                      Discover handcrafted ethnic wear for Raksha Bandhan, Independence Day, and every special celebration.
+                    </p>
+                    <ul className="nvz-hero-features">
+                      {features.map((feature) => (
+                        <li key={feature}>
+                          <span>✓</span>
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="nvz-hero-actions">
+                      <button className="nvz-hero-btn nvz-hero-btn--primary" onClick={() => setPage("Shop")}>SHOP NOW</button>
+                      <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>Explore Collection</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {slide.mobilePanel && (
+                <div
+                  ref={(el) => (panelRefs.current[index] = el)}
+                  className={`nvz-hero-mobile-panel${isOverlayPanel ? " nvz-hero-mobile-panel--overlay" : ""}${isOverlaySolidPanel ? " nvz-hero-mobile-panel--overlay-solid" : ""}`}
+                  aria-hidden="false"
+                >
+                  <div className="nvz-hero-mobile-panel__inner">
+                    {slide.mobilePanel.badge && (
+                      <div className="nvz-hero-badge">{slide.mobilePanel.badge}</div>
+                    )}
+                    {slide.mobilePanel.title && (
+                      <h1 className="nvz-hero-title">{slide.mobilePanel.title}</h1>
+                    )}
+                    {slide.mobilePanel.subtitle && (
+                      <p className="nvz-hero-subtitle">{slide.mobilePanel.subtitle}</p>
+                    )}
+                    <ul className="nvz-hero-features">
+                      {features.map((feature) => (
+                        <li key={feature}>
+                          <span>✓</span>
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="nvz-hero-actions">
+                      <button className="nvz-hero-btn nvz-hero-btn--primary" onClick={() => setPage("Shop")}>{slide.mobilePanel.primaryLabel}</button>
+                      <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>{slide.mobilePanel.secondaryLabel}</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      <div className="nvz-hero-mobile-panel" aria-hidden="false">
-        <div className="nvz-hero-mobile-panel__inner">
-          <div className="nvz-hero-badge">🇮🇳 FESTIVE COLLECTION 2026</div>
-          <h1 className="nvz-hero-title">
-            <span className="nvz-hero-celebrate">Celebrate</span>{" "}
-            <span className="nvz-hero-every-moment">Freedom.</span>
-            <br />
-            <span className="nvz-hero-highlight">Cherish Family.</span>
-          </h1>
-          <p className="nvz-hero-subtitle">
-            Discover handcrafted ethnic wear for Raksha Bandhan and Independence Dayspecial celebration.
-          </p>
-          <ul className="nvz-hero-features">
-            {features.map((feature) => (
-              <li key={feature}>
-                <span>✓</span>
-                {feature}
-              </li>
+      {hasMultipleSlides && (
+        <>
+          <button
+            type="button"
+            className="nvz-hero-arrow nvz-hero-arrow--prev"
+            aria-label="Previous banner"
+            onClick={goPrev}
+          >
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="nvz-hero-arrow nvz-hero-arrow--next"
+            aria-label="Next banner"
+            onClick={goNext}
+          >
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          <div className="nvz-hero-dots" role="tablist" aria-label="Banner slides">
+            {BANNER_SLIDES.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                className={`nvz-hero-dot${index === activeSlide ? " is-active" : ""}`}
+                aria-label={`Show banner ${index + 1}`}
+                aria-selected={index === activeSlide}
+                onClick={() => goToSlide(index)}
+              />
             ))}
-          </ul>
-          <div className="nvz-hero-actions">
-            <button className="nvz-hero-btn nvz-hero-btn--primary" onClick={() => setPage("Shop")}>SHOP NOW</button>
-            <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>EXPLORE COLLECTION</button>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </section>
   );
 }
