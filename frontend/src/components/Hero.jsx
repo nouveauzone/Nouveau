@@ -18,16 +18,7 @@ import { fixImageUrl } from "../utils/imageUrl";
 // Every slide should define this so mobile always looks consistent.
 const BANNER_SLIDES = [
   {
-    src: bannerClozzet,
-    mobileSrc: bannerClozzetMobile,
-    showTextOverlay: false,
-    alt: "Nouveau x Clozzet - your style delivered in 60 minutes",
-    // Full, uncropped photo on mobile. No overlay panel/buttons here —
-    // the photo already has its own "Download Clozzet App" CTA baked
-    // in, so a second button set just clashed with it.
-    mobileImageFit: "natural",
-  },
-  {
+    // FIRST — RAKSHA BANDHAN / CELEBRATE FREEDOM
     src: bannerImage,
     mobileSrc: bannerImageMobile,
     showTextOverlay: true,
@@ -52,6 +43,17 @@ const BANNER_SLIDES = [
       primaryLabel: "SHOP NOW",
       secondaryLabel: "EXPLORE COLLECTION",
     },
+  },
+  {
+    // SECOND — CLOZZET
+    src: bannerClozzet,
+    mobileSrc: bannerClozzetMobile,
+    showTextOverlay: false,
+    alt: "Nouveau x Clozzet - your style delivered in 60 minutes",
+    // Full, uncropped photo on mobile. No overlay panel/buttons here —
+    // the photo already has its own "Download Clozzet App" CTA baked
+    // in, so a second button set just clashed with it.
+    mobileImageFit: "natural",
   },
 ];
 const BANNER_INTERVAL_MS = 5000;
