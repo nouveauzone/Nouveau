@@ -26,6 +26,14 @@ const ADDRESS_FIELDS = [
   { key: "pincode", label: "Pincode", type: "text" },
 ];
 
+// Display labels for shipping country codes shown in the order summary.
+// Add more codes here as you support more shipping destinations.
+const SHIPPING_COUNTRY_LABELS = {
+  AE: "Dubai",
+  CA: "Canada",
+  AU: "Australia",
+};
+
 export default function CheckoutPage({ setPage }) {
   const { cart, dispatch: cartDispatch } = useContext(CartContext);
   const { placeOrder, refreshMyOrders } = useContext(AppDataContext);
@@ -384,7 +392,7 @@ const total =
                 ORDER SUMMARY
               </p>
               <div style={{ background: `${GOLD}12`, border: `1px solid ${GOLD}35`, borderRadius: "10px", padding: "10px 12px", marginBottom: "16px", fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textMuted, lineHeight: 1.8 }}>
-                <div><strong style={{ color: THEME.text }}>Shipping Country:</strong> {shippingCountry || "Not selected"}</div>
+                <div><strong style={{ color: THEME.text }}>Shipping Country:</strong> {SHIPPING_COUNTRY_LABELS[shippingCountry] || shippingCountry || "Not selected"}</div>
                 <div><strong style={{ color: THEME.text }}>Selected Currency:</strong> {currencyCode}</div>
                 <div><strong style={{ color: THEME.text }}>Shipping Charge:</strong> {formatCurrency(shipping)}</div>
               </div>
