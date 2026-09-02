@@ -81,7 +81,7 @@ export default function ContactPage({ setPage }) {
     <div style={{ background:THEME.bg, minHeight:"100vh" }}>
 
       {/* Header */}
-      <div style={{ background:`linear-gradient(135deg, ${THEME.crimsonLight}, ${THEME.bg})`, padding:"72px 40px 48px" }}>
+      <div style={{ background:`linear-gradient(135deg, ${THEME.blushPink} 0%, ${THEME.bg} 54%, ${THEME.lightPink} 100%)`, padding:"72px 40px 48px" }}>
         <div style={{ maxWidth:"1100px", margin:"0 auto" }}>
           <h1 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(32px,5vw,52px)", fontWeight:700, color:THEME.text }}>Get in Touch</h1>
         </div>
@@ -111,8 +111,8 @@ export default function ContactPage({ setPage }) {
 
             <div style={{ display:"flex", gap:"12px", marginTop:"8px", flexWrap:"wrap" }}>
               {[
-                ["📸","Instagram","https://www.instagram.com/nouveauzon?igsh=aWc4bGltMGxkOWU2","#E1306C"],
-                ["📘","Facebook","https://www.facebook.com/nouveauzone","#1877F2"],
+                ["📸","Instagram","https://www.instagram.com/nouveauzon?igsh=aWc4bGltMGxkOWU2",THEME.burgundy],
+                ["📘","Facebook","https://www.facebook.com/nouveauzone",THEME.burgundyDark],
               ].map(([icon,name,href,color]) => (
                 <a key={name} href={href} target="_blank" rel="noreferrer"
                   style={{ display:"inline-flex", alignItems:"center", gap:"6px", background:color, color:"#fff", padding:"10px 16px", borderRadius:"99px", fontFamily:"'Poppins',sans-serif", fontSize:"12px", fontWeight:600, textDecoration:"none" }}>

@@ -79,10 +79,10 @@ export default function Navbar({ page, setPage }) {
                 fontSize: "18px",
                 fontWeight: 700,
                 letterSpacing: "2px",
-                color: "#3B2A1F",
+                color: "#3A2525",
               }}
             >
-              nouveau<span style={{ color: "#D4AF37" }}>™</span>
+              nouveau<span style={{ color: "#C6A15B" }}>™</span>
             </span>
           </button>
 

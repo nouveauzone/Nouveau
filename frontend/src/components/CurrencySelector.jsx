@@ -15,9 +15,9 @@ export default function CurrencySelector({ className = "" }) {
         style={{
           minWidth: "130px",
           borderRadius: "999px",
-          border: "1px solid rgba(26, 26, 26, 0.12)",
+          border: "1px solid rgba(58, 37, 37, 0.12)",
           background: "#fff",
-          color: "#1a1a1a",
+          color: "#3A2525",
           padding: "10px 14px",
           fontFamily: "'Poppins',sans-serif",
           fontSize: "12px",

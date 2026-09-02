@@ -6,8 +6,8 @@ import Footer from "../components/Footer";
 import { fixImageUrl } from "../utils/imageUrl";
 import { useCurrency } from "../context/CurrencyContext";
 
-const GOLD    = "#D4AF37";
-const CRIMSON = "#FF9933";
+const GOLD    = "#C6A15B";
+const CRIMSON = "#8B1E2D";
 
 export default function OrderSuccessPage({ setPage }) {
   const { myOrders } = useContext(AppDataContext) || {};
@@ -72,10 +72,10 @@ export default function OrderSuccessPage({ setPage }) {
           {(orderId || trackingId) && (
             <div style={{background:THEME.bgCard,border:`1px solid ${THEME.border}`,borderRadius:"14px",padding:"20px",margin:"28px 0",textAlign:"left",width:"100%"}}>
               {trackingId && (
-                <div style={{background:"#D4AF3710",border:"1px solid #D4AF3740",borderRadius:"10px",padding:"14px 18px",marginBottom:"14px"}}>
+                <div style={{background:"#C6A15B10",border:"1px solid #C6A15B40",borderRadius:"10px",padding:"14px 18px",marginBottom:"14px"}}>
                   <p style={{fontFamily:"'Poppins',sans-serif",fontSize:"9px",letterSpacing:"3px",color:"#b8962e",marginBottom:"6px",textTransform:"uppercase",fontWeight:700}}>🎯 Tracking ID (Share this!)</p>
                   <p style={{fontFamily:"'Poppins',sans-serif",fontSize:"20px",fontWeight:700,color:"#b8962e",letterSpacing:"1px"}}>{trackingId}</p>
-                  <button onClick={()=>navigator.clipboard?.writeText(trackingId)} style={{background:"none",border:"1px solid #D4AF3760",color:"#b8962e",padding:"4px 12px",borderRadius:"6px",cursor:"pointer",fontFamily:"'Poppins',sans-serif",fontSize:"11px",marginTop:"8px",fontWeight:600}}>📋 Copy Tracking ID</button>
+                  <button onClick={()=>navigator.clipboard?.writeText(trackingId)} style={{background:"none",border:"1px solid #C6A15B60",color:"#997a47",padding:"4px 12px",borderRadius:"6px",cursor:"pointer",fontFamily:"'Poppins',sans-serif",fontSize:"11px",marginTop:"8px",fontWeight:600}}>📋 Copy Tracking ID</button>
                 </div>
               )}
               <p style={{fontFamily:"'Poppins',sans-serif",fontSize:"9px",letterSpacing:"3px",color:THEME.textMuted,marginBottom:"6px",textTransform:"uppercase"}}>Order ID</p>

@@ -9,7 +9,7 @@ import { fixImageUrl } from "../utils/imageUrl";
 // Order matters: this is the order they'll cycle through.
 // showTextOverlay: false for images (like the Clozzet banner) that already
 // have their own text/branding baked in — set true only for plain photo
-// banners that need the "Celebrate Freedom..." text drawn on top on DESKTOP.
+// banners that need the "Celebrate Ganesh Chaturthi..." text drawn on top on DESKTOP.
 // mobileSrc: optional — a separate image shown only on small screens
 // (<=767px). On mobile every slide is cropped to the same fixed height so
 // the two slide types look consistent, and mobilePanel (below) supplies
@@ -18,28 +18,28 @@ import { fixImageUrl } from "../utils/imageUrl";
 // Every slide should define this so mobile always looks consistent.
 const BANNER_SLIDES = [
   {
-    // FIRST — RAKSHA BANDHAN / CELEBRATE FREEDOM
+    // FIRST — GANESH CHATURTHI
     src: bannerImage,
     mobileSrc: bannerImageMobile,
     showTextOverlay: true,
-    alt: "Raksha Bandhan and Independence Day special collection",
+    alt: "Ganesh Chaturthi festive collection",
     // Full uncropped photo on mobile. The photo itself already fades to
     // blank cream near the bottom, so the solid card floats over that
     // fade instead of sitting after it (avoids double blank space).
     mobileImageFit: "natural",
     mobilePanelVariant: "overlay-solid",
     mobilePanel: {
-      badge: "🇮🇳 FESTIVE COLLECTION 2026",
+      badge: "🐘 GANESH CHATURTHI SPECIAL 2026",
       title: (
         <>
           <span className="nvz-hero-celebrate">Celebrate</span>{" "}
-          <span className="nvz-hero-every-moment">Freedom.</span>
+          <span className="nvz-hero-every-moment">Ganesh Chaturthi.</span>
           <br />
-          <span className="nvz-hero-highlight">Cherish Family.</span>
+          <span className="nvz-hero-highlight">Cherish Traditions.</span>
         </>
       ),
       subtitle:
-        "Discover handcrafted ethnic wear for Raksha Bandhan and Independence Day special celebration.",
+        "Discover handcrafted ethnic wear to celebrate Ganesh Chaturthi and every festive occasion.",
       primaryLabel: "SHOP NOW",
       secondaryLabel: "EXPLORE COLLECTION",
     },
@@ -180,7 +180,7 @@ export default function Hero({ setPage }) {
           content: '';
           position: absolute;
           inset: 0;
-          background: linear-gradient(90deg, rgba(255,153,51,.08), rgba(255,255,255,.03), rgba(19,136,8,.08));
+          background: linear-gradient(90deg, rgba(139,30,45,.08), rgba(248,227,229,.08), rgba(198,161,91,.05));
           pointer-events: none;
           z-index: 1;
         }
@@ -201,20 +201,20 @@ export default function Hero({ setPage }) {
         }
 
         .nvz-particle--saffron {
-          background: #FF9933;
-          box-shadow: 0 0 16px rgba(255, 153, 51, 0.18);
+          background: #E58AA8;
+          box-shadow: 0 0 16px rgba(139, 30, 45, 0.18);
         }
 
         .nvz-particle--sparkle {
-          background: #FFF8F0;
-          box-shadow: 0 0 12px rgba(255, 248, 240, 0.3);
+          background: #FDE7F0;
+          box-shadow: 0 0 12px rgba(248, 221, 225, 0.3);
         }
 
         .nvz-particle--leaf {
-          background: #138808;
+          background: #C6A15B;
           border-radius: 999px 0 999px 0;
           transform: rotate(-18deg);
-          box-shadow: 0 0 16px rgba(19, 136, 8, 0.16);
+          box-shadow: 0 0 16px rgba(79, 138, 69, 0.16);
         }
 
         .nvz-hero-track {
@@ -346,13 +346,13 @@ export default function Hero({ setPage }) {
           font-family: 'Playfair Display', serif;
           font-size: clamp(55px, 5vw, 80px);
           font-weight: 700;
-          color: #7A1E1E;
+          color: #E58AA8;
           letter-spacing: 3px;
           line-height: 0.85;
         }
 
         .nvz-hero-brand-name span {
-          color: #D4AF37;
+          color: #C6A15B;
         }
 
         .nvz-hero-brand-tagline {
@@ -360,13 +360,19 @@ export default function Hero({ setPage }) {
           font-size: 19px;
           letter-spacing: 4px;
           text-transform: uppercase;
-          color: #E8CD77;
+          color: #D8BD7A;
           font-weight: 700;
           margin-top: 6px;
           margin-left: 12px;        
         }
 
+        /* Wraps the desktop text block so we can drop a soft scrim
+           behind it — the banner photo underneath is busy (drums,
+           florals, illustration), so raw text on top of it loses
+           contrast. The scrim fades out toward the right so it
+           doesn't cover the rest of the artwork. */
         .nvz-hero-content {
+          position: relative;
           max-width: 420px;
           width: 100%;
           padding-left: 24px;
@@ -376,19 +382,27 @@ export default function Hero({ setPage }) {
           animation: nvz-hero-fade-up 700ms ease forwards;
         }
 
-        .nvz-hero-badge {
+        .nvz-hero-content::before {
+          content: '';
+          position: absolute;
+          inset: -28px -40px -28px -28px;
+          background: linear-gradient(
+            90deg,
+              rgba(250, 242, 240, 0.96) 0%,
+              rgba(249, 232, 237, 0.88) 55%,
+              rgba(250, 242, 240, 0) 100%
           display: inline-block;
           margin-bottom: 14px;
           padding: 8px 14px;
           border-radius: 999px;
-          background: linear-gradient(90deg, rgba(255,153,51,0.95), rgba(255,255,255,0.92), rgba(19,136,8,0.95));
-          color: #1A1A1A;
+          background: linear-gradient(90deg, rgba(139,30,45,0.95), rgba(248,227,229,0.92), rgba(198,161,91,0.95));
+          color: #FFFFFF;
           font-size: 11px;
           letter-spacing: 1.6px;
           text-transform: uppercase;
           font-weight: 600;
           font-family: 'Poppins', 'Inter', sans-serif;
-          box-shadow: 0 8px 24px rgba(255, 153, 51, 0.18), 0 0 18px rgba(19, 136, 8, 0.12);
+          box-shadow: 0 8px 24px rgba(139, 30, 45, 0.18), 0 0 18px rgba(79, 138, 69, 0.12);
         }
 
         .nvz-hero-title {
@@ -396,22 +410,22 @@ export default function Hero({ setPage }) {
           font-size: clamp(34px, 3.2vw, 54px);
           line-height: 1.02;
           margin: 0 0 16px;
-          color: #FFF8F0;
+          color: #3A2525;
           font-weight: 700;
         }
 
         .nvz-hero-title .nvz-hero-celebrate {
-          color: #7A1E1E;
+          color: #8B1E2D;
           display: inline;
         }
 
         .nvz-hero-title .nvz-hero-every-moment {
-          color: #FF9933;
+          color: #C6A15B;
           display: inline;
         }
 
         .nvz-hero-title .nvz-hero-highlight {
-          color: #138808;
+          color: #C6A15B;
           display: inline-block;
         }
 
@@ -419,7 +433,7 @@ export default function Hero({ setPage }) {
           font-family: 'Poppins', 'Inter', sans-serif;
           font-size: 15px;
           line-height: 1.75;
-          color: #4B3B2B;
+          color: #3A2525;
           margin: 0 0 18px;
         }
 
@@ -438,23 +452,23 @@ export default function Hero({ setPage }) {
           gap: 10px;
           font-family: 'Poppins', 'Inter', sans-serif;
           font-size: 14px;
-          color: #3B2A1F;
+          color: #3A2525;
           font-weight: 600;
           transition: color 220ms ease;
         }
 
         .nvz-hero-features li span {
-          color: #FF9933;
+          color: #C6A15B;
           font-size: 14px;
           transition: color 220ms ease;
         }
 
         .nvz-hero-features li:hover {
-          color: #138808;
+          color: #C6A15B;
         }
 
         .nvz-hero-features li:hover span {
-          color: #138808;
+          color: #C6A15B;
         }
 
         .nvz-hero-actions {
@@ -480,15 +494,15 @@ export default function Hero({ setPage }) {
         }
 
         .nvz-hero-btn--primary {
-          background: linear-gradient(90deg, #FF9933, #FFFFFF, #138808);
-          color: #1A1A1A;
+          background: linear-gradient(90deg, #E58AA8, #FDE7F0, #D8B995);
+          color: #FFFFFF;
           border: 1px solid rgba(255,255,255,0.35);
         }
 
         .nvz-hero-btn--secondary {
           background: transparent;
-          color: #138808;
-          border: 2px solid #138808;
+          color: #E58AA8;
+          border: 2px solid #E58AA8;
         }
 
         .nvz-hero-btn:hover {
@@ -496,11 +510,11 @@ export default function Hero({ setPage }) {
         }
 
         .nvz-hero-btn--primary:hover {
-          box-shadow: 0 12px 28px rgba(255, 153, 51, 0.22), 0 10px 24px rgba(19, 136, 8, 0.18);
+          box-shadow: 0 12px 28px rgba(139, 30, 45, 0.22), 0 10px 24px rgba(198, 161, 91, 0.18);
         }
 
         .nvz-hero-btn--secondary:hover {
-          background: #138808;
+          background: #E58AA8;
           color: #fff;
         }
 
@@ -593,7 +607,7 @@ export default function Hero({ setPage }) {
             object-fit: contain;
             object-position: top center;
             padding-top: 16px;
-            background: #FFF8F0;
+            background: #FAF2F0;
             box-sizing: border-box;
           }
 
@@ -617,14 +631,14 @@ export default function Hero({ setPage }) {
             width: 100%;
             margin-top: 0;
             padding: 22px 18px 38px;
-            background: linear-gradient(180deg, rgba(255,248,240,0.94) 0%, rgba(255,248,240,0.98) 100%);
+            background: linear-gradient(180deg, rgba(248,227,229,0.96) 0%, rgba(242,205,210,0.98) 100%);
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
             border-radius: 28px 28px 0 0;
             z-index: 2;
             margin-top: -20px;
-            box-shadow: 0 -14px 32px rgba(26, 60, 139, 0.08);
-            border-top: 1px solid rgba(26, 60, 139, 0.12);
+            box-shadow: 0 -14px 32px rgba(139, 30, 45, 0.08);
+            border-top: 1px solid rgba(139, 30, 45, 0.12);
           }
 
           /* Floats over the bottom of a --natural image instead of
@@ -646,11 +660,11 @@ export default function Hero({ setPage }) {
 
           .nvz-hero-mobile-panel--overlay .nvz-hero-title,
           .nvz-hero-mobile-panel--overlay .nvz-hero-subtitle {
-            color: #FFF8F0;
+            color: #FFFFFF;
           }
 
           .nvz-hero-mobile-panel--overlay .nvz-hero-title .nvz-hero-celebrate {
-            color: #FFB27A;
+            color: #F8E3E5;
           }
 
           /* Floats over the bottom of a --natural image (which already
@@ -663,7 +677,7 @@ export default function Hero({ setPage }) {
             bottom: 0;
             margin-top: 0;
             padding: 22px 18px 38px;
-            background: linear-gradient(180deg, rgba(255,248,240,0) 0%, rgba(255,248,240,0.85) 18%, rgba(255,248,240,0.98) 45%, rgba(255,248,240,0.99) 100%);
+            background: linear-gradient(180deg, rgba(255,249,243,0) 0%, rgba(255,249,243,0.85) 18%, rgba(248,227,229,0.98) 45%, rgba(248,227,229,0.99) 100%);
             border-radius: 0;
             box-shadow: none;
             border-top: none;
@@ -689,8 +703,8 @@ export default function Hero({ setPage }) {
             font-size: 10px;
             margin-bottom: 2px;
             letter-spacing: 2px;
-            background: linear-gradient(90deg, rgba(255,153,51,0.95), rgba(255,255,255,0.96), rgba(19,136,8,0.95));
-            color: #1A1A1A;
+            background: linear-gradient(90deg, rgba(139,30,45,0.95), rgba(252,236,239,0.96), rgba(79,138,69,0.95));
+            color: #FFFFFF;
           }
 
           .nvz-hero-title {
@@ -700,30 +714,30 @@ export default function Hero({ setPage }) {
             text-align: center;
             max-width: 100%;
             margin: 0;
-            color: #3B2A1F;
+            color: #3A2525;
             white-space: normal;
           }
 
           .nvz-hero-title .nvz-hero-celebrate {
-            color: #7A1E1E;
+            color: #E58AA8;
             display: inline;
           }
 
           .nvz-hero-title .nvz-hero-every-moment {
-            color: #FF9933;
+            color: #C6A15B;
             display: inline;
           }
 
           .nvz-hero-title .nvz-hero-highlight {
             display: inline;
-            color: #138808;
+            color: #C6A15B;
             font-style: italic;
           }
 
           .nvz-hero-subtitle {
             font-size: 13px;
             line-height: 1.6;
-            color: #4B3B2B;
+            color: #3A2525;
             width: 100%;
             margin: 0;
             max-width: 28ch;
@@ -748,11 +762,11 @@ export default function Hero({ setPage }) {
           }
 
           .nvz-hero-features li span {
-            color: #FF9933;
+            color: #C6A15B;
           }
 
           .nvz-hero-features li:hover span {
-            color: #138808;
+            color: #C6A15B;
           }
 
           .nvz-hero-actions {
@@ -776,16 +790,16 @@ export default function Hero({ setPage }) {
           }
 
           .nvz-hero-btn--primary {
-            background: linear-gradient(90deg, #FF9933, #FFFFFF, #138808);
+            background: linear-gradient(90deg, #E58AA8, #FCECEF, #D8B995);
             border-color: rgba(255,255,255,0.55);
-            box-shadow: 0 12px 24px rgba(255, 153, 51, 0.18), 0 12px 24px rgba(19, 136, 8, 0.12);
-            color: #1A1A1A;
+            box-shadow: 0 12px 24px rgba(139, 30, 45, 0.18), 0 12px 24px rgba(198, 161, 91, 0.12);
+            color: #FFFFFF;
           }
 
           .nvz-hero-btn--secondary {
-            color: #138808;
-            border-color: #138808;
-            box-shadow: inset 0 0 0 1px rgba(19, 136, 8, 0.08);
+            color: #E58AA8;
+            border-color: #E58AA8;
+            box-shadow: inset 0 0 0 1px rgba(139, 30, 45, 0.08);
           }
 
           .nvz-hero-btn:hover {
@@ -793,7 +807,7 @@ export default function Hero({ setPage }) {
           }
 
           .nvz-hero-btn--secondary:hover {
-            background: #138808;
+            background: #E58AA8;
             color: #fff;
           }
 
@@ -864,12 +878,12 @@ export default function Hero({ setPage }) {
 
                     <h1 className="nvz-hero-title">
                       <span className="nvz-hero-celebrate">Celebrate</span>{" "}
-                      <span className="nvz-hero-every-moment">Freedom.</span>
+                      <span className="nvz-hero-every-moment">Ganesh Chaturthi.</span>
                       <br />
-                      <span className="nvz-hero-highlight">Cherish Family.</span>
+                      <span className="nvz-hero-highlight">Cherish Traditions.</span>
                     </h1>
                     <p className="nvz-hero-subtitle">
-                      Discover handcrafted ethnic wear for Raksha Bandhan, Independence Day, and every special celebration.
+                      Discover handcrafted ethnic wear to celebrate Ganesh Chaturthi and every festive occasion.
                     </p>
                     <ul className="nvz-hero-features">
                       {features.map((feature) => (

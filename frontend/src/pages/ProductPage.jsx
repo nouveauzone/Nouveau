@@ -79,7 +79,7 @@ function StarPicker({ value, onChange }) {
           onMouseEnter={() => setHover(s)}
           onMouseLeave={() => setHover(0)}
           onClick={() => onChange(s)}
-          style={{ background: "none", border: "none", cursor: "pointer", fontSize: "26px", color: (hover || value) >= s ? "#D4AF37" : "#ddd", transition: "color 0.15s", padding: "2px" }}>
+          style={{ background: "none", border: "none", cursor: "pointer", fontSize: "26px", color: (hover || value) >= s ? "#C6A15B" : "#ddd", transition: "color 0.15s", padding: "2px" }}>
           ★
         </button>
       ))}

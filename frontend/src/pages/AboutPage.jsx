@@ -9,7 +9,7 @@ export default function AboutPage({ setPage }) {
     <div style={{ background:THEME.bg, minHeight:"100vh" }}>
 
       {/* Hero */}
-      <div style={{ background:`linear-gradient(135deg, ${THEME.crimsonLight}, ${THEME.bg})`, padding:"120px 40px 80px", textAlign:"center", position:"relative", overflow:"hidden" }}>
+      <div style={{ background:`linear-gradient(135deg, ${THEME.blushPink} 0%, ${THEME.bg} 54%, ${THEME.lightPink} 100%)`, padding:"120px 40px 80px", textAlign:"center", position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", inset:0, opacity:0.04, display:"flex", alignItems:"center", justifyContent:"center" }}><NouveauLogo size={500} /></div>
         <div style={{ position:"relative", zIndex:1 }}>
           <div style={{ display:"flex", justifyContent:"center", marginBottom:"24px" }}><NouveauLogo size={72} bg={true} /></div>

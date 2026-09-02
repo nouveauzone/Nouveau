@@ -480,7 +480,7 @@ export default function Providers({ children }) {
                   
                   return (
                     <div key={t.id} style={{
-                      background: isError ? "#c71f3e" : isWarning ? "#d97706" : "#D4AF37",
+                      background: isError ? "#c71f3e" : isWarning ? "#d97706" : "#C6A15B",
                       color: "#fff",
                       padding: "14px 32px",
                       fontSize: "14px",

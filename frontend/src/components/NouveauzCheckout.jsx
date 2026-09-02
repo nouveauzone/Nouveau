@@ -102,7 +102,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
           items: cartItems.map(getItemLabel).join(", "),
         },
         theme: {
-          color: "#1a1a1a",
+          color: "#3A2525",
           hide_topbar: false,
         },
         modal: {
@@ -196,7 +196,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
         style={{
           width: "100%",
           padding: "16px 24px",
-          background: loading ? "#555" : "#1a1a1a",
+          background: loading ? "#A8A8A8" : "#E58AA8",
           color: "#fff",
           border: "none",
           borderRadius: "12px",

@@ -17,7 +17,7 @@ const formatOrderMoney = (amount, currency = "INR") => {
 // Maps every backend orderStatus value to a badge style
 const STATUS_STYLE = {
   "Awaiting Payment Verification": { bg:"#fff3cd", color:"#856404" },
-  "Placed":       { bg:"#D4AF3720", color:"#b8962e" },
+  "Placed":       { bg:"#C6A15B20", color:"#a67e3f" },
   "Processing":   { bg:"#cce5ff",   color:"#004085" },
   "Shipped":      { bg:"#e9d8fd",   color:"#6b21a8" },
   "Out for Delivery": { bg:"#ffe0b2", color:"#e65100" },

@@ -1,15 +1,15 @@
 :root {
-  --sf-primary: #b76e79;
-  --sf-secondary: #faf7f2;
-  --sf-accent: #f3ede5;
-  --sf-text: #1a1a1a;
-  --sf-muted: #555555;
-  --sf-border: #eadbd2;
+  --sf-primary: #E58AA8;
+  --sf-secondary: #FFF8FB;
+  --sf-accent: #FDE7F0;
+  --sf-text: #5E3B4D;
+  --sf-muted: #8A667A;
+  --sf-border: #F7D7E5;
   --sf-radius: 16px;
-  --sf-shadow-soft: 0 8px 32px rgba(63, 38, 33, 0.05);
-  --sf-shadow-hover: 0 16px 48px rgba(63, 38, 33, 0.12);
-  --sf-glass-bg: rgba(255, 255, 255, 0.85);
-  --sf-btn-shadow: 0 4px 12px rgba(183, 110, 121, 0.2);
+  --sf-shadow-soft: 0 12px 32px rgba(229, 138, 168, 0.08);
+  --sf-shadow-hover: 0 20px 48px rgba(229, 138, 168, 0.12);
+  --sf-glass-bg: rgba(255, 248, 251, 0.92);
+  --sf-btn-shadow: 0 4px 12px rgba(229, 138, 168, 0.18);
 }
 
 .sf-shell {
@@ -539,7 +539,7 @@
   top: 14px;
   left: 14px;
   background: rgba(255, 255, 255, 0.95);
-  color: #FF9933;
+  color: #E58AA8;
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 11px;
@@ -547,8 +547,8 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
   z-index: 10;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
-  border: 1.5px solid rgba(183, 28, 28, 0.18);
+  box-shadow: 0 4px 15px rgba(161, 48, 90, 0.12);
+  border: 1.5px solid rgba(161, 48, 90, 0.18);
   pointer-events: none;
 }
 
@@ -599,13 +599,14 @@
 }
 
 .sf-product-title {
-  font-family: "Playfair Display", serif;
-  font-weight: 700;
+  font-family: "Cormorant Garamond", "Playfair Display", serif;
+  font-weight: 600;
   font-size: 18px;
   line-height: 1.35;
   min-height: 48px;
   margin-top: 8px;
   cursor: pointer;
+  color: var(--sf-primary);
 }
 
 .sf-product-sub {
@@ -661,10 +662,10 @@
 }
 
 .sf-btn-primary {
-  background: linear-gradient(135deg, #FF9933, #138808);
+  background: var(--sf-primary);
   color: #fff;
-  border-color: #138808;
-  box-shadow: 0 4px 14px rgba(139, 0, 0, 0.2);
+  border-color: var(--sf-primary);
+  box-shadow: 0 4px 14px rgba(139, 30, 45, 0.2);
 }
 
 .sf-btn-primary:active {

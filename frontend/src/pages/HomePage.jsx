@@ -156,7 +156,7 @@ export default function HomePage({ setPage, setSelectedProduct }) {
           overflow: hidden;
           cursor: pointer;
           padding: 40px;
-          background: linear-gradient(135deg, #C65D00 0%, #FFF8F0 45%, #0B6B2A 100%);
+          background: linear-gradient(135deg, #E58AA8 0%, #FCECEF 45%, #D8B995 100%);
           transition: transform .35s;
         }
 
@@ -308,7 +308,7 @@ export default function HomePage({ setPage, setSelectedProduct }) {
                       display:"inline-flex",
                       alignItems:"center",
                       gap:"8px",
-                      color:"#D4AF37",
+                      color:"#C6A15B",
                       fontFamily:"'Poppins',sans-serif",
                       fontSize:"12px",
                       fontWeight:700,

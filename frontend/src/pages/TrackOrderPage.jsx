@@ -26,7 +26,7 @@ const STATUS_STEPS = ["Placed", "Processing", "Shipped", "Out for Delivery", "De
 
 const STATUS_CONFIG = {
   "Awaiting Payment Verification": { color: "#d97706", bg: "#d9770615", icon: "⏳", label: "Awaiting Payment Verification" },
-  Placed:             { color: "#D4AF37", bg: "#D4AF3715", icon: "📋", label: "Placed" },
+  Placed:             { color: "#C6A15B", bg: "#C6A15B15", icon: "📋", label: "Placed" },
   Processing:         { color: "#2196F3", bg: "#2196F315", icon: "⚙️",  label: "Processing" },
   Shipped:            { color: "#9C27B0", bg: "#9C27B015", icon: "🚀", label: "Shipped" },
   "Out for Delivery": { color: "#FF9800", bg: "#FF980015", icon: "🛵", label: "Out for Delivery" },
@@ -63,7 +63,7 @@ function ProgressBar({ status }) {
       ) : (
         <div style={{ position:"relative" }}>
           <div style={{ position:"absolute", top:"18px", left:"0", right:"0", height:"4px", background:THEME.border, zIndex:0, borderRadius:"99px", margin:"0 32px" }}>
-            <div style={{ height:"100%", width:`${(progressIdx/(STATUS_STEPS.length-1))*100}%`, background:`linear-gradient(to right,${THEME.crimson},#D4AF37)`, borderRadius:"99px", transition:"width 1s ease" }} />
+            <div style={{ height:"100%", width:`${(progressIdx/(STATUS_STEPS.length-1))*100}%`, background:`linear-gradient(to right,${THEME.crimson},#C6A15B)`, borderRadius:"99px", transition:"width 1s ease" }} />
           </div>
           <div style={{ display:"flex", justifyContent:"space-between", position:"relative", zIndex:1 }}>
             {STATUS_STEPS.map((step, i) => {
@@ -71,14 +71,14 @@ function ProgressBar({ status }) {
               const current = currentIdx === i;
               return (
                 <div key={step} style={{ textAlign:"center", display:"flex", flexDirection:"column", alignItems:"center", gap:"10px", flex:1 }}>
-                  <div style={{ width:"36px", height:"36px", borderRadius:"50%", background: done?(current?"#D4AF37":THEME.crimson):"#fff", border:`3px solid ${done?(current?"#D4AF37":THEME.crimson):THEME.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"14px", boxShadow:current?`0 0 0 6px #D4AF3730`:done?`0 0 0 3px ${THEME.crimson}20`:"none", transition:"all 0.4s" }}>
+                  <div style={{ width:"36px", height:"36px", borderRadius:"50%", background: done?(current?"#C6A15B":THEME.crimson):"#fff", border:`3px solid ${done?(current?"#C6A15B":THEME.crimson):THEME.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"14px", boxShadow:current?`0 0 0 6px #C6A15B30`:done?`0 0 0 3px ${THEME.crimson}20`:"none", transition:"all 0.4s" }}>
                     {done
                       ? (current ? "●" : <svg viewBox="0 0 10 8" width="14" height="14"><path d="M1 4L3.5 7L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/></svg>)
                       : "○"}
                   </div>
-                  <span style={{ fontFamily:"'Poppins',sans-serif", fontSize:"9px", fontWeight:current?700:done?600:400, color:current?"#D4AF37":done?THEME.crimson:THEME.textLight, whiteSpace:"pre-line", lineHeight:1.3, maxWidth:"70px" }}>
+                  <span style={{ fontFamily:"'Poppins',sans-serif", fontSize:"9px", fontWeight:current?700:done?600:400, color:current?"#C6A15B":done?THEME.crimson:THEME.textLight, whiteSpace:"pre-line", lineHeight:1.3, maxWidth:"70px" }}>
                     {step === "Out for Delivery" ? "Out for\nDelivery" : step}
-                    {current && <span style={{ display:"block", fontSize:"7px", background:"#D4AF3720", color:"#D4AF37", padding:"1px 5px", borderRadius:"99px", marginTop:"3px" }}>NOW</span>}
+                    {current && <span style={{ display:"block", fontSize:"7px", background:"#C6A15B20", color:"#C6A15B", padding:"1px 5px", borderRadius:"99px", marginTop:"3px" }}>NOW</span>}
                   </span>
                 </div>
               );
@@ -222,7 +222,7 @@ function OrderCard({ order }) {
         </div>
       )}
       {!isAwaitingPayment && order.orderStatus!=="Delivered" && order.orderStatus!=="Cancelled" && (
-        <div style={{ background:"#D4AF3710", border:"1px solid #D4AF3735", borderRadius:"12px", padding:"16px 20px", display:"flex", gap:"14px", alignItems:"center" }}>
+        <div style={{ background:"#C6A15B10", border:"1px solid #C6A15B35", borderRadius:"12px", padding:"16px 20px", display:"flex", gap:"14px", alignItems:"center" }}>
           <span style={{ fontSize:"24px" }}>🚚</span>
           <div>
             <p style={{ fontFamily:"'Poppins',sans-serif", fontWeight:700, color:"#b8962e", fontSize:"13px" }}>Expected Delivery</p>
@@ -304,10 +304,10 @@ export default function TrackOrderPage({ setPage }) {
   return (
     <div style={{ background:THEME.bg, minHeight:"100vh" }}>
       {/* Hero */}
-      <div style={{ background:`linear-gradient(130deg, #FFD6A5 0%, #FFFFFF 45%, #5DAE45 100%)`, border:"1px solid rgba(255,255,255,0.2)", padding:"60px 40px 0", position:"relative", overflow:"hidden" }}>
+      <div style={{ background:`linear-gradient(130deg, #E8B4A8 0%, #FFFFFF 45%, #C6A15B 100%)`, border:"1px solid rgba(255,255,255,0.2)", padding:"60px 40px 0", position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", inset:0, backgroundImage:`radial-gradient(circle at 20% 50%,rgba(212,175,55,0.08) 0%,transparent 60%)` }} />
         <div style={{ maxWidth:"960px", margin:"0 auto", position:"relative", zIndex:1 }}>
-          <p style={{ fontFamily:"'Poppins',sans-serif", fontSize:"10px", letterSpacing:"6px", color:"#D4AF37", marginBottom:"10px" }}>REAL-TIME STATUS</p>
+          <p style={{ fontFamily:"'Poppins',sans-serif", fontSize:"10px", letterSpacing:"6px", color:"#C6A15B", marginBottom:"10px" }}>REAL-TIME STATUS</p>
           <h1 style={{ fontFamily:"'Playfair Display',serif", fontSize:"clamp(28px,5vw,48px)", fontWeight:700, color:"#7A1E1E", marginBottom:"8px" }}>Track Your Order</h1>
           <p style={{ color:"#4B3B2B", fontSize:"14px", fontFamily:"'Poppins',sans-serif", marginBottom:"32px" }}>Enter your Tracking ID — format: ORD followed by numbers</p>
 
@@ -319,7 +319,7 @@ export default function TrackOrderPage({ setPage }) {
                 onKeyDown={e=>e.key==="Enter"&&handleTrack()}
                 style={{ flex:1, minWidth:"220px", padding:"14px 20px", background:"rgba(255,255,255,0.95)", border:"none", borderRadius:"12px", fontSize:"15px", outline:"none", fontFamily:"'Poppins',sans-serif", color:"#1a1a1a" }} />
               <button onClick={()=>handleTrack()} disabled={loading}
-                style={{ padding:"14px 28px", background:"#D4AF37", border:"none", borderRadius:"12px", cursor:"pointer", fontFamily:"'Poppins',sans-serif", fontSize:"14px", fontWeight:700, color:"#1a1a1a", opacity:loading?0.7:1, minWidth:"130px" }}>
+                style={{ padding:"14px 28px", background:"#C6A15B", border:"none", borderRadius:"12px", cursor:"pointer", fontFamily:"'Poppins',sans-serif", fontSize:"14px", fontWeight:700, color:"#1a1a1a", opacity:loading?0.7:1, minWidth:"130px" }}>
                 {loading ? "Searching..." : "🔍 Track"}
               </button>
             </div>
@@ -440,7 +440,7 @@ export default function TrackOrderPage({ setPage }) {
                       {o.orderStatus!=="Cancelled" && (
                         <div>
                           <div style={{ height:"4px", background:THEME.border, borderRadius:"99px", overflow:"hidden" }}>
-                            <div style={{ height:"100%", width:`${progress}%`, background:`linear-gradient(to right,${THEME.crimson},#D4AF37)`, borderRadius:"99px", transition:"width 0.5s" }} />
+                            <div style={{ height:"100%", width:`${progress}%`, background:`linear-gradient(to right,${THEME.crimson},#C6A15B)`, borderRadius:"99px", transition:"width 0.5s" }} />
                           </div>
                           <div style={{ display:"flex", justifyContent:"space-between", marginTop:"6px" }}>
                             <span style={{ fontFamily:"'Poppins',sans-serif", fontSize:"9px", color:THEME.crimson }}>Placed</span>

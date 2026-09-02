@@ -5,9 +5,9 @@ export const GLOBAL_CSS = `
 
   body {
     margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: #FAF7F2;
-    color: #1A1A1A;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    background: #FFF9F3;
+    color: #4A2929;
   }
 
   *, *::before, *::after {

@@ -208,7 +208,7 @@ const CardPayment = ({
           contact: customerInfo.phone || "",
         },
         method: { card: true, netbanking: false, upi: false, wallet: false },
-        theme: { color: "#1a1a1a" },
+        theme: { color: "#3A2525" },
         modal: {
           backdropclose: false,
           escape: true,

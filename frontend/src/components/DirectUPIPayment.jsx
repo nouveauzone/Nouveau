@@ -112,7 +112,7 @@ const DirectUPIPayment = ({
 
   const styles = {
     wrapper: { fontFamily: "'Poppins', sans-serif", maxWidth: '400px', margin: '0 auto' },
-    heading: { fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#D4AF37', marginBottom: 24, textAlign: 'center' },
+    heading: { fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#C6A15B', marginBottom: 24, textAlign: 'center' },
     appsGrid: { display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: 32 },
     appIcon: (app, active) => ({
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer',
@@ -120,17 +120,17 @@ const DirectUPIPayment = ({
     }),
     qrCard: {
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: '30px 24px', borderRadius: 20,
-      border: '1px solid #D4AF3725', background: '#fff', boxShadow: '0 10px 40px rgba(212,175,55,0.05)', marginBottom: 28,
+      border: '1px solid #C6A15B25', background: '#fff', boxShadow: '0 10px 40px rgba(198,161,91,0.05)', marginBottom: 28,
     },
-    qrTitle: { fontSize: 14, fontWeight: 600, color: '#1a1a1a', margin: 0, letterSpacing: '-0.01em' },
+    qrTitle: { fontSize: 14, fontWeight: 600, color: '#3A2525', margin: 0, letterSpacing: '-0.01em' },
     qrWrapper: { padding: '15px', background: '#fff', borderRadius: '12px', border: '1.2px solid #f0f0f0' },
     upiIdBox: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f9f9fb', border: '1.2px solid #e9eaef', borderRadius: 14, padding: '12px 16px', marginBottom: 24 },
-    copyBtn: { background: '#1a1a1a', color: '#fff', border: 'none', borderRadius: 10, padding: '8px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' },
+    copyBtn: { background: '#E58AA8', color: '#fff', border: 'none', borderRadius: 10, padding: '8px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' },
     toast: { position: 'absolute', top: -45, left: '50%', transform: 'translateX(-50%)', background: '#2ecc71', color: '#fff', padding: '8px 18px', borderRadius: 30, fontSize: 12, fontWeight: 600, boxShadow: '0 5px 20px rgba(46,204,113,0.3)', whiteSpace: 'nowrap', zIndex: 10 },
     amountBox: { textAlign: 'center', padding: '20px 0', borderTop: '1px solid #f0f0f0', marginTop: 8 },
     confirmOverlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 1000 },
     confirmSheet: { width: '100%', maxWidth: '500px', background: '#fff', padding: '30px 24px', borderRadius: '24px 24px 0 0', textAlign: 'center' },
-    confirmBtn: { width: '100%', background: '#D4AF37', color: '#fff', border: 'none', borderRadius: 12, padding: '16px', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 12 },
+    confirmBtn: { width: '100%', background: '#C6A15B', color: '#fff', border: 'none', borderRadius: 12, padding: '16px', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 12 },
     cancelBtn: { width: '100%', background: 'none', color: '#888', border: 'none', padding: '12px', fontSize: 14, cursor: 'pointer' },
   };
 
@@ -166,7 +166,7 @@ const DirectUPIPayment = ({
           <QRCodeSVG value={upiLink} size={180} level="M" />
         </div>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ margin: 0, fontSize: '22px', fontWeight: 800, color: '#1a1a1a' }}>{formatPrice(Number(amount) || 0)}</p>
+          <p style={{ margin: 0, fontSize: '22px', fontWeight: 800, color: '#3A2525' }}>{formatPrice(Number(amount) || 0)}</p>
           <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#888' }}>Total Payable Amount</p>
         </div>
       </div>
@@ -177,7 +177,7 @@ const DirectUPIPayment = ({
         <div style={styles.upiIdBox}>
           <div style={{ flex: 1, minWidth: 0, marginRight: 12 }}>
             <p style={{ margin: 0, fontSize: 10, color: '#888', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Merchant UPI ID</p>
-            <p style={{ margin: '3px 0 0', fontSize: 14, fontWeight: 600, color: '#1a1a1a', overflow: 'hidden', textOverflow: 'ellipsis' }}>{normalizedUpiId}</p>
+            <p style={{ margin: '3px 0 0', fontSize: 14, fontWeight: 600, color: '#3A2525', overflow: 'hidden', textOverflow: 'ellipsis' }}>{normalizedUpiId}</p>
           </div>
           <button
             onClick={() => {
@@ -185,7 +185,7 @@ const DirectUPIPayment = ({
               setCopied(true);
               setTimeout(() => setCopied(false), 2000);
             }}
-            style={{ ...styles.copyBtn, background: copied ? '#2ecc71' : '#1a1a1a' }}
+            style={{ ...styles.copyBtn, background: copied ? '#2ecc71' : '#E58AA8' }}
           >
             {copied ? 'Copied' : 'Copy'}
           </button>

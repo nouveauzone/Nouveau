@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { THEME } from "../styles/theme";
 import { SHIPPING_FEE_BY_CURRENCY } from "../data/constants";
 
-const GOLD = "#D4AF37";
+const GOLD = "#C6A15B";
 
 export const SHIPPING_OPTIONS_BY_CURRENCY = {
   USD: {
@@ -97,7 +97,7 @@ export default function ShippingSelector({ currencyCode, onSelect, selected: con
                   top: "10px",
                   right: "10px",
                   background: GOLD,
-                  color: "#1a1a1a",
+                  color: "#FFFFFF",
                   fontSize: "10px",
                   fontWeight: 700,
                   letterSpacing: "1px",

@@ -66,7 +66,7 @@ export default function Footer({ setPage }) {
 	};
 
 	return (
-		<footer style={{ background: `linear-gradient(130deg, ${THEME.crimson}, ${THEME.bg}, ${THEME.crimsonDark})`, padding: "42px 32px 24px", borderTop: `1px solid ${THEME.crimson}55` }}>
+		<footer style={{ background: `linear-gradient(130deg, ${THEME.burgundy}, ${THEME.blushPink}, ${THEME.gold}15)`, padding: "42px 32px 24px", borderTop: `1px solid ${THEME.gold}55` }}>
 			<div style={{ maxWidth: "1400px", margin: "0 auto" }}>
 				<div style={{ textAlign: "center", marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid rgba(255,255,255,0.18)" }}>
 					<div style={{ display: "flex", justifyContent: "center" }}>
@@ -93,13 +93,13 @@ export default function Footer({ setPage }) {
 									href={href}
 									target="_blank"
 									rel="noreferrer"
-									style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "rgba(59,42,31,0.95)", fontSize: "12px", fontFamily: "'Poppins',sans-serif", marginRight: "18px", marginBottom: "6px", textDecoration: "none", borderBottom: "1px solid transparent", transition: "all 0.2s" }}
+									style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "rgba(255,255,255,0.9)", fontSize: "12px", fontFamily: "'Poppins',sans-serif", marginRight: "18px", marginBottom: "6px", textDecoration: "none", borderBottom: "1px solid transparent", transition: "all 0.2s" }}
 									onMouseEnter={(e) => {
-										e.currentTarget.style.color = THEME.gold;
-										e.currentTarget.style.borderBottomColor = THEME.gold;
+										e.currentTarget.style.color = THEME.goldLight;
+										e.currentTarget.style.borderBottomColor = THEME.goldLight;
 									}}
 									onMouseLeave={(e) => {
-										e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+										e.currentTarget.style.color = "rgba(255,255,255,0.9)";
 										e.currentTarget.style.borderBottomColor = "transparent";
 									}}
 								>
