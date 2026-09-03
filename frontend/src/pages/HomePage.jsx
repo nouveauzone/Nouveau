@@ -108,12 +108,15 @@ export default function HomePage({ setPage, setSelectedProduct }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const newArrivals = PRODUCTS.filter((p) => p.isNew && normalizeCategory(p.category) === "Indian Ethnic Wear").slice(0, 4);
+  const newArrivals = PRODUCTS.filter((p) => p.isNew).slice(0, 4);
 
+  const trendingFeatured = PRODUCTS.filter((p) => p.isFeatured);
   const trendingBase = PRODUCTS.filter((p) => normalizeCategory(p.category) === "Indian Western Wear");
-  const trendingFallback = PRODUCTS.filter((p) => !trendingBase.some((w) => w._id === p._id));
-  const trending = [...trendingBase, ...trendingFallback].slice(0, 4);
-
+  const trendingFallback = PRODUCTS.filter(
+    (p) => !trendingFeatured.some((f) => f._id === p._id) && !trendingBase.some((w) => w._id === p._id)
+  );
+  const trending = [...trendingFeatured, ...trendingBase, ...trendingFallback].slice(0, 4);
+  
   const ethnic = PRODUCTS.filter(
     (p) => normalizeCategory(p.category) === "Indian Ethnic Wear"
   );
