@@ -309,6 +309,29 @@ export default function Hero({ setPage }) {
           right: 16px;
         }
 
+        .nvz-hero-quick-actions {
+          position: absolute;
+          left: 56px;
+          bottom: 44px;
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          padding: 8px;
+          border: 1px solid rgba(255, 255, 255, 0.8);
+          border-radius: 18px;
+          background: rgba(255, 238, 246, 0.78);
+          box-shadow: 0 12px 28px rgba(92, 59, 77, 0.16);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          z-index: 6;
+        }
+
+        .nvz-hero-quick-actions .nvz-hero-btn {
+          min-width: 148px;
+          min-height: 48px;
+          box-shadow: 0 6px 16px rgba(92, 59, 77, 0.15);
+        }
+
         .nvz-hero-overlay {
           position: absolute;
           inset: 0;
@@ -483,26 +506,27 @@ export default function Hero({ setPage }) {
 
         .nvz-hero-btn {
           border-radius: 9999px;
-          padding: 12px 20px;
+          padding: 14px 24px;
           font-family: 'Poppins', 'Inter', sans-serif;
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 700;
-          letter-spacing: 0.04em;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
           transition: transform 300ms ease, background 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
           cursor: pointer;
         }
 
         .nvz-hero-btn--primary {
-          background: linear-gradient(90deg, #E58AA8, #FDE7F0, #D8B995);
+          background: linear-gradient(135deg, #C95780, #E58AA8);
           color: #FFFFFF;
-          border: 1px solid rgba(255,255,255,0.35);
+          border: 1px solid rgba(255,255,255,0.65);
+          text-shadow: 0 1px 2px rgba(92, 59, 77, 0.22);
         }
 
         .nvz-hero-btn--secondary {
-          background: transparent;
-          color: #E58AA8;
-          border: 2px solid #E58AA8;
+          background: rgba(255, 255, 255, 0.96);
+          color: #B94D76;
+          border: 2px solid #D76E96;
         }
 
         .nvz-hero-btn:hover {
@@ -510,7 +534,7 @@ export default function Hero({ setPage }) {
         }
 
         .nvz-hero-btn--primary:hover {
-          box-shadow: 0 12px 28px rgba(139, 30, 45, 0.22), 0 10px 24px rgba(198, 161, 91, 0.18);
+          box-shadow: 0 14px 30px rgba(185, 77, 118, 0.3);
         }
 
         .nvz-hero-btn--secondary:hover {
@@ -623,6 +647,25 @@ export default function Hero({ setPage }) {
 
           .nvz-hero-overlay {
             display: none;
+          }
+
+          .nvz-hero-quick-actions {
+            left: 16px;
+            right: 16px;
+            bottom: 18px;
+            display: flex;
+            gap: 10px;
+            padding: 7px;
+            border-radius: 18px;
+          }
+
+          .nvz-hero-quick-actions .nvz-hero-btn {
+            flex: 1 1 0;
+            min-width: 0;
+            min-height: 46px;
+            padding: 12px 10px;
+            font-size: 11px;
+            letter-spacing: 0.06em;
           }
 
           .nvz-hero-mobile-panel {
@@ -893,13 +936,18 @@ export default function Hero({ setPage }) {
                         </li>
                       ))}
                     </ul>
-                    <div className="nvz-hero-actions">
-                      <button className="nvz-hero-btn nvz-hero-btn--primary" onClick={() => setPage("Shop")}>SHOP NOW</button>
-                      <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>Explore Collection</button>
-                    </div>
                   </div>
                 </div>
               )}
+
+              <div className="nvz-hero-quick-actions">
+                <button className="nvz-hero-btn nvz-hero-btn--primary" onClick={() => setPage("Shop")}>
+                  SHOP NOW
+                </button>
+                <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>
+                  EXPLORE NOW
+                </button>
+              </div>
 
               {slide.mobilePanel && (
                 <div
