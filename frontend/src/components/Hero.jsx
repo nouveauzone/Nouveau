@@ -27,22 +27,6 @@ const BANNER_SLIDES = [
     // blank cream near the bottom, so the solid card floats over that
     // fade instead of sitting after it (avoids double blank space).
     mobileImageFit: "natural",
-    mobilePanelVariant: "overlay-solid",
-    mobilePanel: {
-      badge: "🐘 GANESH CHATURTHI SPECIAL 2026",
-      title: (
-        <>
-          <span className="nvz-hero-celebrate">Celebrate</span>{" "}
-          <span className="nvz-hero-every-moment">Ganesh Chaturthi.</span>
-          <br />
-          <span className="nvz-hero-highlight">Cherish Traditions.</span>
-        </>
-      ),
-      subtitle:
-        "Discover handcrafted ethnic wear to celebrate Ganesh Chaturthi and every festive occasion.",
-      primaryLabel: "SHOP NOW",
-      secondaryLabel: "EXPLORE COLLECTION",
-    },
   },
   {
     // SECOND — CLOZZET
@@ -327,7 +311,7 @@ export default function Hero({ setPage }) {
         }
 
         .nvz-hero-quick-actions .nvz-hero-btn {
-          min-width: 148px;
+          min-width: 180px;
           min-height: 48px;
           box-shadow: 0 6px 16px rgba(92, 59, 77, 0.15);
         }
@@ -405,15 +389,24 @@ export default function Hero({ setPage }) {
           animation: nvz-hero-fade-up 700ms ease forwards;
         }
 
-        .nvz-hero-content::before {
+        /*.nvz-hero-content::before {
           content: '';
           position: absolute;
-          inset: -28px -40px -28px -28px;
+          left: -12px;
+          top: -18px;
+          bottom: -18px;
+          width: min(360px, 92vw);
           background: linear-gradient(
             90deg,
-              rgba(250, 242, 240, 0.96) 0%,
-              rgba(249, 232, 237, 0.88) 55%,
+              rgba(250, 242, 240, 0.86) 0%,
+              rgba(249, 232, 237, 0.52) 60%,
               rgba(250, 242, 240, 0) 100%
+          );
+          border-radius: 24px;
+          pointer-events: none;
+        }*/
+
+        .nvz-hero-badge {
           display: inline-block;
           margin-bottom: 14px;
           padding: 8px 14px;
@@ -618,7 +611,7 @@ export default function Hero({ setPage }) {
           .nvz-hero-banner__image {
             position: static;
             width: 100%;
-            height: 230px;
+            height: auto;
             object-fit: cover;
             object-position: right center;
             border-radius: 0;
@@ -626,11 +619,11 @@ export default function Hero({ setPage }) {
           }
 
           .nvz-hero-banner__image--natural {
-            height: auto;
+            height: 750px;
             filter: none;
-            object-fit: contain;
-            object-position: top center;
-            padding-top: 16px;
+            object-fit: cover;
+            object-position: center 18%;
+            padding-top: 0;
             background: #FAF2F0;
             box-sizing: border-box;
           }
@@ -646,42 +639,47 @@ export default function Hero({ setPage }) {
           }
 
           .nvz-hero-overlay {
-            display: none;
+            display: none !important;
+          }
+
+          .nvz-hero-content::before {
+            display: none !important;
           }
 
           .nvz-hero-quick-actions {
-            left: 16px;
-            right: 16px;
-            bottom: 18px;
-            display: flex;
-            gap: 10px;
-            padding: 7px;
-            border-radius: 18px;
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
+            width: auto;
+            max-width: calc(100% - 24px);
+            background: rgba(255, 238, 246, 0.78);
+            box-shadow: 1px solid rgba(255, 255, 255, 0.8);
+            padding: 4px 6px;
+            justify-content: center;
+            gap: 6px;
           }
 
           .nvz-hero-quick-actions .nvz-hero-btn {
-            flex: 1 1 0;
+            flex: none;
+            width: min(100%, 160px);
             min-width: 0;
-            min-height: 46px;
-            padding: 12px 10px;
-            font-size: 11px;
-            letter-spacing: 0.06em;
           }
 
           .nvz-hero-mobile-panel {
             display: block;
             position: relative;
-            width: 100%;
-            margin-top: 0;
-            padding: 22px 18px 38px;
+            width: min(360px, calc(100% - 24px));
+            max-width: 360px;
+            margin: -20px auto 0;
+            padding: 20px 16px 34px;
             background: linear-gradient(180deg, rgba(248,227,229,0.96) 0%, rgba(242,205,210,0.98) 100%);
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
             border-radius: 28px 28px 0 0;
             z-index: 2;
-            margin-top: -20px;
             box-shadow: 0 -14px 32px rgba(139, 30, 45, 0.08);
             border-top: 1px solid rgba(139, 30, 45, 0.12);
+            box-sizing: border-box;
           }
 
           /* Floats over the bottom of a --natural image instead of
@@ -715,15 +713,22 @@ export default function Hero({ setPage }) {
              as the normal-flow panel, so there's no double blank gap. */
           .nvz-hero-mobile-panel--overlay-solid {
             position: absolute;
-            left: 0;
-            right: 0;
+            left: 50%;
             bottom: 0;
+            width: min(360px, calc(100% - 24px));
+            max-width: 360px;
+            transform: translateX(-50%);
             margin-top: 0;
-            padding: 22px 18px 38px;
-            background: linear-gradient(180deg, rgba(255,249,243,0) 0%, rgba(255,249,243,0.85) 18%, rgba(248,227,229,0.98) 45%, rgba(248,227,229,0.99) 100%);
+            padding: 22px 16px 34px;
+            background: transparent;
             border-radius: 0;
             box-shadow: none;
             border-top: none;
+            pointer-events: none;
+          }
+
+          .nvz-hero-mobile-panel--overlay-solid .nvz-hero-actions {
+            pointer-events: auto;
           }
 
           .nvz-hero-mobile-panel__inner {
@@ -732,7 +737,8 @@ export default function Hero({ setPage }) {
             align-items: center;
             text-align: center;
             gap: 8px;
-            max-width: 360px;
+            width: 100%;
+            max-width: 100%;
             margin: 0 auto;
             opacity: 0;
             transform: translateY(18px);
@@ -821,8 +827,8 @@ export default function Hero({ setPage }) {
           }
 
           .nvz-hero-btn {
-            width: 100%;
-            max-width: none;
+            width: min(100%, 240px);
+            max-width: 240px;
             height: 46px;
             display: inline-flex;
             align-items: center;
@@ -874,6 +880,10 @@ export default function Hero({ setPage }) {
           .nvz-hero-mobile-panel .nvz-hero-actions .nvz-hero-btn--secondary {
             margin-top: 0;
           }
+          
+          .nvz-hero-mobile-panel .nvz-hero-actions .nvz-hero-btn--secondary {
+            min-width: 200px;
+          }
         }
       `}</style>
 
@@ -911,84 +921,14 @@ export default function Hero({ setPage }) {
                 ))}
               </div>
 
-              {slide.showTextOverlay && (
-                <div className="nvz-hero-overlay">
-                  <div className="nvz-hero-content">
-                    <div className="nvz-hero-brand">
-                      <img
-                        src={fixImageUrl("/nouveau-logo.png")}
-                        alt="Nouveau Logo"
-                        className="nvz-hero-logo"
-                      />
-                      <div className="nvz-hero-brand-text">
-                        <div className="nvz-hero-brand-name">
-                          nouveau<span>™</span>
-                        </div>
-                        <div className="nvz-hero-brand-tagline">Wear Your Aura</div>
-                      </div>
-                    </div>
-
-                    <h1 className="nvz-hero-title">
-                      <span className="nvz-hero-celebrate">Celebrate</span>{" "}
-                      <span className="nvz-hero-every-moment">Ganesh Chaturthi.</span>
-                      <br />
-                      <span className="nvz-hero-highlight">Cherish Traditions.</span>
-                    </h1>
-                    <p className="nvz-hero-subtitle">
-                      Discover handcrafted ethnic wear to celebrate Ganesh Chaturthi and every festive occasion.
-                    </p>
-                    <ul className="nvz-hero-features">
-                      {features.map((feature) => (
-                        <li key={feature}>
-                          <span>✓</span>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-
               <div className="nvz-hero-quick-actions">
                 <button className="nvz-hero-btn nvz-hero-btn--primary" onClick={() => setPage("Shop")}>
                   SHOP NOW
                 </button>
                 <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>
-                  EXPLORE NOW
+                  EXPLORE COLLECTION
                 </button>
               </div>
-
-              {slide.mobilePanel && (
-                <div
-                  ref={(el) => (panelRefs.current[index] = el)}
-                  className={`nvz-hero-mobile-panel${isOverlayPanel ? " nvz-hero-mobile-panel--overlay" : ""}${isOverlaySolidPanel ? " nvz-hero-mobile-panel--overlay-solid" : ""}`}
-                  aria-hidden="false"
-                >
-                  <div className="nvz-hero-mobile-panel__inner">
-                    {slide.mobilePanel.badge && (
-                      <div className="nvz-hero-badge">{slide.mobilePanel.badge}</div>
-                    )}
-                    {slide.mobilePanel.title && (
-                      <h1 className="nvz-hero-title">{slide.mobilePanel.title}</h1>
-                    )}
-                    {slide.mobilePanel.subtitle && (
-                      <p className="nvz-hero-subtitle">{slide.mobilePanel.subtitle}</p>
-                    )}
-                    <ul className="nvz-hero-features">
-                      {features.map((feature) => (
-                        <li key={feature}>
-                          <span>✓</span>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="nvz-hero-actions">
-                      <button className="nvz-hero-btn nvz-hero-btn--primary" onClick={() => setPage("Shop")}>{slide.mobilePanel.primaryLabel}</button>
-                      <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>{slide.mobilePanel.secondaryLabel}</button>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           );
         })}
