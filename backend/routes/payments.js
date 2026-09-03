@@ -201,10 +201,13 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
       return res.status(400).json({ message: "Invalid signature" });
     }
 
-    let updatedOrder = null;
+     let updatedOrder = null;
 
-    if (orderId) {
-      const order = await Order.findById(orderId);
+    if (orderId && mongoose.isValidObjectId(orderId)) {
+      const order = await Order.findById(orderId).catch((err) => {
+        console.log("[razorpay] orderId lookup failed, skipping update:", err.message);
+        return null;
+      });
       if (order) {
         order.paymentStatus = "paid";
         order.paymentId = razorpay_payment_id;
