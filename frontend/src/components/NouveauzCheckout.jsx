@@ -129,6 +129,11 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
+              // Do NOT send response.razorpay_order_id as `orderId` — the backend
+              // treats `orderId` as a Mongo ObjectId lookup, and a Razorpay gateway
+              // ID there throws a CastError, breaking verification. No pre-existing
+              // Mongo order exists yet at this point; it's created via placeOrder()
+              // right after this call succeeds.
               items: cartItems.map((item) => ({
                 product: item._id,
                 title: item.title,
