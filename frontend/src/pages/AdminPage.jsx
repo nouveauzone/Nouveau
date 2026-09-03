@@ -1049,6 +1049,10 @@ export default function AdminPage({ setPage }) {
                     <input type="checkbox" id="isnew" checked={productForm.isNew} onChange={e => setProductForm(f => ({ ...f, isNew: e.target.checked }))} style={{ accentColor: THEME.crimson, width: "16px", height: "16px" }} />
                     <label htmlFor="isnew" style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.text, cursor: "pointer" }}>Mark as New Arrival</label>
                   </div>
+                  <div style={{ gridColumn: "1/-1", display: "flex", alignItems: "center", gap: "10px" }}>
+                    <input type="checkbox" id="isfeatured" checked={productForm.isFeatured} onChange={e => setProductForm(f => ({ ...f, isFeatured: e.target.checked }))} style={{ accentColor: THEME.crimson, width: "16px", height: "16px" }} />
+                    <label htmlFor="isfeatured" style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.text, cursor: "pointer" }}>Mark as Trending (Trending Now section)</label>
+                  </div>
                 </div>
                 <div style={{ display: "flex", gap: "10px", marginTop: "20px", flexDirection: isMobile ? "column" : "row" }}>
                   <BtnPrimary onClick={saveProduct} style={{ borderRadius: "10px", width: isMobile ? "100%" : "auto" }}>{editingId ? "Update Product ✅" : "Add Product 🆕"}</BtnPrimary>
