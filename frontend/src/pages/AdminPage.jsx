@@ -162,8 +162,7 @@ const normalizeSizeRows = (sizes = []) => {
   return SIZE_OPTIONS.map((size) => rows.get(size));
 };
 
-const EMPTY_PRODUCT = { title: "", price: "", originalPrice: "", category: "Indian Ethnic Wear", subcategory: "", material: "", sizes: normalizeSizeRows(), discount: "0", description: "", isNew: true, images: ["/product1.jpeg"] };
-
+const EMPTY_PRODUCT = { title: "", price: "", originalPrice: "", category: "Indian Ethnic Wear", subcategory: "", material: "", sizes: normalizeSizeRows(), discount: "0", description: "", isNew: true, isFeatured: false, images: ["/product1.jpeg"] };
 const getSizeStockTotal = (sizes = []) => (
   Array.isArray(sizes)
     ? sizes.reduce((sum, entry) => sum + Math.max(0, Number(entry?.quantity ?? entry?.stock) || 0), 0)
