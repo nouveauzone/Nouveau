@@ -1067,8 +1067,8 @@ export default function AdminPage({ setPage }) {
                 <div style={{ flex: 1, minWidth: "140px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                     <p style={{ fontFamily: "'Playfair Display',serif", fontSize: "15px", fontWeight: 700, color: THEME.text }}>{p.title}</p>
-                    {p.isNew && <span style={{ background: `${THEME.crimson}15`, color: THEME.crimson, fontSize: "9px", letterSpacing: "2px", padding: "2px 8px", borderRadius: "99px", fontFamily: "'Poppins',sans-serif", fontWeight: 700 }}>NEW</span>}
-                    {(getEffectiveStock(p.sizes) <= 0) && <span style={{ background: `${THEME.textMuted}20`, color: THEME.textMuted, fontSize: "9px", letterSpacing: "2px", padding: "2px 8px", borderRadius: "99px", fontFamily: "'Poppins',sans-serif", fontWeight: 700, border: `1px solid ${THEME.border}` }}>SOLD OUT</span>}
+{p.isNew && <span style={{ background: `${THEME.crimson}15`, color: THEME.crimson, fontSize: "9px", letterSpacing: "2px", padding: "2px 8px", borderRadius: "99px", fontFamily: "'Poppins',sans-serif", fontWeight: 700 }}>NEW</span>}
+                    {p.isFeatured && <span style={{ background: "#3A252515", color: "#3A2525", fontSize: "9px", letterSpacing: "2px", padding: "2px 8px", borderRadius: "99px", fontFamily: "'Poppins',sans-serif", fontWeight: 700 }}>TRENDING</span>}                    {(getEffectiveStock(p.sizes) <= 0) && <span style={{ background: `${THEME.textMuted}20`, color: THEME.textMuted, fontSize: "9px", letterSpacing: "2px", padding: "2px 8px", borderRadius: "99px", fontFamily: "'Poppins',sans-serif", fontWeight: 700, border: `1px solid ${THEME.border}` }}>SOLD OUT</span>}
                   </div>
                   <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "3px" }}>{p.category} · {p.subcategory || "—"} · Stock: {getEffectiveStock(p.sizes)}</p>
                   <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight }}>Sizes: {formatSizeSummary(p.sizes)}</p>
