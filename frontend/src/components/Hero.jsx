@@ -926,7 +926,7 @@ export default function Hero({ setPage }) {
                   SHOP NOW
                 </button>
                 <button className="nvz-hero-btn nvz-hero-btn--secondary" onClick={() => setPage("Shop")}>
-                  EXPLORE COLLECTION
+                  EXPLORE COLLECTIONS
                 </button>
               </div>
             </div>
