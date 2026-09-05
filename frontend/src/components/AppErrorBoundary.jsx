@@ -12,7 +12,7 @@ export default class AppErrorBoundary extends Component {
     console.error("App Error:", error, info);
 
     const message = String(error?.message || error || "");
-    const isChunkOrCacheError = /(ChunkLoadError|Loading chunk [0-9]+ failed|Failed to fetch dynamically imported module|Importing a module script failed)/i.test(message);
+    const isChunkOrCacheError = /(ChunkLoadError|Loading chunk [^ ]+ failed|Failed to fetch dynamically imported module|Importing a module script failed)/i.test(message);
 
     // One-time self-recovery for stale cached assets after a deployment.
     if (isChunkOrCacheError && typeof window !== "undefined") {

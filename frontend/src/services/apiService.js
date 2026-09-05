@@ -96,16 +96,6 @@ const normalizeFallback = (value) => {
 let cachedRazorpayKeyId = null;
 
 const getRazorpayKeyId = async () => {
-  const reactEnvKey = String(process.env.REACT_APP_RAZORPAY_KEY_ID || "").trim();
-  const viteEnvKey = String(process.env.VITE_RAZORPAY_KEY_ID || "").trim();
-  const envKey = reactEnvKey || viteEnvKey;
-
-  if (envKey) {
-    cachedRazorpayKeyId = envKey;
-    logDebug("[razorpay] using env key");
-    return envKey;
-  }
-
   if (cachedRazorpayKeyId) {
     logDebug("[razorpay] using cached key");
     return cachedRazorpayKeyId;
@@ -158,7 +148,7 @@ const getRazorpayKeyId = async () => {
     logDebug("[razorpay] direct fetch also failed:", err.message);
   }
 
-  const message = lastError?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID or enable /razorpay/config on the API server.";
+  const message = lastError?.message || "Razorpay public key unavailable from the payment server.";
   throw new Error(message);
 };
 
@@ -320,7 +310,11 @@ const request = async (config) => {
       }
     }
 
-    throw new Error(message);
+    const apiError = new Error(message);
+    apiError.status = status;
+    apiError.code = error?.code || "";
+    apiError.requestUrl = requestUrl;
+    throw apiError;
   }
 };
 
@@ -392,12 +386,12 @@ const apiService = {
   placeOrder: (data) => request({ url: "/orders", method: "POST", data }),
   getMyOrders: () => request({ url: "/orders/my", method: "GET" }),
   getOrder: (id) => request({ url: `/orders/${id}`, method: "GET" }),
-  getAllOrders: (params = {}) => request({ url: "/orders/all", method: "GET", params }),
+  getAllOrders: (params = {}) => request({ url: "/orders/all", method: "GET", params, skipAuthResetOn401: true }),
   trackOrder: (trackingId) => request({ url: `/orders/track/${trackingId}`, method: "GET" }),
   updateOrderStatus: (id, status, message) => request({ url: `/orders/update/${id}`, method: "PUT", data: { status, message } }),
   deleteOrder: (id) => request({ url: `/orders/${id}`, method: "DELETE" }),
 
-  getAllUsers: (params = {}) => request({ url: "/users", method: "GET", params }),
+  getAllUsers: (params = {}) => request({ url: "/users", method: "GET", params, skipAuthResetOn401: true }),
   getUserDetail: (id) => request({ url: `/users/${id}/detail`, method: "GET" }),
   deleteUser: (id) => request({ url: `/users/${id}`, method: "DELETE" }),
 

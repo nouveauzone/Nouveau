@@ -53,7 +53,12 @@ const orderSchema = new mongoose.Schema(
     // ── Payment ───────────────────────────────────────────────────────────
     paymentMethod: { type: String, default: "COD" },
     paymentStatus: { type: String, enum: ["pending", "paid", "failed"], default: "pending" },
-    paymentId:     { type: String, default: "" },
+    paymentId:     { type: String, default: undefined },
+    razorpayOrderId: { type: String, default: "", index: true },
+    razorpayAmount: { type: Number, default: 0 },
+    razorpayCurrency: { type: String, default: "INR", uppercase: true },
+    paymentConfirmedAt: { type: Date },
+    paymentNotificationSentAt: { type: Date },
 
     // ── Totals ────────────────────────────────────────────────────────────
     subtotal:       { type: Number, default: 0 },
@@ -76,7 +81,7 @@ const orderSchema = new mongoose.Schema(
 orderSchema.pre("save", function (next) {
   if (this.isNew) {
     const defaultMessage = this.orderStatus === "Awaiting Payment Verification"
-      ? "Order received. Waiting for UPI payment verification."
+      ? "Order received. Waiting for payment verification."
       : "Order placed successfully.";
 
     this.statusHistory.push({ status: this.orderStatus, message: defaultMessage });
@@ -89,5 +94,6 @@ orderSchema.pre("save", function (next) {
 
 orderSchema.index({ userId: 1, createdAt: -1 });
 orderSchema.index({ orderStatus: 1, createdAt: -1 });
+orderSchema.index({ paymentId: 1 }, { unique: true, partialFilterExpression: { paymentId: { $gt: "" } } });
 
 module.exports = mongoose.model("Order", orderSchema);

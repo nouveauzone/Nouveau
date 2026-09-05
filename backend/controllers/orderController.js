@@ -8,6 +8,17 @@ const { sendOrderEmail, customerOrderConfirmationHTML, shippedEmailHTML } = requ
 const { calculateOrderTotals } = require("../services/pricingService");
 const { normalizeOrderOutput } = require("../utils/imageUrl");
 const { isReturningCustomer, calculateReturningCustomerDiscount } = require("../services/customerDiscountService");
+const Razorpay = require("razorpay");
+
+const getRazorpayClient = () => {
+  const keyId = String(process.env.RAZORPAY_KEY_ID || "").trim();
+  const keySecret = String(process.env.RAZORPAY_KEY_SECRET || "").trim();
+  if (!keyId || !keySecret) throw new Error("Razorpay is not configured on the server.");
+  if (process.env.NODE_ENV === "production" && !keyId.startsWith("rzp_live_")) {
+    throw new Error("Production Razorpay Key ID must be a live key.");
+  }
+  return new Razorpay({ key_id: keyId, key_secret: keySecret });
+};
 
 const hasSuspiciousUpiPattern = (value) => {
   if (!/^\d{12}$/.test(value)) return true;
@@ -28,7 +39,7 @@ const normalizeSizeLabel = (value) => {
 // POST /api/orders/create  — place order (alias for POST /api/orders)
 // ─────────────────────────────────────────────────────────────────────────────
 exports.createOrder = asyncHandler(async (req, res) => {
-  const { items, products, shippingAddress, paymentMethod, paymentReference, couponCode, shippingCurrency, currencyCode, exchangeRate } = req.body;
+  const { items, products, shippingAddress, paymentMethod, paymentReference, razorpayOrderId, couponCode, shippingCurrency, currencyCode, exchangeRate } = req.body;
   const orderArray = products || items;
   if (!orderArray?.length) return res.status(400).json({ message: "No items in order" });
 
@@ -42,6 +53,11 @@ exports.createOrder = asyncHandler(async (req, res) => {
   const isUpiOrder = normalizedPaymentMethod === "UPI";
   const isRazorpayOrder = normalizedPaymentMethod === "RAZORPAY";
   const normalizedPaymentReference = String(paymentReference || "").trim();
+  const normalizedRazorpayOrderId = String(razorpayOrderId || "").trim();
+
+  if (isRazorpayOrder) {
+    return res.status(400).json({ message: "Razorpay orders must be created through the secure checkout endpoint." });
+  }
 
   const isValidUpiReference = /^\d{12}$/.test(normalizedPaymentReference);
   const isValidRazorpayReference = /^[A-Za-z0-9\-_]{6,64}$/.test(normalizedPaymentReference);
@@ -50,6 +66,26 @@ exports.createOrder = asyncHandler(async (req, res) => {
     return res.status(400).json({
       message: "Valid payment reference is required before placing order.",
     });
+  }
+
+  if (isRazorpayOrder) {
+    if (!/^order_[A-Za-z0-9]+$/.test(normalizedRazorpayOrderId)) {
+      return res.status(400).json({ message: "Valid Razorpay order ID is required before placing an online order." });
+    }
+
+    const existingPayment = await Order.findOne({ paymentId: normalizedPaymentReference }).lean();
+    if (existingPayment) {
+      return res.status(409).json({ message: "This Razorpay payment has already been used for an order." });
+    }
+
+    try {
+      const payment = await getRazorpayClient().payments.fetch(normalizedPaymentReference);
+      if (payment?.status !== "captured" || payment?.order_id !== normalizedRazorpayOrderId) {
+        return res.status(400).json({ message: "Razorpay payment is not captured for this order." });
+      }
+    } catch (error) {
+      return res.status(400).json({ message: "Unable to confirm the Razorpay payment." });
+    }
   }
 
   if (isUpiOrder && hasSuspiciousUpiPattern(normalizedPaymentReference)) {
@@ -141,6 +177,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
         paymentMethod: normalizedPaymentMethod,
         paymentStatus: isUpiOrder ? "pending" : "paid",
         paymentId: (isUpiOrder || isRazorpayOrder) ? normalizedPaymentReference : "",
+        razorpayOrderId: isRazorpayOrder ? normalizedRazorpayOrderId : "",
         orderStatus: initialStatus,
         couponCode:    totals.couponCode,
         subtotal:      totals.subtotal,

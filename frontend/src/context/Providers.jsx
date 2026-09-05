@@ -344,6 +344,7 @@ export default function Providers({ children }) {
         shippingCurrency: shippingDetails.currencyCode || "INR",
         exchangeRate: shippingDetails.exchangeRate || 1,
         shippingCountry: shippingDetails.shippingCountry || "",
+        razorpayOrderId: shippingDetails.razorpayOrderId || "",
         subtotal, shippingCharge, total,
       };
       const backendOrder = await API.placeOrder(orderData);

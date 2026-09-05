@@ -36,7 +36,7 @@ const SHIPPING_COUNTRY_LABELS = {
 
 export default function CheckoutPage({ setPage }) {
   const { cart, dispatch: cartDispatch } = useContext(CartContext);
-  const { placeOrder, refreshMyOrders } = useContext(AppDataContext);
+  const { refreshMyOrders } = useContext(AppDataContext);
   const toast = useContext(ToastContext);
   const { isAuthenticated, token } = useContext(AuthContext);
   const {
@@ -151,7 +151,7 @@ const total =
     return candidate;
   };
 
-  const handleRazorpaySuccess = async ({ paymentId, verification, verificationError }) => {
+  const handleRazorpaySuccess = async ({ verification, verificationError }) => {
     if (processing) return;
 
     setProcessing(true);
@@ -164,41 +164,13 @@ const total =
         return;
       }
 
-      if (verificationError) {
-        const message = String(verificationError?.message || "");
-        if (/invalid signature/i.test(message)) {
-          throw new Error("Payment verification failed. Please contact support with your payment ID.");
-        }
-        toast("Payment received. Finalizing your order...", "warning");
+      if (verificationError || !verification?.success) {
+        throw new Error("Payment verification failed. Please contact support with your payment ID.");
       }
 
-      let orderId = getVerificationOrderId(verification);
-
-      if (!orderId) {
-        if (!Array.isArray(cart) || cart.length === 0) {
-          throw new Error("Payment received, but the cart is empty. Please contact support with your payment ID.");
-        }
-
-        const reference = String(
-          paymentId ||
-          verification?.razorpay_payment_id ||
-          verification?.paymentId ||
-          ""
-        ).trim();
-
-        if (!reference) {
-          throw new Error("Missing Razorpay payment reference. Please contact support.");
-        }
-
-        orderId = await placeOrder(address, cart, "RAZORPAY", reference, {
-          currencyCode,
-          exchangeRate,
-          shippingCharge: shipping,
-          shippingCountry,
-        });
-      } else {
-        cartDispatch({ type: "CLEAR" });
-      }
+      const orderId = getVerificationOrderId(verification);
+      if (!orderId) throw new Error("Payment verified but the pending order was not found. Please contact support.");
+      cartDispatch({ type: "CLEAR" });
 
       if (!orderId) {
         throw new Error("Order ID missing after payment. Please contact support.");

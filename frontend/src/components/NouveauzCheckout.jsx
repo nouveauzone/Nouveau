@@ -32,13 +32,13 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
     try {
       keyId = await apiService.getRazorpayKeyId();
     } catch (error) {
-      const message = error?.message || "Razorpay public key unavailable. Set REACT_APP_RAZORPAY_KEY_ID in the frontend build env or enable the backend /razorpay/config route.";
+      const message = error?.message || "Razorpay public key unavailable from the payment server.";
       onFailure?.({ reason: "missing-key", description: message });
       return;
     }
 
     if (!keyId) {
-      const message = "Razorpay key missing. Add REACT_APP_RAZORPAY_KEY_ID in frontend environment.";
+      const message = "Razorpay public key is unavailable from the payment server.";
       onFailure?.({ reason: "missing-key", description: message });
       return;
     }
@@ -56,17 +56,10 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
     try {
       await loadRazorpayScript();
       
-      // Calculate subtotal for discount calculation
-      const subtotal = cartItems.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
-      
-      // Create Razorpay order with amount and pass subtotal for discount calculation
-      const gatewayOrder = await apiService.createRazorpayOrder({ 
-        amount: totalPrice,
-        subtotal: subtotal,
-        items: cartItems,
-        currencyCode,
-        exchangeRate,
-        shippingCharge,
+      const gatewayOrder = await apiService.createRazorpayOrder({
+        items: cartItems.map((item) => ({ product: item._id, size: item.size, qty: item.qty })),
+        shippingAddress: customerInfo,
+        shippingCountry,
       }, token);
       
       const orderId = gatewayOrder?.order?.id || gatewayOrder?.orderId || gatewayOrder?.id || gatewayOrder?.order?.orderId;
@@ -134,39 +127,26 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
               // ID there throws a CastError, breaking verification. No pre-existing
               // Mongo order exists yet at this point; it's created via placeOrder()
               // right after this call succeeds.
-              items: cartItems.map((item) => ({
-                product: item._id,
-                title: item.title,
-                image: item.images?.[0] || "",
-                price: item.price,
-                size: item.size,
-                qty: item.qty,
-              })),
-              shippingAddress: customerInfo,
-              paymentMethod: "RAZORPAY",
-              paymentReference: response.razorpay_payment_id,
-              total: Number(amount),
-              currencyCode,
-              shippingCurrency: currencyCode,
-              exchangeRate,
-              shippingCharge,
-              shippingCountry,
+              orderId: gatewayOrder.databaseOrderId,
             }, token);
           } catch (error) {
             verificationError = error;
             console.error("[razorpay] verify failed", error);
+            onFailure?.({ reason: "verification_failed", description: error?.message || "Payment verification failed" });
+            return;
+          }
+
+          try {
+            await Promise.resolve(onSuccess?.({
+              paymentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+              signature: response.razorpay_signature,
+              verification,
+              verificationError,
+            }));
+          } catch (error) {
+            console.error("[razorpay] post-payment handler failed", error);
           } finally {
-            try {
-              await Promise.resolve(onSuccess?.({
-                paymentId: response.razorpay_payment_id,
-                orderId: response.razorpay_order_id,
-                signature: response.razorpay_signature,
-                verification,
-                verificationError,
-              }));
-            } catch (error) {
-              console.error("[razorpay] post-payment handler failed", error);
-            }
             setLoading(false);
           }
         },

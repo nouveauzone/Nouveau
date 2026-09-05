@@ -277,6 +277,16 @@ const getStoredProducts = () => {
   }
 };
 
+const getOrdersLoadError = (error) => {
+  const status = Number(error?.status || 0);
+  if (status === 401) return "Orders could not be loaded because the admin session is missing or expired. Please sign in again.";
+  if (status === 403) return "Orders could not be loaded because this account is not authorized as an admin.";
+  if (status === 404) return "Orders API was not found. Verify the production API URL points to the backend service.";
+  if (status >= 500) return `Orders service error (${status}). Please try again or check the backend deployment.`;
+  if (error?.code === "ERR_NETWORK" || !status) return "Orders could not be reached. Check the production API connection and try again.";
+  return error?.message || "Orders could not be loaded. Please try again.";
+};
+
 export default function AdminPage({ setPage }) {
   const { dispatch: authDispatch, isAuthenticated, user, token } = useContext(AuthContext);
   const { allOrders: ctxAllOrders = [], updateOrderStatus: ctxUpdateStatus, deleteOrderLocal, localUsers: ctxLocalUsers = [] } = useContext(AppDataContext) || {};
@@ -322,6 +332,8 @@ export default function AdminPage({ setPage }) {
     }
   }, [products]);
   const [orders, setOrders] = useState([]);
+  const [ordersError, setOrdersError] = useState("");
+  const [ordersLoaded, setOrdersLoaded] = useState(false);
   const [users, setUsers] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
   const [orderPage, setOrderPage] = useState(1);
@@ -372,9 +384,15 @@ export default function AdminPage({ setPage }) {
         API.getProducts(),
       ]);
 
-      const backendOrderList = backendOrders.status === "fulfilled" ? backendOrders.value : [];
-      const localOrderList = Array.isArray(ctxAllOrders) ? ctxAllOrders : [];
-      setOrders(mergeById(backendOrderList, localOrderList));
+      if (backendOrders.status === "fulfilled") {
+        const backendOrderList = backendOrders.value;
+        const localOrderList = Array.isArray(ctxAllOrders) ? ctxAllOrders : [];
+        setOrders(mergeById(backendOrderList, localOrderList));
+        setOrdersError("");
+        setOrdersLoaded(true);
+      } else {
+        setOrdersError(getOrdersLoadError(backendOrders.reason));
+      }
 
       const backendUserList = backendUsers.status === "fulfilled" ? backendUsers.value : [];
       const localUserList = Array.isArray(ctxLocalUsers) ? ctxLocalUsers : [];
@@ -388,7 +406,9 @@ export default function AdminPage({ setPage }) {
           try { localStorage.setItem('nouveau_local_products', JSON.stringify(backendProducts)); } catch { }
         }
       }
-    } catch { /* backend not available - using local data */ }
+    } catch (error) {
+      setOrdersError(getOrdersLoadError(error));
+    }
     setLoadingData(false);
   };
 
@@ -1090,6 +1110,15 @@ export default function AdminPage({ setPage }) {
         {/* ══ ORDERS ═════════════════════════════════════════════════════════ */}
         {tab === "orders" && (
           <div>
+            {ordersError && (
+              <div role="alert" style={{ background: "#fff4e5", border: "1px solid #f0b36b", color: "#7a4100", borderRadius: "10px", padding: "14px 16px", marginBottom: "20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+                <div>
+                  <strong style={{ display: "block", fontFamily: "'Poppins',sans-serif", fontSize: "12px", marginBottom: "4px" }}>Orders unavailable</strong>
+                  <span style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px" }}>{ordersError}</span>
+                </div>
+                <button type="button" onClick={loadData} style={{ background: "transparent", border: "1px solid #b9782f", color: "#7a4100", borderRadius: "8px", padding: "8px 12px", cursor: "pointer", fontFamily: "'Poppins',sans-serif", fontSize: "11px", fontWeight: 700 }}>Retry</button>
+              </div>
+            )}
             {selectedOrder && (
               <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 200, display: "flex", alignItems: isMobile ? "flex-end" : "center", justifyContent: "center", padding: isMobile ? "0" : "20px" }}>
                 <div style={{ background: "#fff", borderRadius: isMobile ? "20px 20px 0 0" : "20px", padding: isMobile ? "22px 18px 24px" : "32px", maxWidth: isMobile ? "100%" : "580px", width: "100%", maxHeight: isMobile ? "90vh" : "85vh", overflowY: "auto", position: "relative" }}>
@@ -1194,11 +1223,11 @@ export default function AdminPage({ setPage }) {
             <div style={{ marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", gap: "12px", flexWrap: "wrap" }}>
               <div>
                 <h1 style={{ fontFamily: "'Playfair Display',serif", fontSize: "30px", marginBottom: "2px" }}>Orders</h1>
-                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textLight }}>{filteredOrders.length} orders found</p>
+                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textLight }}>{!ordersLoaded && ordersError ? "Orders unavailable" : `${filteredOrders.length} orders found`}</p>
               </div>
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                <span style={{ background: `${THEME.crimson}10`, color: THEME.crimson, border: `1px solid ${THEME.crimson}20`, borderRadius: "99px", padding: "8px 12px", fontFamily: "'Poppins',sans-serif", fontSize: "11px", fontWeight: 700 }}>Total: {allOrders.length}</span>
-                <span style={{ background: `${THEME.gold}15`, color: THEME.goldDark, border: `1px solid ${THEME.gold}25`, borderRadius: "99px", padding: "8px 12px", fontFamily: "'Poppins',sans-serif", fontSize: "11px", fontWeight: 700 }}>Revenue: ₹{totalRevenue.toLocaleString("en-IN")}</span>
+                <span style={{ background: `${THEME.crimson}10`, color: THEME.crimson, border: `1px solid ${THEME.crimson}20`, borderRadius: "99px", padding: "8px 12px", fontFamily: "'Poppins',sans-serif", fontSize: "11px", fontWeight: 700 }}>Total: {!ordersLoaded && ordersError ? "unavailable" : allOrders.length}</span>
+                <span style={{ background: `${THEME.gold}15`, color: THEME.goldDark, border: `1px solid ${THEME.gold}25`, borderRadius: "99px", padding: "8px 12px", fontFamily: "'Poppins',sans-serif", fontSize: "11px", fontWeight: 700 }}>Revenue: {!ordersLoaded && ordersError ? "unavailable" : `₹${totalRevenue.toLocaleString("en-IN")}`}</span>
               </div>
             </div>
             <div style={{ display: "flex", gap: "10px", marginBottom: "18px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>

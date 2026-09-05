@@ -92,6 +92,9 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   message: { message: "Too many login attempts, please try again after 15 minutes." },
 });
+// Must precede express.json() so Razorpay's webhook HMAC is calculated from
+// the exact bytes Razorpay sent. Configure this exact URL in Razorpay.
+app.use("/api/razorpay/webhook", express.raw({ type: "application/json" }));
 app.use(express.json({ limit:"10mb" }));
 // Twilio webhook needs urlencoded body
 app.use("/api/whatsapp/webhook", express.urlencoded({ extended: false }));

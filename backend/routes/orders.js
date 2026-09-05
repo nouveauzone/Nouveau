@@ -24,6 +24,7 @@ const orderCreateValidation = [
   body("items").optional().isArray(),
   body("products").optional().isArray(),
   body("paymentMethod").optional().isIn(["COD", "UPI", "RAZORPAY", "cod", "upi", "razorpay"]).withMessage("Unsupported payment method"),
+  body("razorpayOrderId").optional().isString().trim(),
 
   body("shippingAddress.name").trim().notEmpty(),
   body("shippingAddress.phone").trim().notEmpty(),
@@ -68,6 +69,9 @@ const orderCreateValidation = [
 
     if (method === "RAZORPAY" && !/^[A-Za-z0-9\-_]{6,64}$/.test(ref)) {
       throw new Error("Valid Razorpay paymentReference is required for online orders");
+    }
+    if (method === "RAZORPAY" && !/^order_[A-Za-z0-9]+$/.test(String(value?.razorpayOrderId || ""))) {
+      throw new Error("Valid Razorpay order ID is required for online orders");
     }
     return true;
   }),
