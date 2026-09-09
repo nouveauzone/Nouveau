@@ -13,6 +13,7 @@ const imageFileFilter = (req, file, cb) => {
 };
 
 const hasCloudinary = Boolean(
+  process.env.CLOUDINARY_URL ||
   process.env.CLOUDINARY_NAME &&
   process.env.CLOUDINARY_API_KEY &&
   process.env.CLOUDINARY_API_SECRET
