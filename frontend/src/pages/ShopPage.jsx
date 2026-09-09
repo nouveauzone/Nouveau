@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { PRODUCTS as INITIAL_PRODUCTS } from "../data/products";
 import { THEME } from "../styles/theme";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
@@ -9,13 +8,7 @@ import { fixImageUrl } from "../utils/imageUrl";
 
 const CATS = ["All", "Indian Ethnic Wear", "Indian Western Wear"];
 
-const seedById = INITIAL_PRODUCTS.reduce((acc, item) => {
-  acc[item._id] = item;
-  return acc;
-}, {});
-
 const norm = (p) => {
-  const fallbackSeed = seedById[p?._id];
   const rawSizes = Array.isArray(p?.sizes) ? p.sizes : [];
   const normalizedSizes = rawSizes
     .map((entry) => {
@@ -29,8 +22,7 @@ const norm = (p) => {
 
   if (normalizedSizes.length === 0) {
     const legacyStock = p?.stock != null ? Math.max(0, Number(p.stock) || 0) : null;
-    const seedLegacyStock = fallbackSeed?.stock != null ? Math.max(0, Number(fallbackSeed.stock) || 0) : null;
-    const migrated = legacyStock != null ? legacyStock : seedLegacyStock != null ? seedLegacyStock : 0;
+    const migrated = legacyStock != null ? legacyStock : 0;
     normalizedSizes.push({ size: "Free Size", quantity: migrated });
   }
 
@@ -64,21 +56,9 @@ const dedupeProducts = (items = []) => {
   return merged;
 };
 
-// Get products from localStorage OR fallback to built-in 16 products
-const getLocalProducts = () => {
-  try {
-    const s = localStorage.getItem("nouveau_local_products");
-    if (s) {
-      const p = JSON.parse(s);
-      if (Array.isArray(p) && p.length > 0) return dedupeProducts(p);
-    }
-  } catch { }
-  return dedupeProducts(INITIAL_PRODUCTS);
-};
-
 export default function ShopPage({ setPage, setSelectedProduct, initialCategory }) {
 
-  const [products, setProducts] = useState(getLocalProducts);
+  const [products, setProducts] = useState([]);
   const [cat, setCat] = useState(initialCategory || "All");
   const [search, setSearch] = useState("");
   const [maxPrice, setMaxPrice] = useState(20000);
@@ -90,39 +70,17 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
   useEffect(() => {
     let alive = true;
 
-    API.getProducts()
+    const refreshProducts = () => API.getProducts()
       .then((data) => {
         if (!alive) return;
-        const list = data?.products?.length ? data.products
-          : Array.isArray(data) && data.length ? data : null;
-        if (list && list.length > 0) {
-          const normalized = dedupeProducts(list);
-          setProducts(normalized);
-          try { localStorage.setItem("nouveau_local_products", JSON.stringify(normalized)); } catch { }
-        }
-        // else: backend returned empty → keep showing local products (no error shown)
-      })
-      .catch(() => {
-        // Backend down/slow → silently keep local products, never show error
+        const list = Array.isArray(data?.products) ? data.products : Array.isArray(data) ? data : [];
+        setProducts(dedupeProducts(list));
       });
+    refreshProducts().catch(() => {});
 
     // Listen for admin panel changes
-    const onStorage = (e) => {
-      if (e.key === "nouveau_local_products" && e.newValue) {
-        try {
-          const p = JSON.parse(e.newValue);
-          if (Array.isArray(p) && p.length > 0) setProducts(dedupeProducts(p));
-        } catch { }
-      }
-    };
-    const onProductsUpdated = () => {
-      try {
-        const s = localStorage.getItem("nouveau_local_products");
-        if (!s) return;
-        const p = JSON.parse(s);
-        if (Array.isArray(p) && p.length > 0) setProducts(dedupeProducts(p));
-      } catch { }
-    };
+    const onStorage = () => { refreshProducts().catch(() => {}); };
+    const onProductsUpdated = () => { refreshProducts().catch(() => {}); };
     window.addEventListener("storage", onStorage);
     window.addEventListener("nouveau:products-updated", onProductsUpdated);
     return () => {

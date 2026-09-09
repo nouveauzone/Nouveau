@@ -119,6 +119,11 @@ const cleanText = (value, fallback = "") => {
   return raw;
 };
 
+const cleanDescription = (value, fallback = "") => {
+  const raw = typeof value === "string" ? value.trim() : "";
+  return raw && !BAD_TEXT_RE.test(raw) ? raw : fallback;
+};
+
 const cleanImages = (images) => {
   if (!Array.isArray(images) || !images.length) return ["/product1.jpeg"];
   const filtered = images.filter((img) => {
@@ -183,7 +188,7 @@ const normalizeProduct = (product) => {
     ...product,
     title: cleanText(product.title, "Nouveau Signature Piece"),
     subcategory: cleanText(product.subcategory, "Women's Wear"),
-    description: cleanText(product.description, "Elegant premium womenswear crafted with attention to detail and all-day comfort."),
+    description: cleanDescription(product.description, "Elegant premium womenswear crafted with attention to detail and all-day comfort."),
     images: cleanImages(product.images),
     category: category === "Indian Ethnic Wear" || category === "Indian Western Wear" ? category : "Indian Ethnic Wear",
     price: Number(product.price) || 0,

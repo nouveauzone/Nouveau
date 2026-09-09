@@ -24,6 +24,11 @@ const cleanText = (value, fallback = "") => {
   return raw;
 };
 
+const cleanDescription = (value, fallback = "") => {
+  const raw = typeof value === "string" ? value.trim() : "";
+  return raw && !BAD_TEXT_RE.test(raw) ? raw : fallback;
+};
+
 const cleanCategory = (value) => {
   const normalized = normalizeCategory(value);
   if (normalized === "Indian Ethnic Wear" || normalized === "Indian Western Wear") return normalized;
@@ -129,7 +134,7 @@ export default function ProductPage({ product, setPage }) {
   const safeCategory = cleanCategory(displayProduct?.category);
   const safeSubcategory = cleanText(displayProduct?.subcategory, "Women's Wear");
   const safeMaterial = cleanText(displayProduct?.material || "", "");
-  const safeDescription = cleanText(
+  const safeDescription = cleanDescription(
     displayProduct?.description,
     "Elegant premium womenswear crafted with attention to detail and all-day comfort."
   );
