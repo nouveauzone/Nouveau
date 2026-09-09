@@ -100,11 +100,12 @@ const normalizeSizeInventory = (sizes) => {
 const normalizeProductInput = (payload = {}) => {
   if (!payload || typeof payload !== "object") return payload;
 
-  const { stock: _ignoredStock, ...rest } = payload;
+  const { stock: _ignoredStock, isNew, ...rest } = payload;
   const normalizedSizes = normalizeSizeInventory(rest.sizes);
 
   return {
     ...rest,
+    ...(isNew !== undefined ? { _isNew: Boolean(isNew) } : {}),
     images: Array.isArray(rest.images)
       ? normalizeImageListForStorage(rest.images)
       : rest.images,
