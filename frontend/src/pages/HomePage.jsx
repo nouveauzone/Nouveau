@@ -14,6 +14,7 @@ import { fixImageUrl } from "../utils/imageUrl";
 
 const normalizeProduct = (product = {}) => ({
   ...product,
+  isNew: Boolean(product?.isNew ?? product?._isNew),
   category: normalizeCategory(product?.category),
   images: Array.isArray(product?.images) && product.images.length
     ? product.images.map((image) => fixImageUrl(image))

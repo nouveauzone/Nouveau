@@ -186,6 +186,7 @@ const normalizeProduct = (product) => {
   const sizes = normalizeSizeRows(product.sizes);
   return {
     ...product,
+    isNew: Boolean(product?.isNew ?? product?._isNew),
     title: cleanText(product.title, "Nouveau Signature Piece"),
     subcategory: cleanText(product.subcategory, "Women's Wear"),
     description: cleanDescription(product.description, "Elegant premium womenswear crafted with attention to detail and all-day comfort."),

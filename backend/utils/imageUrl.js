@@ -126,6 +126,7 @@ const normalizeProductOutput = (product = {}) => {
 
   return {
     ...rest,
+    isNew: Boolean(rest.isNew ?? rest._isNew),
     images,
     sizes: normalizedSizes.length || Array.isArray(rest.sizes)
       ? normalizedSizes

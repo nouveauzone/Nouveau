@@ -34,6 +34,7 @@ const normalizeSizes = (product) => {
 
 const normalizeProduct = (product) => ({
   ...product,
+  isNew: Boolean(product?.isNew ?? product?._isNew),
   images: Array.isArray(product?.images) && product.images.length ? product.images : ["/ethnic1.jpeg"],
   price: Number(product?.price) || 0,
   originalPrice: Number(product?.originalPrice) || Number(product?.price) || 0,
@@ -60,7 +61,7 @@ const dedupeProducts = (items = []) => {
 
 const prepareProductWritePayload = (data = {}) => {
   const normalized = normalizeProduct(data);
-  const { _id, id, rating, reviews, avgRating, numReviews, stock, createdAt, updatedAt, __v, ...rest } = normalized;
+  const { _id, id, rating, reviews, avgRating, numReviews, stock, createdAt, updatedAt, __v, _isNew, ...rest } = normalized;
 
   const sizes = normalizeSizes({ sizes: rest.sizes })
     .map((entry) => ({
