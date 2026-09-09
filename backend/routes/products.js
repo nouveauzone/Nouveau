@@ -60,9 +60,7 @@ const coerceSizeInventory = (value) => {
 };
 
 const isValidSizeInventory = (sizes) => {
-  if (!Array.isArray(sizes) || sizes.length === 0) {
-    return false;
-  }
+  if (!Array.isArray(sizes)) return false;
 
   return sizes.every((entry) => {
     if (!entry || typeof entry !== "object") return false;

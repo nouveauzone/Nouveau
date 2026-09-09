@@ -674,12 +674,6 @@ export default function AdminPage({ setPage }) {
       })
       .filter(Boolean);
 
-    // Validate: at least one size with quantity > 0 is required.
-    if (!Array.isArray(finalSizes) || finalSizes.length === 0) {
-      toast("Please add at least one size with quantity > 0", "error");
-      return;
-    }
-
     console.log("[admin:saveProduct] Built sizes array:", finalSizes);
     console.log("[admin:saveProduct] Total stock:", finalSizes.reduce((sum, s) => sum + s.quantity, 0));
 
@@ -751,8 +745,8 @@ export default function AdminPage({ setPage }) {
       if (!Array.isArray(payload.sizes)) {
         throw new Error("Sizes must be an array");
       }
-      const hasInvalidSize = payload.sizes.some(s => 
-        !s.size || typeof s.quantity !== "number" || s.quantity <= 0
+      const hasInvalidSize = payload.sizes.some(s =>
+        !s.size || typeof s.quantity !== "number" || s.quantity < 0
       );
       if (hasInvalidSize) {
         throw new Error("Invalid size format. Each size must have: { size: string, quantity: number > 0 }");
