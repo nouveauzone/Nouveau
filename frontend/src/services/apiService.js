@@ -94,6 +94,10 @@ const normalizeFallback = (value) => {
 };
 
 let cachedRazorpayKeyId = null;
+let productsCache = null;
+let productsCacheAt = 0;
+let productsRequest = null;
+const PRODUCTS_CACHE_TTL = 5000;
 
 const getRazorpayKeyId = async () => {
   if (cachedRazorpayKeyId) {
@@ -318,6 +322,11 @@ const request = async (config) => {
   }
 };
 
+const invalidateProductsCache = () => {
+  productsCache = null;
+  productsCacheAt = 0;
+};
+
 const apiService = {
   register: (data) => {
     logInfo("[auth] register request", { email: data?.email });
@@ -331,20 +340,50 @@ const apiService = {
   getMe: () => request({ url: "/auth/me", method: "GET" }),
 
   getProducts: async (params = {}) => {
-    const data = await request({ url: "/products", method: "GET", params });
-    const backendProducts = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.products)
-        ? data.products
-        : [];
+    const hasParams = Object.keys(params || {}).length > 0;
+    const cacheIsFresh = !hasParams && productsCache && Date.now() - productsCacheAt < PRODUCTS_CACHE_TTL;
+    if (cacheIsFresh) return productsCache;
 
-    return dedupeProducts(backendProducts);
+    if (!hasParams && productsRequest) return productsRequest;
+
+    const load = request({ url: "/products", method: "GET", params })
+      .then((data) => {
+        const backendProducts = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.products)
+            ? data.products
+            : [];
+        const result = dedupeProducts(backendProducts);
+        if (!hasParams) {
+          productsCache = result;
+          productsCacheAt = Date.now();
+        }
+        return result;
+      })
+      .finally(() => {
+        if (!hasParams) productsRequest = null;
+      });
+
+    if (!hasParams) productsRequest = load;
+    return load;
   },
   getProduct: (id) => request({ url: `/products/${id}`, method: "GET" }),
   getRazorpayKeyId: () => getRazorpayKeyId(),
-  createProduct: (data) => request({ url: "/products", method: "POST", data: prepareProductWritePayload(data) }),
-  updateProduct: (id, data) => request({ url: `/products/${id}`, method: "PUT", data: prepareProductWritePayload(data) }),
-  deleteProduct: (id) => request({ url: `/products/${id}`, method: "DELETE" }),
+  createProduct: async (data) => {
+    const result = await request({ url: "/products", method: "POST", data: prepareProductWritePayload(data) });
+    invalidateProductsCache();
+    return result;
+  },
+  updateProduct: async (id, data) => {
+    const result = await request({ url: `/products/${id}`, method: "PUT", data: prepareProductWritePayload(data) });
+    invalidateProductsCache();
+    return result;
+  },
+  deleteProduct: async (id) => {
+    const result = await request({ url: `/products/${id}`, method: "DELETE" });
+    invalidateProductsCache();
+    return result;
+  },
   addReview: (id, data) => request({ url: `/reviews/${id}`, method: "POST", data }),
   uploadImages: (formData) => request({ url: "/upload", method: "POST", data: formData }),
   getCurrencyInfo: async () => {
