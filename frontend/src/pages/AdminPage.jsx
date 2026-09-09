@@ -759,7 +759,12 @@ export default function AdminPage({ setPage }) {
       }
       
       if (isEdit) {
-        await API.updateProduct(editingId, payload);
+        const updatedProduct = await API.updateProduct(editingId, payload);
+        if (updatedProduct?._id) {
+          setProducts((prev) => prev.map((product) => (
+            product._id === editingId ? normalizeProduct(updatedProduct) : product
+          )));
+        }
         savedOnBackend = true;
       } else {
         // Do not send local temp _id to backend; MongoDB will generate a valid ObjectId.
