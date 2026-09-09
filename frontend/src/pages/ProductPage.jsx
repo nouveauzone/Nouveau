@@ -88,7 +88,9 @@ function StarPicker({ value, onChange }) {
 }
 
 export default function ProductPage({ product, setPage }) {
-  const initialSizes = normalizeSizeInventory(product?.sizes);
+  const [liveProduct, setLiveProduct] = useState(product);
+  const displayProduct = liveProduct || product;
+  const initialSizes = normalizeSizeInventory(displayProduct?.sizes);
   const [selectedSize, setSelectedSize] = useState(initialSizes.find((entry) => entry.quantity > 0)?.size || initialSizes[0]?.size || "Free Size");
   const [qty, setQty] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
@@ -100,26 +102,43 @@ export default function ProductPage({ product, setPage }) {
   const [submitting, setSubmitting] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" ? window.innerWidth < 768 : false);
 
+  useEffect(() => {
+    setLiveProduct(product);
+    const productId = product?._id || product?.id;
+    if (!productId) return undefined;
+
+    let active = true;
+    API.getProduct(productId)
+      .then((freshProduct) => {
+        if (active && freshProduct?._id) setLiveProduct(freshProduct);
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, [product]);
+
   const { dispatch: cartDispatch } = useContext(CartContext);
   const { wishlist, toggleWishlist } = useContext(WishlistContext);
   const { isAuthenticated, user } = useContext(AuthContext);
   const { formatPrice, currencyCode } = useContext(CurrencyContext);
   const toast = useContext(ToastContext);
 
-  const safeTitle = cleanText(product?.title, "Nouveau Signature Piece");
-  const safeCategory = cleanCategory(product?.category);
-  const safeSubcategory = cleanText(product?.subcategory, "Women's Wear");
-  const safeMaterial = cleanText(product?.material || "", "");
+  const safeTitle = cleanText(displayProduct?.title, "Nouveau Signature Piece");
+  const safeCategory = cleanCategory(displayProduct?.category);
+  const safeSubcategory = cleanText(displayProduct?.subcategory, "Women's Wear");
+  const safeMaterial = cleanText(displayProduct?.material || "", "");
   const safeDescription = cleanText(
-    product?.description,
+    displayProduct?.description,
     "Elegant premium womenswear crafted with attention to detail and all-day comfort."
   );
-  const safeImages = cleanImages(product?.images).map((img) => fixImageUrl(img));
-  const sizeInventory = normalizeSizeInventory(product?.sizes);
+  const safeImages = cleanImages(displayProduct?.images).map((img) => fixImageUrl(img));
+  const sizeInventory = normalizeSizeInventory(displayProduct?.sizes);
   const safeSizes = sizeInventory.map((entry) => entry.size);
-  const safePrice = Number(product?.price) || 0;
-  const safeOriginalPrice = Number(product?.originalPrice) || safePrice;
-  const safeDiscount = Number(product?.discount) || 0;
+  const safePrice = Number(displayProduct?.price) || 0;
+  const safeOriginalPrice = Number(displayProduct?.originalPrice) || safePrice;
+  const safeDiscount = Number(displayProduct?.discount) || 0;
   const safeStock = sizeInventory.reduce((sum, entry) => sum + Number(entry.quantity || 0), 0);
   const selectedSizeStock = sizeInventory.find((entry) => entry.size === selectedSize)?.quantity || 0;
   const isSoldOut = safeStock <= 0;
@@ -138,7 +157,7 @@ export default function ProductPage({ product, setPage }) {
     }
 
     setQty((current) => Math.min(Math.max(1, current), selectedSizeStock));
-  }, [product, safeSizes, selectedSize, selectedSizeStock]);
+  }, [displayProduct, safeSizes, selectedSize, selectedSizeStock]);
 
   useEffect(() => {
     const handleResize = () => {

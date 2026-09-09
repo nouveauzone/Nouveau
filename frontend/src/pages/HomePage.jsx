@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Hero from "../components/Hero";
-import { PRODUCTS as INITIAL_PRODUCTS } from "../data/products";
 import { THEME } from "../styles/theme";
 import ProductCard from "../components/ProductCard";
 import NouveauLogo from "../components/Logo";
@@ -51,19 +50,6 @@ export default function HomePage({ setPage, setSelectedProduct }) {
   useEffect(() => {
     setIsLoading(true);
     setIsError(false);
-    // First try localStorage (Admin panel changes)
-    try {
-      const saved = localStorage.getItem('nouveau_local_products');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setPRODUCTS(dedupeProducts(parsed));
-          setIsLoading(false);
-          return;
-        }
-      }
-    } catch {}
-    // Then try backend API
     API.getProducts().then((data) => {
       const list = Array.isArray(data?.products)
         ? data.products
@@ -71,14 +57,10 @@ export default function HomePage({ setPage, setSelectedProduct }) {
           ? data
           : [];
 
-      if (list.length > 0) {
-        setPRODUCTS(dedupeProducts(list));
-      } else {
-        setPRODUCTS(dedupeProducts(INITIAL_PRODUCTS));
-      }
+      setPRODUCTS(dedupeProducts(list));
     }).catch(() => {
       setIsError(true);
-      setPRODUCTS(dedupeProducts(INITIAL_PRODUCTS));
+      setPRODUCTS([]);
     }).finally(() => {
       setIsLoading(false);
     });
@@ -86,14 +68,16 @@ export default function HomePage({ setPage, setSelectedProduct }) {
 
   useEffect(() => {
     const handleProductsUpdated = () => {
-      try {
-        const saved = localStorage.getItem("nouveau_local_products");
-        if (!saved) return;
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setPRODUCTS(dedupeProducts(parsed));
-        }
-      } catch { }
+      API.getProducts()
+        .then((data) => {
+          const list = Array.isArray(data?.products)
+            ? data.products
+            : Array.isArray(data)
+              ? data
+              : [];
+          setPRODUCTS(dedupeProducts(list));
+        })
+        .catch(() => {});
     };
 
     window.addEventListener("nouveau:products-updated", handleProductsUpdated);

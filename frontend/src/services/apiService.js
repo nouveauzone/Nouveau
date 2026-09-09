@@ -1,6 +1,5 @@
 import axios from "axios";
 import API_URL from "../config/api";
-import { PRODUCTS as INITIAL_PRODUCTS } from "../data/products";
 import { clearAuthSession } from "../utils/authSession";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -331,22 +330,14 @@ const apiService = {
   getMe: () => request({ url: "/auth/me", method: "GET" }),
 
   getProducts: async (params = {}) => {
-    try {
-      const data = await request({ url: "/products", method: "GET", params });
-      const backendProducts = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.products)
-          ? data.products
-          : [];
+    const data = await request({ url: "/products", method: "GET", params });
+    const backendProducts = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.products)
+        ? data.products
+        : [];
 
-      if (backendProducts.length > 0) {
-        return dedupeProducts(backendProducts);
-      }
-
-      return dedupeProducts(INITIAL_PRODUCTS);
-    } catch {
-      return dedupeProducts(INITIAL_PRODUCTS);
-    }
+    return dedupeProducts(backendProducts);
   },
   getProduct: (id) => request({ url: `/products/${id}`, method: "GET" }),
   getRazorpayKeyId: () => getRazorpayKeyId(),
