@@ -56,9 +56,36 @@ const dedupeProducts = (items = []) => {
   return merged;
 };
 
+// ── Last-known product list, so the shop shows instantly on repeat visits ──
+const SHOP_CACHE_KEY = "nouveau_shop_products_v1";
+const SHOP_CACHE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+const readShopCache = () => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(SHOP_CACHE_KEY) || "null");
+    if (!parsed || !Array.isArray(parsed.items)) return [];
+    if (Date.now() - Number(parsed.at || 0) > SHOP_CACHE_MAX_AGE) return [];
+    return parsed.items;
+  } catch {
+    return [];
+  }
+};
+
+const writeShopCache = (items) => {
+  try {
+    const raw = JSON.stringify({ at: Date.now(), items });
+    if (raw.length < 3000000) localStorage.setItem(SHOP_CACHE_KEY, raw);
+  } catch {
+    /* storage full / unavailable: ignore */
+  }
+};
+
 export default function ShopPage({ setPage, setSelectedProduct, initialCategory }) {
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(readShopCache);
+  const [loading, setLoading] = useState(() => products.length === 0);
+  const [loadError, setLoadError] = useState(false);
+  const [retryTick, setRetryTick] = useState(0);
   const [cat, setCat] = useState(initialCategory || "All");
   const [search, setSearch] = useState("");
   const [maxPrice, setMaxPrice] = useState(20000);
@@ -99,9 +126,18 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
       .then((data) => {
         if (!alive) return;
         const list = Array.isArray(data?.products) ? data.products : Array.isArray(data) ? data : [];
-        setProducts(dedupeProducts(list));
+        const deduped = dedupeProducts(list);
+        setProducts(deduped);
+        setLoadError(false);
+        setLoading(false);
+        if (deduped.length > 0) writeShopCache(deduped);
+      })
+      .catch(() => {
+        if (!alive) return;
+        setLoading(false);
+        setLoadError(true);
       });
-    refreshProducts().catch(() => {});
+    refreshProducts();
 
     // Listen for admin panel changes
     const onStorage = () => { refreshProducts().catch(() => {}); };
@@ -113,7 +149,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("nouveau:products-updated", onProductsUpdated);
     };
-  }, []);
+  }, [retryTick]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -164,6 +200,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
   const ethnicCount = products.filter(p => p.category === "Indian Ethnic Wear").length;
   const westernCount = products.filter(p => p.category === "Indian Western Wear").length;
   const totalCount = products.length;
+  const cnt = (n) => (loading ? "" : ` (${n})`);
   const activeFilterCount = selectedSizes.length + selectedTypes.length;
 
   const clearFilters = () => { setCat("All"); setSearch(""); setMaxPrice(20000); setSortBy("featured"); setSelectedSizes([]); setSelectedTypes([]); };
@@ -213,6 +250,11 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
       <style>{`
         .sp-layout { display: flex; gap: 28px; max-width: 1400px; margin: 0 auto; padding: 40px var(--container-padding); }
         .sp-sidebar { width: 220px; flex-shrink: 0; }
+        .sp-skel { background: #fff; border: 1px solid rgba(201,80,106,0.12); border-radius: 16px; overflow: hidden; padding-bottom: 16px; }
+        .sp-skel-img, .sp-skel-line { background: linear-gradient(90deg,#f6e4ea 25%,#fcf1f4 50%,#f6e4ea 75%); background-size: 200% 100%; animation: sp-shimmer 1.3s infinite linear; }
+        .sp-skel-img { aspect-ratio: 3/4; }
+        .sp-skel-line { height: 12px; border-radius: 6px; margin: 12px 14px 0; }
+        @keyframes sp-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .sp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(clamp(140px,36vw,250px),1fr)); gap: clamp(10px,2.5vw,18px); }
         @media(max-width:768px){
           .sp-sidebar{display:none!important;}
@@ -244,7 +286,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
             {cat === "All" ? "All Collections" : cat}
           </h1>
           <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "13px", fontFamily: "'Poppins',sans-serif" }}>
-            {filtered.length} of {totalCount} products · Women Only
+            {loading ? "Loading products…" : `${filtered.length} of ${totalCount} products`} · Women Only
           </p>
         </div>
       </div>
@@ -256,7 +298,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
             const count = c === "All" ? totalCount : c === "Indian Ethnic Wear" ? ethnicCount : westernCount;
             return (
               <button key={c} className={`sp-tab${cat === c ? " on" : ""}`} onClick={() => setCat(c)}>
-                {c === "All" ? `All (${count})` : c === "Indian Ethnic Wear" ? `Ethnic (${count})` : `Western (${count})`}
+                {c === "All" ? `All${cnt(count)}` : c === "Indian Ethnic Wear" ? `Ethnic${cnt(count)}` : `Western${cnt(count)}`}
               </button>
             );
           })}
@@ -314,7 +356,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
               const count = c === "All" ? totalCount : c === "Indian Ethnic Wear" ? ethnicCount : westernCount;
               return (
                 <button key={c} onClick={() => setCat(c)} style={{ display: "block", width: "100%", textAlign: "left", background: cat === c ? `${THEME.crimson}10` : "none", border: "none", color: cat === c ? THEME.crimson : THEME.textMuted, cursor: "pointer", padding: "9px 12px", fontSize: "13px", fontFamily: "'Poppins',sans-serif", fontWeight: cat === c ? 700 : 400, borderLeft: cat === c ? `2px solid ${THEME.crimson}` : "2px solid transparent", borderRadius: "0 6px 6px 0", transition: "all 0.2s", minHeight: "40px", marginBottom: "4px" }}>
-                  {c === "All" ? `All Products (${count})` : c === "Indian Ethnic Wear" ? `Ethnic Wear (${count})` : `Western Wear (${count})`}
+                  {c === "All" ? `All Products${cnt(count)}` : c === "Indian Ethnic Wear" ? `Ethnic Wear${cnt(count)}` : `Western Wear${cnt(count)}`}
                 </button>
               );
             })}
@@ -393,7 +435,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="sp-desktop-sort" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px", flexWrap: "wrap", gap: "10px" }}>
             <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textMuted }}>
-              Showing <strong style={{ color: THEME.text }}>{filtered.length}</strong> of {totalCount} products
+              {loading ? "Loading products…" : <>Showing <strong style={{ color: THEME.text }}>{filtered.length}</strong> of {totalCount} products</>}
             </p>
             <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
               <button
@@ -492,7 +534,26 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
             </div>
           )}
 
-          {filtered.length === 0 ? (
+          {loading && products.length === 0 ? (
+            <div className="sp-grid" aria-busy="true" aria-label="Loading products">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="sp-skel">
+                  <div className="sp-skel-img" />
+                  <div className="sp-skel-line" style={{ width: "40%" }} />
+                  <div className="sp-skel-line" style={{ width: "80%" }} />
+                  <div className="sp-skel-line" style={{ width: "30%" }} />
+                </div>
+              ))}
+            </div>
+          ) : loadError && products.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "60px 20px", background: THEME.bgCard, borderRadius: "16px", border: `1px solid ${THEME.border}` }}>
+              <p style={{ fontFamily: "'Playfair Display',serif", fontSize: "22px", color: THEME.textMuted, marginBottom: "10px" }}>Couldn't load products</p>
+              <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textLight, marginBottom: "20px" }}>Please check your connection and try again.</p>
+              <button onClick={() => { setLoadError(false); setLoading(true); setRetryTick((t) => t + 1); }} style={{ background: THEME.crimson, color: "#fff", border: "none", padding: "12px 28px", borderRadius: "99px", cursor: "pointer", fontFamily: "'Poppins',sans-serif", fontSize: "13px", fontWeight: 600 }}>
+                Try Again
+              </button>
+            </div>
+          ) : filtered.length === 0 ? (
             <div style={{ textAlign: "center", padding: "60px 20px", background: THEME.bgCard, borderRadius: "16px", border: `1px solid ${THEME.border}` }}>
               <p style={{ fontFamily: "'Playfair Display',serif", fontSize: "22px", color: THEME.textMuted, marginBottom: "10px" }}>No products found</p>
               <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", color: THEME.textLight, marginBottom: "20px" }}>Try removing filters</p>
