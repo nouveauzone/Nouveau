@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { THEME } from "../styles/theme";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import API from "../services/apiService";
-import { SHIPPING_FREE_THRESHOLD, normalizeCategory, SIZE_OPTIONS, normalizeSizeLabel } from "../data/constants";
+import { SHIPPING_FREE_THRESHOLD, normalizeCategory, SIZE_OPTIONS, normalizeSizeLabel, PRODUCT_TYPES, getProductType } from "../data/constants";
 import { fixImageUrl } from "../utils/imageUrl";
 
 const CATS = ["All", "Indian Ethnic Wear", "Indian Western Wear"];
@@ -64,7 +64,32 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
   const [maxPrice, setMaxPrice] = useState(20000);
   const [sortBy, setSortBy] = useState("featured");
   const [selectedSizes, setSelectedSizes] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
   const [showSizeFilterMobile, setShowSizeFilterMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" ? window.innerWidth < 768 : false);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // Close the filter dropdown when clicking outside it
+  const filterRef = useRef(null);
+  useEffect(() => {
+    if (!showSizeFilterMobile) return undefined;
+    const onDown = (e) => {
+      if (filterRef.current && filterRef.current.contains(e.target)) return;
+      if (e.target.closest && e.target.closest("[data-filter-toggle]")) return;
+      setShowSizeFilterMobile(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("touchstart", onDown);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("touchstart", onDown);
+    };
+  }, [showSizeFilterMobile]);
 
   // ── Background sync: try backend, silently fallback to local ─────────────
   useEffect(() => {
@@ -126,6 +151,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
     if (cat !== "All" && p.category !== cat) return false;
     if ((p.price || 0) > maxPrice) return false;
     if (!productMatchesSize(p)) return false;
+    if (selectedTypes.length > 0 && !selectedTypes.includes(getProductType(p))) return false;
     return true;
   });
 
@@ -138,15 +164,49 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
   const ethnicCount = products.filter(p => p.category === "Indian Ethnic Wear").length;
   const westernCount = products.filter(p => p.category === "Indian Western Wear").length;
   const totalCount = products.length;
+  const activeFilterCount = selectedSizes.length + selectedTypes.length;
 
-  const clearFilters = () => { setCat("All"); setSearch(""); setMaxPrice(20000); setSortBy("featured"); setSelectedSizes([]); };
-  const hasFilters = cat !== "All" || search.trim() !== "" || maxPrice < 20000 || sortBy !== "featured" || selectedSizes.length > 0;
+  const clearFilters = () => { setCat("All"); setSearch(""); setMaxPrice(20000); setSortBy("featured"); setSelectedSizes([]); setSelectedTypes([]); };
+  const hasFilters = cat !== "All" || search.trim() !== "" || maxPrice < 20000 || sortBy !== "featured" || selectedSizes.length > 0 || selectedTypes.length > 0;
 
   const toggleSize = (size) => {
     setSelectedSizes((prev) =>
       prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
     );
   };
+
+  const toggleType = (type) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  // Plain checkbox row (no boxes) used inside the Filter dropdown
+  const renderCheckRow = (label, checked, onToggle) => (
+    <label
+      key={label}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        padding: "7px 4px",
+        cursor: "pointer",
+        fontFamily: "'Poppins',sans-serif",
+        fontSize: "13px",
+        color: checked ? THEME.crimson : THEME.text,
+        fontWeight: checked ? 600 : 400,
+        userSelect: "none",
+      }}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onToggle}
+        style={{ accentColor: THEME.crimson, width: "15px", height: "15px", margin: 0, cursor: "pointer", flexShrink: 0 }}
+      />
+      <span style={{ flex: 1 }}>{label}</span>
+    </label>
+  );
 
   return (
     <div style={{ background: THEME.bg, minHeight: "100vh" }}>
@@ -216,9 +276,10 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
         <button
           type="button"
           className="sp-sel"
+          data-filter-toggle
           onClick={() => setShowSizeFilterMobile((prev) => !prev)}
           style={{
-            flex: "0 0 86px",
+            flex: "0 0 108px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -226,7 +287,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
           }}
         >
           <span style={{ flex: 1, textAlign: "left" }}>
-            Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
+            Filter by{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
           </span>
           <span className="sp-filter-arrow" />
         </button>
@@ -338,13 +399,14 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
               <button
                 type="button"
                 className="sp-sel"
+                data-filter-toggle
                 onClick={() => setShowSizeFilterMobile(!showSizeFilterMobile)}
                 style={{
-                  flex: "0 0 86px",
+                  flex: "0 0 108px",
                   display: "flex",
-                  background: selectedSizes.length > 0 ? THEME.crimson : THEME.bgCard,
-                  color: selectedSizes.length > 0 ? "#fff" : THEME.text,
-                  border: selectedSizes.length > 0 ? `1px solid ${THEME.crimson}` : `1px solid ${THEME.border}`,
+                  background: activeFilterCount > 0 ? THEME.crimson : THEME.bgCard,
+                  color: activeFilterCount > 0 ? "#fff" : THEME.text,
+                  border: activeFilterCount > 0 ? `1px solid ${THEME.crimson}` : `1px solid ${THEME.border}`,
                   padding: "0 10px",
                   borderRadius: "10px",
                   fontFamily: "'Poppins',sans-serif",
@@ -359,7 +421,7 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
                 }}
               >
                 <span style={{ flex: 1, textAlign: "left" }}>
-                  Filter{selectedSizes.length > 0 ? ` (${selectedSizes.length})` : ""}
+                  Filter by{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
                 </span>
                 <span className="sp-filter-arrow" />
               </button>
@@ -375,41 +437,57 @@ export default function ShopPage({ setPage, setSelectedProduct, initialCategory 
           </div>
 
           {showSizeFilterMobile && (
-            <div style={{ background: THEME.bgCard, border: `1px solid ${THEME.border}`, borderRadius: "12px", padding: "16px", marginBottom: "18px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", letterSpacing: "2px", color: THEME.crimson, textTransform: "uppercase", fontWeight: 700 }}>Select Sizes</p>
-                <button
-                  onClick={() => setShowSizeFilterMobile(false)}
-                  style={{ background: "none", border: "none", color: THEME.textMuted, cursor: "pointer", fontSize: "16px", padding: "0" }}
-                >
-                  ✕
-                </button>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(70px, 1fr))", gap: "8px" }}>
-                {SIZE_OPTIONS.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => toggleSize(size)}
-                    style={{
-                      padding: "10px 8px",
-                      borderRadius: "8px",
-                      border: selectedSizes.includes(size) ? `2px solid ${THEME.crimson}` : `1px solid ${THEME.border}`,
-                      background: selectedSizes.includes(size) ? `${THEME.crimson}10` : THEME.bg,
-                      color: selectedSizes.includes(size) ? THEME.crimson : THEME.text,
-                      fontFamily: "'Poppins',sans-serif",
-                      fontSize: "11px",
-                      fontWeight: selectedSizes.includes(size) ? 700 : 500,
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                      minHeight: "36px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {size}
-                  </button>
-                ))}
+            <div ref={filterRef} style={{ position: "relative", height: 0, zIndex: 30 }}>
+              <div style={{
+                position: "absolute",
+                top: "-8px",
+                right: 0,
+                width: isMobile ? "100%" : "460px",
+                maxWidth: "100%",
+                background: THEME.bgCard,
+                border: `1px solid ${THEME.border}`,
+                borderRadius: "12px",
+                boxShadow: "0 14px 34px rgba(0,0,0,0.14)",
+                padding: "14px 16px 12px",
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                  <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "13px", fontWeight: 700, color: THEME.text, margin: 0 }}>Filter by</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                    {activeFilterCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedSizes([]); setSelectedTypes([]); }}
+                        style={{ background: "none", border: "none", color: THEME.crimson, cursor: "pointer", fontFamily: "'Poppins',sans-serif", fontSize: "12px", fontWeight: 600, padding: 0 }}
+                      >
+                        Clear
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setShowSizeFilterMobile(false)}
+                      aria-label="Close filters"
+                      style={{ background: "none", border: "none", color: THEME.textMuted, cursor: "pointer", fontSize: "16px", padding: 0, lineHeight: 1 }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: isMobile ? "12px" : "20px" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: THEME.crimson, textTransform: "uppercase", fontWeight: 700, margin: "0 0 6px" }}>Select Sizes</p>
+                    <div style={{ maxHeight: isMobile ? "230px" : "240px", overflowY: "auto", scrollbarWidth: "thin", paddingRight: "4px" }}>
+                      {SIZE_OPTIONS.map((size) => renderCheckRow(size, selectedSizes.includes(size), () => toggleSize(size)))}
+                    </div>
+                  </div>
+
+                  <div style={{ minWidth: 0, borderLeft: `1px solid ${THEME.border}`, paddingLeft: isMobile ? "12px" : "20px" }}>
+                    <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: THEME.crimson, textTransform: "uppercase", fontWeight: 700, margin: "0 0 6px" }}>Product Type</p>
+                    <div style={{ maxHeight: isMobile ? "230px" : "240px", overflowY: "auto", scrollbarWidth: "thin", paddingRight: "4px" }}>
+                      {PRODUCT_TYPES.map(({ label: t }) => renderCheckRow(t, selectedTypes.includes(t), () => toggleType(t)))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}

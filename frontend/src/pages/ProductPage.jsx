@@ -295,7 +295,7 @@ export default function ProductPage({ product, setPage }) {
               )}
             </div>
 
-            <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "14px", color: THEME.textMuted, lineHeight: 1.85, marginBottom: "24px" }}>{safeDescription}</p>
+            <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "14px", color: THEME.textMuted, lineHeight: 1.85, marginBottom: "24px", display: "-webkit-box", WebkitLineClamp: 5, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{safeDescription}</p>
 
             {/* Size */}
             <div style={{ marginBottom: "20px" }}>
@@ -401,20 +401,25 @@ export default function ProductPage({ product, setPage }) {
   ))}
 </div>  
 
-{/* ── RETURN & EXCHANGE POLICY ── */}
-            <div style={{
-              marginTop: "24px",
-              background: THEME.bgCard,
-              border: `1px solid ${THEME.border}`,
-              borderRadius: "14px",
-              padding: "18px 20px",
-              display: "flex",
-              gap: "14px",
-              alignItems: "flex-start",
-            }}>
-<div style={{ fontSize: "22px", flexShrink: 0, lineHeight: 1 }}>🔄</div>
+          </div>
+        </div>
+
+        {/* ── RETURN & EXCHANGE POLICY (full width, below the product grid) ── */}
+        <div style={{
+          marginTop: isMobile ? "24px" : "48px",
+          background: THEME.bgCard,
+          border: `1px solid ${THEME.border}`,
+          borderRadius: "14px",
+          padding: isMobile ? "18px 16px" : "24px 28px",
+          display: "flex",
+          gap: "14px",
+          alignItems: "flex-start",
+        }}>
+          <div style={{ fontSize: "22px", flexShrink: 0, lineHeight: 1 }}>🔄</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "14px" : "48px" }}>
               <div>
-<p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: "#C9506A", fontWeight: 700, marginBottom: "6px", textTransform: "uppercase" }}>
+                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: "#C9506A", fontWeight: 700, marginBottom: "6px", textTransform: "uppercase" }}>
                   India Return and Exchange Policy
                 </p>
                 <ul style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textMuted, lineHeight: 1.7, paddingLeft: "18px", margin: 0 }}>
@@ -426,8 +431,10 @@ export default function ProductPage({ product, setPage }) {
                   <li>All sales are final</li>
                   <li>Refund will be initiated between 5-7 business days</li>
                 </ul>
+              </div>
 
-                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: "#C9506A", fontWeight: 700, marginTop: "14px", marginBottom: "6px", textTransform: "uppercase" }}>
+              <div>
+                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", letterSpacing: "2px", color: "#C9506A", fontWeight: 700, marginBottom: "6px", textTransform: "uppercase" }}>
                   International return and exchange policy
                 </p>
                 <ul style={{ fontFamily: "'Poppins',sans-serif", fontSize: "12px", color: THEME.textMuted, lineHeight: 1.7, paddingLeft: "18px", margin: 0 }}>
@@ -435,16 +442,18 @@ export default function ProductPage({ product, setPage }) {
                   <li>Please carefully verify your size and shipping details before placing your order.</li>
                   <li>Customs duties, import taxes, and any local government charges (if applicable) are the sole responsibility of the customer and are not included in the product price or shipping charges.</li>
                 </ul>
-                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "8px", marginBottom: "6px" }}>
-                  🌍 International Buyer - For international buyers — please contact us on WhatsApp before ordering so we can confirm sizing, shipping, and any additional requirements.
-                </p>
-                <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "2px" }}>
-                  For queries: WhatsApp +91 7733881577
-                </p>
               </div>
             </div>
+
+            <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "14px", marginBottom: "6px" }}>
+              🌍 International Buyer - For international buyers — please contact us on WhatsApp before ordering so we can confirm sizing, shipping, and any additional requirements.
+            </p>
+            <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "2px" }}>
+              For queries: WhatsApp +91 7733881577
+            </p>
           </div>
         </div>
+
 
         {/* Tabs */}
         <div style={{ marginTop: "64px" }}>
