@@ -212,7 +212,12 @@ const serializeDetailBoxes = (value = []) => normalizeDetailBoxes(value)
   .map(({ title, value: boxValue }) => `${title} | ${boxValue}`)
   .join("\n");
 
-const EMPTY_PRODUCT = { title: "", price: "", originalPrice: "", category: "Indian Ethnic Wear", subcategory: "", material: "", sizes: normalizeSizeRows(), discount: "0", description: "", detailBoxes: "", isNew: true, isFeatured: false, images: ["/product1.jpeg"] };
+const isColourDetailBox = ({ title }) => /^(colour|color)$/i.test(String(title || "").trim());
+const getProductColour = (product) => String(
+  product?.color || product?.colour || normalizeDetailBoxes(product?.detailBoxes).find(isColourDetailBox)?.value || ""
+).trim();
+
+const EMPTY_PRODUCT = { title: "", price: "", originalPrice: "", category: "Indian Ethnic Wear", subcategory: "", material: "", color: "", sizes: normalizeSizeRows(), discount: "0", description: "", detailBoxes: "", isNew: true, isFeatured: false, images: ["/product1.jpeg"] };
 const getSizeStockTotal = (sizes = []) => (
   Array.isArray(sizes)
     ? sizes.reduce((sum, entry) => sum + Math.max(0, Number(entry?.quantity ?? entry?.stock) || 0), 0)
@@ -241,6 +246,7 @@ const normalizeProduct = (product) => {
     price: Number(product.price) || 0,
     originalPrice: Number(product.originalPrice) || Number(product.price) || 0,
     discount: Number(product.discount) || 0,
+    color: getProductColour(product),
     sizes,
   };
 };
@@ -669,7 +675,7 @@ export default function AdminPage({ setPage }) {
   };
 
   // ── Product helpers ───────────────────────────────────────────────────────
-  const openEdit = (p) => { const safe = normalizeProduct(p); setProductForm({ ...safe, price: String(safe.price), originalPrice: String(safe.originalPrice), discount: String(safe.discount || 0), sizes: normalizeSizeRows(safe.sizes), detailBoxes: serializeDetailBoxes(safe.detailBoxes) }); setEditingId(p._id); setShowAddForm(true); };
+  const openEdit = (p) => { const safe = normalizeProduct(p); setProductForm({ ...safe, price: String(safe.price), originalPrice: String(safe.originalPrice), discount: String(safe.discount || 0), sizes: normalizeSizeRows(safe.sizes), detailBoxes: serializeDetailBoxes(safe.detailBoxes.filter((entry) => !isColourDetailBox(entry))) }); setEditingId(p._id); setShowAddForm(true); };
   const openAdd = () => { setProductForm({ ...EMPTY_PRODUCT, detailBoxes: "" }); setEditingId(null); setShowAddForm(true); };
 
   const handleImageUpload = async (e) => {
@@ -730,12 +736,16 @@ export default function AdminPage({ setPage }) {
       discount: Number(safeForm.discount) || 0,
       gender: "Women",
       images: safeForm.images?.length ? safeForm.images : ["/product1.jpeg"],
-      detailBoxes: normalizeDetailBoxes(safeForm.detailBoxes),
+      detailBoxes: [
+        ...normalizeDetailBoxes(safeForm.detailBoxes).filter((entry) => !isColourDetailBox(entry)),
+        ...(String(safeForm.color || "").trim() ? [{ title: "Colour", value: String(safeForm.color).trim() }] : []),
+      ],
       _id: editingId || tempId,
       rating: safeForm.rating || 4.5,
       reviews: safeForm.reviews || 0,
       sizes: finalSizes, // Only valid sizes with quantity > 0
     };
+    delete cleaned.color;
 
     const normalizePayloadSizes = (rawSizes) => {
       let list = [];
@@ -1082,6 +1092,7 @@ export default function AdminPage({ setPage }) {
                     { field: "discount", label: "Discount %", inputType: "number", fullWidth: false },
                     { field: "subcategory", label: "Subcategory (Kurta, Dress…)", inputType: "text", fullWidth: false },
                     { field: "material", label: "Material/Fabric", inputType: "text", fullWidth: false, placeholder: "Cotton, Rayon, Silk, Georgette..." },
+                    { field: "color", label: "Colour", inputType: "text", fullWidth: false, placeholder: "Teal Blue, Black, Red..." },
                   ].map((item) => (
                     <div key={item.field} style={{ gridColumn: item.fullWidth ? "1/-1" : "auto" }}>
                       <label style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "2px", color: THEME.crimson, display: "block", marginBottom: "6px", fontWeight: 700 }}>{item.label.toUpperCase()}</label>
