@@ -97,6 +97,39 @@ const normalizeSizeInventory = (sizes) => {
   return Array.from(merged.values());
 };
 
+const normalizeDetailBoxes = (boxes) => {
+  const entries = Array.isArray(boxes) ? boxes : typeof boxes === "string" ? boxes.split(/\n+/) : [];
+
+  const normalized = entries
+    .map((entry) => {
+      if (!entry) return null;
+
+      if (typeof entry === "object") {
+        const title = String(entry.title || entry.label || "").trim();
+        const value = String(entry.value || entry.text || entry.detail || "").trim();
+        if (!title && !value) return null;
+        return { title: title || "Details", value: value || title };
+      }
+
+      const raw = String(entry).trim();
+      if (!raw) return null;
+
+      const separator = raw.includes("|") ? "|" : raw.includes(":") ? ":" : null;
+      if (!separator) {
+        return { title: "Details", value: raw };
+      }
+
+      const [titlePart, ...rest] = raw.split(separator);
+      const title = titlePart.trim();
+      const value = rest.join(separator).trim();
+      if (!title && !value) return null;
+      return { title: title || "Details", value: value || title };
+    })
+    .filter(Boolean);
+
+  return normalized;
+};
+
 const normalizeProductInput = (payload = {}) => {
   if (!payload || typeof payload !== "object") return payload;
 
@@ -109,6 +142,7 @@ const normalizeProductInput = (payload = {}) => {
     images: Array.isArray(rest.images)
       ? normalizeImageListForStorage(rest.images)
       : rest.images,
+    detailBoxes: normalizeDetailBoxes(rest.detailBoxes),
     sizes: normalizedSizes.length || Array.isArray(rest.sizes)
       ? normalizedSizes
       : rest.sizes,
@@ -128,6 +162,7 @@ const normalizeProductOutput = (product = {}) => {
   return {
     ...rest,
     isNew: Boolean(rest.isNew ?? rest._isNew),
+    detailBoxes: normalizeDetailBoxes(rest.detailBoxes),
     images,
     sizes: normalizedSizes.length || Array.isArray(rest.sizes)
       ? normalizedSizes

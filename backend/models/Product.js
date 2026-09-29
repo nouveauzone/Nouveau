@@ -87,6 +87,10 @@ const productSchema = new mongoose.Schema(
     material: { type: String, default: "" },
     gender: { type: String, enum: ["Women", "Men", "Unisex"], default: "Women" },
     images: [{ type: String, set: normalizeImagePathForStorage }],
+    detailBoxes: [{
+      title: { type: String, default: "Details" },
+      value: { type: String, default: "" },
+    }],
     sizes: { type: [sizeQuantitySchema], default: [] },
     _isNew: { type: Boolean, default: false, alias: "isNew" },
     isFeatured: { type: Boolean, default: false },
@@ -146,6 +150,21 @@ productSchema.pre("validate", function (next) {
   });
 
   this.sizes = Array.from(cleaned.values());
+
+  if (this.detailBoxes && !Array.isArray(this.detailBoxes)) {
+    this.detailBoxes = [];
+  }
+
+  this.detailBoxes = (this.detailBoxes || [])
+    .map((entry) => {
+      if (!entry || typeof entry !== "object") return null;
+      const title = String(entry.title || entry.label || "").trim() || "Details";
+      const value = String(entry.value || entry.text || entry.detail || "").trim();
+      if (!value) return null;
+      return { title, value };
+    })
+    .filter(Boolean);
+
   next();
 });
 

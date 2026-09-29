@@ -167,7 +167,52 @@ const normalizeSizeRows = (sizes = []) => {
   return SIZE_OPTIONS.map((size) => rows.get(size));
 };
 
-const EMPTY_PRODUCT = { title: "", price: "", originalPrice: "", category: "Indian Ethnic Wear", subcategory: "", material: "", sizes: normalizeSizeRows(), discount: "0", description: "", isNew: true, isFeatured: false, images: ["/product1.jpeg"] };
+const normalizeDetailBoxes = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => {
+        if (!entry || typeof entry !== "object") return null;
+        const title = String(entry.title || entry.label || "").trim();
+        const boxValue = String(entry.value || entry.text || entry.detail || "").trim();
+        if (!title && !boxValue) return null;
+        return { title: title || "Details", value: boxValue || title };
+      })
+      .filter(Boolean);
+  }
+
+  if (!value) return [];
+
+  if (typeof value === "string") {
+    return value
+      .split(/\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const separator = line.includes("|") ? "|" : line.includes(":") ? ":" : null;
+        if (!separator) return { title: "Details", value: line };
+        const [rawTitle, ...rest] = line.split(separator);
+        const title = rawTitle.trim();
+        const boxValue = rest.join(separator).trim();
+        if (!title && !boxValue) return null;
+        return { title: title || "Details", value: boxValue || title };
+      })
+      .filter(Boolean);
+  }
+
+  if (typeof value === "object") {
+    return Object.entries(value)
+      .map(([title, boxValue]) => ({ title: String(title || "Details").trim() || "Details", value: String(boxValue || "").trim() }))
+      .filter((entry) => entry.value);
+  }
+
+  return [];
+};
+
+const serializeDetailBoxes = (value = []) => normalizeDetailBoxes(value)
+  .map(({ title, value: boxValue }) => `${title} | ${boxValue}`)
+  .join("\n");
+
+const EMPTY_PRODUCT = { title: "", price: "", originalPrice: "", category: "Indian Ethnic Wear", subcategory: "", material: "", sizes: normalizeSizeRows(), discount: "0", description: "", detailBoxes: "", isNew: true, isFeatured: false, images: ["/product1.jpeg"] };
 const getSizeStockTotal = (sizes = []) => (
   Array.isArray(sizes)
     ? sizes.reduce((sum, entry) => sum + Math.max(0, Number(entry?.quantity ?? entry?.stock) || 0), 0)
@@ -190,6 +235,7 @@ const normalizeProduct = (product) => {
     title: cleanText(product.title, "Nouveau Signature Piece"),
     subcategory: cleanText(product.subcategory, "Women's Wear"),
     description: cleanDescription(product.description, "Elegant premium womenswear crafted with attention to detail and all-day comfort."),
+    detailBoxes: normalizeDetailBoxes(product.detailBoxes),
     images: cleanImages(product.images),
     category: category === "Indian Ethnic Wear" || category === "Indian Western Wear" ? category : "Indian Ethnic Wear",
     price: Number(product.price) || 0,
@@ -623,8 +669,8 @@ export default function AdminPage({ setPage }) {
   };
 
   // ── Product helpers ───────────────────────────────────────────────────────
-  const openEdit = (p) => { const safe = normalizeProduct(p); setProductForm({ ...safe, price: String(safe.price), originalPrice: String(safe.originalPrice), discount: String(safe.discount || 0), sizes: normalizeSizeRows(safe.sizes) }); setEditingId(p._id); setShowAddForm(true); };
-  const openAdd = () => { setProductForm(EMPTY_PRODUCT); setEditingId(null); setShowAddForm(true); };
+  const openEdit = (p) => { const safe = normalizeProduct(p); setProductForm({ ...safe, price: String(safe.price), originalPrice: String(safe.originalPrice), discount: String(safe.discount || 0), sizes: normalizeSizeRows(safe.sizes), detailBoxes: serializeDetailBoxes(safe.detailBoxes) }); setEditingId(p._id); setShowAddForm(true); };
+  const openAdd = () => { setProductForm({ ...EMPTY_PRODUCT, detailBoxes: "" }); setEditingId(null); setShowAddForm(true); };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -684,6 +730,7 @@ export default function AdminPage({ setPage }) {
       discount: Number(safeForm.discount) || 0,
       gender: "Women",
       images: safeForm.images?.length ? safeForm.images : ["/product1.jpeg"],
+      detailBoxes: normalizeDetailBoxes(safeForm.detailBoxes),
       _id: editingId || tempId,
       rating: safeForm.rating || 4.5,
       reviews: safeForm.reviews || 0,
@@ -1069,6 +1116,17 @@ export default function AdminPage({ setPage }) {
                   <div style={{ gridColumn: "1/-1" }}>
                     <label style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "2px", color: THEME.crimson, display: "block", marginBottom: "6px", fontWeight: 700 }}>DESCRIPTION</label>
                     <textarea rows={3} value={productForm.description} onChange={e => setProductForm(f => ({ ...f, description: e.target.value }))} style={{ ...iStyle, resize: "vertical" }} />
+                  </div>
+                  <div style={{ gridColumn: "1/-1" }}>
+                    <label style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "2px", color: THEME.crimson, display: "block", marginBottom: "6px", fontWeight: 700 }}>CUSTOM DETAIL BOXES</label>
+                    <textarea
+                      rows={4}
+                      value={productForm.detailBoxes}
+                      onChange={e => setProductForm(f => ({ ...f, detailBoxes: e.target.value }))}
+                      placeholder={'Care | Hand wash only\nShipping | 5-7 business days\nFabric | Cotton'}
+                      style={{ ...iStyle, resize: "vertical" }}
+                    />
+                    <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "11px", color: THEME.textLight, marginTop: "6px", marginBottom: 0 }}>Format: Title | Value (one box per line)</p>
                   </div>
                   <div style={{ gridColumn: "1/-1", display: "flex", alignItems: "center", gap: "10px" }}>
                     <input type="checkbox" id="isnew" checked={productForm.isNew} onChange={e => setProductForm(f => ({ ...f, isNew: e.target.checked }))} style={{ accentColor: THEME.crimson, width: "16px", height: "16px" }} />

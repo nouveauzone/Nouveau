@@ -35,6 +35,47 @@ const cleanCategory = (value) => {
   return "Nouveau Collection";
 };
 
+const normalizeDetailBoxes = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => {
+        if (!entry || typeof entry !== "object") return null;
+        const title = String(entry.title || entry.label || "").trim();
+        const boxValue = String(entry.value || entry.text || entry.detail || "").trim();
+        if (!title && !boxValue) return null;
+        return { title: title || "Details", value: boxValue || title };
+      })
+      .filter(Boolean);
+  }
+
+  if (!value) return [];
+
+  if (typeof value === "string") {
+    return value
+      .split(/\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const separator = line.includes("|") ? "|" : line.includes(":") ? ":" : null;
+        if (!separator) return { title: "Details", value: line };
+        const [rawTitle, ...rest] = line.split(separator);
+        const title = rawTitle.trim();
+        const boxValue = rest.join(separator).trim();
+        if (!title && !boxValue) return null;
+        return { title: title || "Details", value: boxValue || title };
+      })
+      .filter(Boolean);
+  }
+
+  if (typeof value === "object") {
+    return Object.entries(value)
+      .map(([title, boxValue]) => ({ title: String(title || "Details").trim() || "Details", value: String(boxValue || "").trim() }))
+      .filter((entry) => entry.value);
+  }
+
+  return [];
+};
+
 const cleanImages = (images) => {
   if (!Array.isArray(images) || !images.length) return ["/product1.jpeg"];
   const filtered = images.filter((img) => typeof img === "string" && img.trim().length > 0 && !img.includes("\\"));
@@ -144,6 +185,7 @@ export default function ProductPage({ product, setPage }) {
   const safePrice = Number(displayProduct?.price) || 0;
   const safeOriginalPrice = Number(displayProduct?.originalPrice) || safePrice;
   const safeDiscount = Number(displayProduct?.discount) || 0;
+  const customDetailBoxes = normalizeDetailBoxes(displayProduct?.detailBoxes || []);
   const safeStock = sizeInventory.reduce((sum, entry) => sum + Number(entry.quantity || 0), 0);
   const selectedSizeStock = sizeInventory.find((entry) => entry.size === selectedSize)?.quantity || 0;
   const isSoldOut = safeStock <= 0;
@@ -469,10 +511,17 @@ export default function ProductPage({ product, setPage }) {
           {activeTab === "desc" && (
             <div style={{ maxWidth: "700px" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                {[["Category", safeCategory], ["Subcategory", safeSubcategory], ["Available Sizes", safeSizes.join(", ")], ["Stock", safeStock + " units"], ...(safeMaterial ? [["Material / Fabric", safeMaterial]] : [])].map(([l, v]) => (
-                  <div key={l} style={{ background: THEME.bgCard, border: `1px solid ${THEME.border}`, borderRadius: "10px", padding: "14px 18px" }}>
-                    <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", color: THEME.textLight, letterSpacing: "2px", marginBottom: "4px" }}>{l.toUpperCase()}</p>
-                    <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "14px", color: THEME.text, fontWeight: 600 }}>{v}</p>
+                {[
+                  ["Category", safeCategory],
+                  ["Subcategory", safeSubcategory],
+                  ["Available Sizes", safeSizes.join(", ")],
+                  ["Stock", safeStock + " units"],
+                  ...(safeMaterial ? [["Material / Fabric", safeMaterial]] : []),
+                  ...customDetailBoxes.map(({ title, value }) => [title, value])
+                ].map(([label, value], index) => (
+                  <div key={`${label}-${index}`} style={{ background: THEME.bgCard, border: `1px solid ${THEME.border}`, borderRadius: "10px", padding: "14px 18px" }}>
+                    <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", color: THEME.crimson, letterSpacing: "2px", marginBottom: "4px", fontWeight: 700 }}>{String(label).toUpperCase()}</p>
+                    <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "14px", color: THEME.text, fontWeight: 600, lineHeight: 1.5 }}>{value}</p>
                   </div>
                 ))}
               </div>
