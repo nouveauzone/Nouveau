@@ -337,8 +337,6 @@ export default function ProductPage({ product, setPage }) {
               )}
             </div>
 
-            <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "14px", color: THEME.textMuted, lineHeight: 1.85, marginBottom: "24px", display: "-webkit-box", WebkitLineClamp: 5, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{safeDescription}</p>
-
             {/* Size */}
             <div style={{ marginBottom: "20px" }}>
               <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "10px", letterSpacing: "3px", color: THEME.crimson, marginBottom: "10px", fontWeight: 700 }}>SELECT SIZE</p>
@@ -510,6 +508,7 @@ export default function ProductPage({ product, setPage }) {
 
           {activeTab === "desc" && (
             <div style={{ maxWidth: "700px" }}>
+              <p style={{ fontFamily: "'Poppins',sans-serif", fontSize: "14px", color: THEME.textMuted, lineHeight: 1.85, margin: "0 0 20px" }}>{safeDescription}</p>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                 {[
                   ["Category", safeCategory],
