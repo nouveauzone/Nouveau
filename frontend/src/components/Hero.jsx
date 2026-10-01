@@ -295,7 +295,8 @@ export default function Hero({ setPage }) {
 
         .nvz-hero-quick-actions {
           position: absolute;
-          left: 56px;
+          left: auto;
+          right: 490px;
           bottom: 44px;
           display: flex;
           gap: 12px;
