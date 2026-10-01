@@ -181,7 +181,7 @@ export default function NouveauzCheckout({ amount, cartItems = [], customerInfo 
         style={{
           width: "100%",
           padding: "16px 24px",
-          background: loading ? "#A8A8A8" : "#E58AA8",
+          background: loading ? "#A8A8A8" : "var(--nvz-burgundy)",
           color: "#fff",
           border: "none",
           borderRadius: "12px",

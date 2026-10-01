@@ -144,7 +144,7 @@ export default function HomePage({ setPage, setSelectedProduct }) {
           overflow: hidden;
           cursor: pointer;
           padding: 40px;
-          background: linear-gradient(135deg, #E58AA8 0%, #FCECEF 45%, #D8B995 100%);
+          background: linear-gradient(135deg, #FAF7F0 0%, #F4EAD9 45%, #C6A15B 100%);
           transition: transform .35s;
         }
 

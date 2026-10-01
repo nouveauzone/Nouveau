@@ -16,57 +16,55 @@ html {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* ✨ Luxury Pink Fashion Theme - Premium Indian Ethnic Wear ✨ */
   font-family: 'Poppins', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  color: var(--nvz-text, #5C3D3D);
-  background-color: var(--nvz-bg, #FFF9F6);
-  background-image: linear-gradient(to bottom right, rgba(255, 249, 246, 1) 0%, rgba(253, 215, 224, 0.3) 100%);
+  color: var(--nvz-text, #3A2525);
+  background-color: var(--nvz-bg, #FAF7F0);
+  background-image: linear-gradient(to bottom right, rgba(250, 247, 240, 1) 0%, rgba(244, 234, 217, 0.45) 100%);
 }
 
 :root {
-  /* Premium all-pink clothing palette */
-  --nvz-burgundy: #E58AA8;
-  --nvz-burgundy-dark: #D76E96;
-  --nvz-burgundy-light: #F1B6CA;
+  --nvz-burgundy: #8B1E2D;
+  --nvz-burgundy-dark: #641722;
+  --nvz-burgundy-light: #A94345;
 
-  --nvz-blush: #FDE7F0;
-  --nvz-rose: #F7C2D8;
-  --nvz-pink-light: #FBEAF2;
-  --nvz-deep-pink: #E98BB1;
-  --nvz-mauve: #F7D9E8;
+  --nvz-blush: #F8E3E5;
+  --nvz-rose: #C6A15B;
+  --nvz-pink-light: #FAF2F0;
+  --nvz-deep-pink: #65151F;
+  --nvz-mauve: #E8D5B9;
 
-  --nvz-gold: #D8B995;
-  --nvz-gold-light: #E8D4B5;
-  --nvz-gold-dark: #C79B6A;
+  --nvz-gold: #C6A15B;
+  --nvz-gold-light: #D8BD7A;
+  --nvz-gold-dark: #A77A35;
 
-  --nvz-ivory: #FFF9FB;
+  --nvz-ivory: #FAF7F0;
   --nvz-white: #FFFFFF;
-  --nvz-brown: #5E3B4D;
-  --nvz-brown-muted: #896778;
-  --nvz-brown-light: #B78EA0;
-  --nvz-cream: #FFFDFE;
+  --nvz-brown: #3A2525;
+  --nvz-brown-muted: #705C4A;
+  --nvz-brown-light: #988878;
+  --nvz-cream: #FFFCF6;
 
-  --nvz-peach: #FFDDE9;
-  --nvz-coral: #F5B5C9;
+  --nvz-peach: #F4EAD9;
+  --nvz-coral: #A94345;
 
-  --nvz-bg: #FFF8FB;
-  --nvz-bg-light: #FDE7F0;
-  --nvz-bg-card: #FFFDFE;
+  --nvz-bg: #FAF7F0;
+  --nvz-bg-light: #F4EAD9;
+  --nvz-bg-card: #FFFCF6;
 
-  --nvz-text: #5E3B4D;
-  --nvz-text-muted: #896778;
-  --nvz-text-light: #B78EA0;
+  --nvz-text: #3A2525;
+  --nvz-text-muted: #78675B;
+  --nvz-text-light: #988878;
 
-  --nvz-border: #F7CFE0;
-  --nvz-border-light: #FDE7F0;
-  --nvz-divider: #F7D9E8;
+  --nvz-border: #E8D9C3;
+  --nvz-border-light: #F1E7D8;
+  --nvz-divider: #E9DDCA;
 
-  --nvz-shadow: 0 10px 28px rgba(229, 138, 168, 0.08);
-  --nvz-shadow-hover: 0 18px 42px rgba(229, 138, 168, 0.12);
+  --nvz-shadow: 0 10px 28px rgba(58, 37, 37, 0.08);
+  --nvz-shadow-hover: 0 18px 42px rgba(58, 37, 37, 0.12);
 
-  --nvz-gradient-luxury: linear-gradient(135deg, #FFF9FB 0%, #FDE7F0 100%);
-  --nvz-gradient-pink: linear-gradient(135deg, #FBEAF2 0%, #F7C2D8 100%);
-  --nvz-gradient-gold: linear-gradient(135deg, #E8D4B5 0%, #D8B995 100%);
+  --nvz-gradient-luxury: linear-gradient(135deg, #FAF7F0 0%, #F4EAD9 100%);
+  --nvz-gradient-pink: linear-gradient(135deg, #F8E3E5 0%, #E8D5B9 100%);
+  --nvz-gradient-gold: linear-gradient(135deg, #D8BD7A 0%, #C6A15B 100%);
 }
 
 /* Typography helpers */
@@ -109,7 +107,7 @@ p, input, textarea, select, label { color: var(--nvz-text); }
 }
 
 /* Hero and ambient animations */
-.nvz-hero-bg { background: linear-gradient(180deg, rgba(255,217,225,0.95), rgba(245,181,203,0.9)); }
+.nvz-hero-bg { background: linear-gradient(180deg, rgba(250,247,240,0.95), rgba(232,213,185,0.9)); }
 .nvz-parallax { transform: translateZ(0); will-change: transform; }
 
 @keyframes nvz-fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -135,7 +133,7 @@ a.nvz-gold-underline:hover::after { background: var(--nvz-muted-gold); }
 
 /* === Hero-specific overrides (visual redesign only) === */
 .hero-wrapper {
-  background: linear-gradient(90deg, rgba(161, 48, 90, 0.08) 0%, rgba(255, 217, 225, 0.1) 50%, rgba(212, 175, 55, 0.06) 100%);
+  background: linear-gradient(90deg, rgba(139, 30, 45, 0.08) 0%, rgba(250, 247, 240, 0.1) 50%, rgba(198, 161, 91, 0.08) 100%);
   color: var(--nvz-ivory);
   position: relative;
   overflow: hidden;
@@ -155,7 +153,7 @@ a.nvz-gold-underline:hover::after { background: var(--nvz-muted-gold); }
   content: '';
   position: absolute;
   left: 0; top: 0; bottom: 0; width: 58%;
-  background: linear-gradient(90deg, rgba(161, 48, 90, 0.15) 0%, rgba(245, 181, 203, 0.08) 40%, rgba(0,0,0,0) 100%);
+  background: linear-gradient(90deg, rgba(139, 30, 45, 0.15) 0%, rgba(198, 161, 91, 0.08) 40%, rgba(0,0,0,0) 100%);
   pointer-events: none;
 }
 
@@ -179,25 +177,25 @@ a.nvz-gold-underline:hover::after { background: var(--nvz-muted-gold); }
   -webkit-text-stroke: 0.2px rgba(0,0,0,0.02);
 }
 
-.subtitle { color: #D8B995 !important; font-weight: 600; }
+.subtitle { color: #C6A15B !important; font-weight: 600; }
 
-/* Override inline btn styles with important rules to match premium pink + burgundy + gold palette */
+/* Keep the home campaign button on the banner's burgundy and gold palette. */
 .btn-shop {
-  background: linear-gradient(90deg, #E58AA8, #FDE7F0, #D8B995) !important;
+  background: linear-gradient(90deg, #8B1E2D, #A94345, #C6A15B) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 12px 30px rgba(161, 48, 90, 0.2) !important;
+  box-shadow: 0 12px 30px rgba(139, 30, 45, 0.2) !important;
 }
-.btn-shop:hover { background: linear-gradient(90deg, #D8B995, #F7C2D8, #E58AA8) !important; transform: translateY(-3px) !important; }
+.btn-shop:hover { background: linear-gradient(90deg, #C6A15B, #A94345, #8B1E2D) !important; transform: translateY(-3px) !important; }
 
 /* Header: glass blur, light border */
 .sf-navbar {
-  background: rgba(255, 249, 243, 0.96) !important;
+  background: rgba(250, 247, 240, 0.96) !important;
   backdrop-filter: blur(18px) !important;
   -webkit-backdrop-filter: blur(18px) !important;
   border-bottom: 1px solid var(--nvz-border-light) !important;
 }
 .sf-nav-link { color: var(--nvz-text) !important; }
-.sf-nav-link:hover, .sf-nav-link.active { color: var(--nvz-burgundy) !important; background: rgba(248, 227, 229, 0.4); border-radius: 8px; }
+.sf-nav-link:hover, .sf-nav-link.active { color: var(--nvz-burgundy) !important; background: rgba(198, 161, 91, 0.16); border-radius: 8px; }
 
 /* Search box rounded, soft shadow */
 .sf-search { 
@@ -383,35 +381,35 @@ input, textarea, select {
   }
 
 }footer {
-  background-image: linear-gradient(115deg, #FDE7F0 0%, #FFFDFE 48%, #FBEAF2 100%) !important;
-  background-color: #FFFDFE !important;
-  border-top: 1px solid #F7CFE0 !important;
+  background-image: linear-gradient(115deg, #FAF7F0 0%, #FFFCF6 48%, #F4EAD9 100%) !important;
+  background-color: #FFFCF6 !important;
+  border-top: 1px solid #E8D9C3 !important;
 }
 
 footer > div > div {
-  border-bottom: 1px solid #F3D6E3 !important;
+  border-bottom: 1px solid #E9DDCA !important;
 }
 
 footer > div > div > div:nth-child(2) {
-  color: #E58AA8 !important;
+  color: #8B1E2D !important;
 }
 
 footer > div > div > p {
-  color: #D8B995 !important;
+  color: #C6A15B !important;
 }
 
 footer .footer-intro {
-  color: #68495A !important;
+  color: #3A2525 !important;
 }
 
 footer .footer-grid > div:not(:first-child) > p {
-  color: #D76E96 !important;
+  color: #8B1E2D !important;
   letter-spacing: 1px !important;
 }
 
 footer .footer-grid span,
 footer .footer-grid a {
-  color: #68495A !important;
+  color: #3A2525 !important;
   display: block !important;
   margin-bottom: 10px;
   transition: all 0.3s ease !important;
@@ -421,37 +419,37 @@ footer .footer-grid a {
 
 footer .footer-grid span:hover,
 footer .footer-grid a:hover {
-  color: #D76E96 !important;
+  color: #C6A15B !important;
   transform: translateX(4px) !important;
 }
 
 footer .footer-social a {
-  color: #68495A !important;
+  color: #3A2525 !important;
   transition: all 0.3s ease !important;
 }
 
 footer .footer-social a:hover {
-  color: #D76E96 !important;
+  color: #C6A15B !important;
   transform: translateX(4px) !important;
 }
 
 footer .footer-bottom-row > p:first-child {
-  color: #896778 !important;
+  color: #78675B !important;
 }
 
 footer .footer-bottom-row .footer-made {
-  color: #896778 !important;
+  color: #78675B !important;
 }
 
 footer .footer-bottom-row > div span,
 footer .footer-bottom-row > div > span {
-  color: #68495A !important;
+  color: #3A2525 !important;
   transition: all 0.3s ease !important;
   cursor: pointer !important;
 }
 
 footer .footer-bottom-row > div span:hover,
 footer .footer-bottom-row > div > span:hover {
-  color: #D76E96 !important;
+  color: #C6A15B !important;
   transform: translateX(4px) !important;
 }

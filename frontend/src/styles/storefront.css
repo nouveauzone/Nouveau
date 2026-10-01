@@ -1,15 +1,15 @@
 :root {
-  --sf-primary: #E58AA8;
-  --sf-secondary: #FFF8FB;
-  --sf-accent: #FDE7F0;
-  --sf-text: #5E3B4D;
-  --sf-muted: #8A667A;
-  --sf-border: #F7D7E5;
+  --sf-primary: #8B1E2D;
+  --sf-secondary: #FAF7F0;
+  --sf-accent: #F4EAD9;
+  --sf-text: #3A2525;
+  --sf-muted: #78675B;
+  --sf-border: #E8D9C3;
   --sf-radius: 16px;
-  --sf-shadow-soft: 0 12px 32px rgba(229, 138, 168, 0.08);
-  --sf-shadow-hover: 0 20px 48px rgba(229, 138, 168, 0.12);
-  --sf-glass-bg: rgba(255, 248, 251, 0.92);
-  --sf-btn-shadow: 0 4px 12px rgba(229, 138, 168, 0.18);
+  --sf-shadow-soft: 0 12px 32px rgba(58, 37, 37, 0.08);
+  --sf-shadow-hover: 0 20px 48px rgba(58, 37, 37, 0.12);
+  --sf-glass-bg: rgba(250, 247, 240, 0.94);
+  --sf-btn-shadow: 0 4px 12px rgba(139, 30, 45, 0.18);
 }
 
 .sf-shell {
@@ -539,7 +539,7 @@
   top: 14px;
   left: 14px;
   background: rgba(255, 255, 255, 0.95);
-  color: #E58AA8;
+  color: var(--sf-primary);
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 11px;

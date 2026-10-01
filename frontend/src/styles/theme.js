@@ -1,40 +1,32 @@
 export const THEME = {
-  // ✨ Premium pastel pink fashion theme for premium clothing ✨
-  // Main palette keeps everything in blush / rose / soft pink shades
-  burgundy: "#E58AA8",
-  burgundyDark: "#D76E96",
-  crimson: "#E58AA8",
-  crimsonDark: "#D76E96",
+  burgundy: "#8B1E2D",
+  burgundyDark: "#641722",
+  crimson: "#8B1E2D",
+  crimsonDark: "#65151F",
 
-  // Pink family — soft to rich rose
-  blushPink: "#FDE7F0",
-  rosePink: "#F7C2D8",
-  lightPink: "#FBEAF2",
+  blushPink: "#F8E3E5",
+  rosePink: "#E8D5B9",
+  lightPink: "#FAF2F0",
 
-  // Luxury warm accent, still subtle and feminine
-  gold: "#D8B995",
-  goldLight: "#EAD3B6",
+  gold: "#C6A15B",
+  goldLight: "#D8BD7A",
 
-  // Neutral tones
-  ivory: "#FFF9FB",
+  ivory: "#FAF7F0",
   white: "#FFFFFF",
-  warmBrown: "#68495A",
+  warmBrown: "#3A2525",
 
-  // Backgrounds & surfaces
-  bg: "#FFF8FB",
-  bgLight: "#FDE7F0",
-  bgCard: "#FFFDFE",
+  bg: "#FAF7F0",
+  bgLight: "#F4EAD9",
+  bgCard: "#FFFCF6",
 
-  // Typography
-  text: "#5E3B4D",
-  textSecondary: "#896778",
-  textLight: "#B78EA0",
-  textMuted: "#896778",
+  text: "#3A2525",
+  textSecondary: "#705C4A",
+  textLight: "#988878",
+  textMuted: "#78675B",
 
-  // Borders & accents
-  border: "#F7CFE0",
-  borderLight: "#FDE7F0",
-  divider: "#F6D7E5",
+  border: "#E8D9C3",
+  borderLight: "#F1E7D8",
+  divider: "#E9DDCA",
 };
 
 // Responsive utilities

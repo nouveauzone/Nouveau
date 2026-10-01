@@ -185,12 +185,12 @@ export default function Hero({ setPage }) {
         }
 
         .nvz-particle--saffron {
-          background: #E58AA8;
+          background: #8B1E2D;
           box-shadow: 0 0 16px rgba(139, 30, 45, 0.18);
         }
 
         .nvz-particle--sparkle {
-          background: #FDE7F0;
+          background: #F8E3E5;
           box-shadow: 0 0 12px rgba(248, 221, 225, 0.3);
         }
 
@@ -303,8 +303,8 @@ export default function Hero({ setPage }) {
           padding: 8px;
           border: 1px solid rgba(255, 255, 255, 0.8);
           border-radius: 18px;
-          background: rgba(255, 238, 246, 0.78);
-          box-shadow: 0 12px 28px rgba(92, 59, 77, 0.16);
+          background: rgba(250, 247, 240, 0.86);
+          box-shadow: 0 12px 28px rgba(58, 37, 37, 0.16);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
           z-index: 6;
@@ -313,7 +313,7 @@ export default function Hero({ setPage }) {
         .nvz-hero-quick-actions .nvz-hero-btn {
           min-width: 180px;
           min-height: 48px;
-          box-shadow: 0 6px 16px rgba(92, 59, 77, 0.15);
+          box-shadow: 0 6px 16px rgba(58, 37, 37, 0.15);
         }
 
         .nvz-hero-overlay {
@@ -353,7 +353,7 @@ export default function Hero({ setPage }) {
           font-family: 'Playfair Display', serif;
           font-size: clamp(55px, 5vw, 80px);
           font-weight: 700;
-          color: #E58AA8;
+          color: #8B1E2D;
           letter-spacing: 3px;
           line-height: 0.85;
         }
@@ -510,16 +510,16 @@ export default function Hero({ setPage }) {
         }
 
         .nvz-hero-btn--primary {
-          background: linear-gradient(135deg, #C95780, #E58AA8);
+          background: linear-gradient(135deg, #8B1E2D, #A92A3A);
           color: #FFFFFF;
           border: 1px solid rgba(255,255,255,0.65);
-          text-shadow: 0 1px 2px rgba(92, 59, 77, 0.22);
+          text-shadow: 0 1px 2px rgba(58, 37, 37, 0.22);
         }
 
         .nvz-hero-btn--secondary {
-          background: rgba(255, 255, 255, 0.96);
-          color: #B94D76;
-          border: 2px solid #D76E96;
+          background: #F8E3E5;
+          color: #8B1E2D;
+          border: 2px solid #C6A15B;
         }
 
         .nvz-hero-btn:hover {
@@ -527,11 +527,11 @@ export default function Hero({ setPage }) {
         }
 
         .nvz-hero-btn--primary:hover {
-          box-shadow: 0 14px 30px rgba(185, 77, 118, 0.3);
+          box-shadow: 0 14px 30px rgba(139, 30, 45, 0.3);
         }
 
         .nvz-hero-btn--secondary:hover {
-          background: #E58AA8;
+          background: #C6A15B;
           color: #fff;
         }
 
@@ -652,7 +652,7 @@ export default function Hero({ setPage }) {
             transform: translateX(-50%);
             width: auto;
             max-width: calc(100% - 24px);
-            background: rgba(255, 238, 246, 0.78);
+            background: rgba(250, 247, 240, 0.86);
             box-shadow: 1px solid rgba(255, 255, 255, 0.8);
             padding: 4px 6px;
             justify-content: center;
@@ -768,7 +768,7 @@ export default function Hero({ setPage }) {
           }
 
           .nvz-hero-title .nvz-hero-celebrate {
-            color: #E58AA8;
+            color: #8B1E2D;
             display: inline;
           }
 
@@ -839,17 +839,17 @@ export default function Hero({ setPage }) {
           }
 
           .nvz-hero-btn--primary {
-            background: linear-gradient(135deg, #C95780, #E58AA8) !important;
+            background: linear-gradient(135deg, #8B1E2D, #A92A3A) !important;
             border-color: rgba(255,255,255,0.75);
-            box-shadow: 0 8px 18px rgba(185, 77, 118, 0.28);
+            box-shadow: 0 8px 18px rgba(139, 30, 45, 0.28);
             color: #FFFFFF;
           }
 
           .nvz-hero-btn--secondary {
-            background: rgba(255, 255, 255, 0.96) !important;
-            color: #B94D76 !important;
-            border-color: #D76E96;
-            box-shadow: inset 0 0 0 1px rgba(215, 110, 150, 0.12);
+            background: #F8E3E5 !important;
+            color: #8B1E2D !important;
+            border-color: #C6A15B;
+            box-shadow: inset 0 0 0 1px rgba(198, 161, 91, 0.12);
           }
 
           .nvz-hero-btn:hover {
@@ -857,12 +857,12 @@ export default function Hero({ setPage }) {
           }
 
           .nvz-hero-btn--secondary:hover {
-            background: #E58AA8;
-            color: #fff;
+            background: #C6A15B;
+            color: #3A2525;
           }
 
           .nvz-hero-btn--primary:hover {
-            box-shadow: 0 12px 24px rgba(185, 77, 118, 0.34);
+            box-shadow: 0 12px 24px rgba(139, 30, 45, 0.34);
           }
 
           .nvz-hero-quick-actions .nvz-hero-btn {

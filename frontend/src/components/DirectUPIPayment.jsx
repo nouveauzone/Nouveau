@@ -125,7 +125,7 @@ const DirectUPIPayment = ({
     qrTitle: { fontSize: 14, fontWeight: 600, color: '#3A2525', margin: 0, letterSpacing: '-0.01em' },
     qrWrapper: { padding: '15px', background: '#fff', borderRadius: '12px', border: '1.2px solid #f0f0f0' },
     upiIdBox: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f9f9fb', border: '1.2px solid #e9eaef', borderRadius: 14, padding: '12px 16px', marginBottom: 24 },
-    copyBtn: { background: '#E58AA8', color: '#fff', border: 'none', borderRadius: 10, padding: '8px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' },
+    copyBtn: { background: 'var(--nvz-burgundy)', color: '#fff', border: 'none', borderRadius: 10, padding: '8px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' },
     toast: { position: 'absolute', top: -45, left: '50%', transform: 'translateX(-50%)', background: '#2ecc71', color: '#fff', padding: '8px 18px', borderRadius: 30, fontSize: 12, fontWeight: 600, boxShadow: '0 5px 20px rgba(46,204,113,0.3)', whiteSpace: 'nowrap', zIndex: 10 },
     amountBox: { textAlign: 'center', padding: '20px 0', borderTop: '1px solid #f0f0f0', marginTop: 8 },
     confirmOverlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 1000 },
@@ -185,7 +185,7 @@ const DirectUPIPayment = ({
               setCopied(true);
               setTimeout(() => setCopied(false), 2000);
             }}
-            style={{ ...styles.copyBtn, background: copied ? '#2ecc71' : '#E58AA8' }}
+            style={{ ...styles.copyBtn, background: copied ? '#2ecc71' : 'var(--nvz-burgundy)' }}
           >
             {copied ? 'Copied' : 'Copy'}
           </button>
